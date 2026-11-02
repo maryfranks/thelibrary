@@ -1,0 +1,1007 @@
+{
+  "stages": [
+    {
+      "id": "stage1_vestibule",
+      "text": "You are in the vestibule.",
+      "commands": {
+        "try to leave": {
+          "next_node": "stage1_vestibule_respawn",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "A monster attacks you as you try to leave."
+        },
+        "look around": {
+          "next_node": "stage1_vestibule_searched"
+        }
+      }
+    },
+    {
+      "id": "stage1_vestibule_respawn",
+      "text": "You respawn in the vestibule with a hint.",
+      "commands": {
+        "look around": {
+          "next_node": "stage1_vestibule_searched"
+        }
+      }
+    },
+    {
+      "id": "stage1_vestibule_searched",
+      "text": "You look around and discover a pack.",
+      "commands": {
+        "look around": {
+          "next_node": "stage1_vestibule_searched"
+        },
+        "look in the pack": {
+          "next_node": "stage1_pack_checked"
+        }
+      }
+    },
+    {
+      "id": "stage1_pack_checked",
+      "text": "You look inside the pack.",
+      "commands": {
+        "look around": {
+          "next_node": "stage1_vestibule_searched"
+        },
+        "look in the pack": {
+          "next_node": "stage1_pack_checked"
+        },
+        "hop turnstiles": {
+          "next_node": "stage1_turnstile_check"
+        },
+        "pick up mop": {
+          "next_node": "stage1_mop_acquired"
+        }
+      }
+    },
+    {
+      "id": "stage1_turnstile_check",
+      "text": "You reach the turnstiles without a mop.",
+      "commands": {
+        "look around": {
+          "next_node": "stage1_vestibule_searched"
+        },
+        "look in the pack": {
+          "next_node": "stage1_pack_checked"
+        },
+        "go back for mop": {
+          "next_node": "stage1_mop_acquired"
+        },
+        "proceed anyway": {
+          "next_node": "stage2_foyer"
+        }
+      }
+    },
+    {
+      "id": "stage1_mop_acquired",
+      "text": "You have acquired the mop.",
+      "commands": {
+        "look around": {
+          "next_node": "stage1_mop_acquired"
+        },
+        "look in the pack": {
+          "next_node": "stage1_pack_checked"
+        },
+        "hop turnstiles": {
+          "next_node": "stage2_foyer"
+        }
+      }
+    },
+    {
+      "id": "stage2_foyer",
+      "text": "You have arrived in the foyer.",
+      "commands": {
+        "look around": {
+          "next_node": "stage2_foyer_searched"
+        },
+        "any other action": {
+          "next_node": "stage2_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "A monster attacks you for making noise."
+        }
+      }
+    },
+    {
+      "id": "stage2_foyer_searched",
+      "text": "You examine the explored foyer.",
+      "commands": {
+        "look around": {
+          "next_node": "stage2_foyer_searched"
+        },
+        "look in the pack": {
+          "next_node": "stage2_foyer_searched"
+        },
+        "search corpse": {
+          "next_node": "stage2_corpse_looted",
+          "items_acquired": ["lemon candy", "pack of gum", "mace", "hair ties"]
+        },
+        "search desk": {
+          "next_node": "stage2_desk_looted",
+          "items_acquired": ["small notebook", "stacks key"]
+        },
+        "explore periodicals": {
+          "next_node": "stage2_periodicals_check"
+        }
+      }
+    },
+    {
+      "id": "stage2_corpse_looted",
+      "text": "You loot the corpse.",
+      "commands": {
+        "look around": {
+          "next_node": "stage2_corpse_looted"
+        },
+        "look in the pack": {
+          "next_node": "stage2_corpse_looted"
+        },
+        "search desk": {
+          "next_node": "stage2_both_looted",
+          "items_acquired": ["small notebook", "stacks key"]
+        },
+        "explore periodicals": {
+          "next_node": "stage2_periodicals_check"
+        }
+      }
+    },
+    {
+      "id": "stage2_desk_looted",
+      "text": "You loot the desk.",
+      "commands": {
+        "look around": {
+          "next_node": "stage2_desk_looted"
+        },
+        "look in the pack": {
+          "next_node": "stage2_desk_looted"
+        },
+        "search corpse": {
+          "next_node": "stage2_both_looted",
+          "items_acquired": ["lemon candy", "pack of gum", "mace", "hair ties"]
+        },
+        "explore periodicals": {
+          "next_node": "stage2_periodicals_check"
+        }
+      }
+    },
+    {
+      "id": "stage2_both_looted",
+      "text": "You have fully looted the foyer.",
+      "commands": {
+        "look around": {
+          "next_node": "stage2_both_looted"
+        },
+        "look in the pack": {
+          "next_node": "stage2_both_looted"
+        },
+        "explore periodicals": {
+          "next_node": "stage2_periodicals_check"
+        }
+      }
+    },
+    {
+      "id": "stage2_periodicals_check",
+      "text": "You check the periodicals with your item status.",
+      "commands": {
+        "no mop check": {
+          "next_node": "stage2_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Without the mop, you perish."
+        },
+        "with mop check": {
+          "next_node": "stage2_reading_room_door"
+        }
+      }
+    },
+    {
+      "id": "stage2_reading_room_door",
+      "text": "You stand before the reading room door.",
+      "commands": {
+        "rattle reading room door": {
+          "next_node": "stage2_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Rattling the door draws a monster."
+        },
+        "try the lock quietly": {
+          "next_node": "stage2_reading_room_locked"
+        }
+      }
+    },
+    {
+      "id": "stage2_reading_room_locked",
+      "text": "The reading room door is locked.",
+      "commands": {
+        "look around": {
+          "next_node": "stage2_fireplace_revealed"
+        }
+      }
+    },
+    {
+      "id": "stage2_fireplace_revealed",
+      "text": "A fireplace has been revealed.",
+      "commands": {
+        "search fireplace": {
+          "next_node": "stage2_poker_acquired",
+          "items_acquired": ["fireplace poker"],
+          "item_lost": "mop"
+        },
+        "go deeper": {
+          "next_node": "stage2_stacks_door_check",
+          "retains_item": "mop"
+        }
+      }
+    },
+    {
+      "id": "stage2_poker_acquired",
+      "text": "You acquired the fireplace poker and traded away your mop.",
+      "commands": {
+        "go deeper": {
+          "next_node": "stage2_stacks_door_check"
+        }
+      }
+    },
+    {
+      "id": "stage2_stacks_door_check",
+      "text": "You check the stacks door with your key.",
+      "commands": {
+        "no stacks key": {
+          "next_node": "stage2_stacks_door_locked_no_key"
+        },
+        "with stacks key": {
+          "next_node": "stage3_arrival"
+        }
+      }
+    },
+    {
+      "id": "stage2_stacks_door_locked_no_key",
+      "text": "The stacks door is locked and you lack the key.",
+      "commands": {
+        "defend yourself": {
+          "next_node": "stage2_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "You are attacked."
+        },
+        "slowly walk backwards": {
+          "next_node": "stage2_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "You are attacked while backing away."
+        }
+      }
+    },
+    {
+      "id": "stage2_death_choice",
+      "text": "You have died in Stage 2.",
+      "commands": {
+        "try again": {
+          "next_node": "stage1_mop_acquired"
+        },
+        "give up": {
+          "next_node": "game_over"
+        }
+      }
+    },
+    {
+      "id": "stage3_arrival",
+      "text": "You arrive at the stacks.",
+      "commands": {
+        "with mop check": {
+          "next_node": "stage3_early_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "The mop fails you against the hazard."
+        },
+        "with poker check": {
+          "next_node": "stage3_hub_unexplored"
+        }
+      }
+    },
+    {
+      "id": "stage3_early_death_choice",
+      "text": "You died during early Stage 3.",
+      "commands": {
+        "try again": {
+          "next_node": "stage2_stacks_door_check"
+        },
+        "give up": {
+          "next_node": "game_over"
+        }
+      }
+    },
+    {
+      "id": "stage3_hub_unexplored",
+      "text": "You are at the unexplored main hub of the stacks.",
+      "commands": {
+        "go deeper": {
+          "next_node": "stage3_early_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Going deeper blindly leads to attack."
+        },
+        "go back toward foyer": {
+          "next_node": "stage3_hub_unexplored"
+        },
+        "look around": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage3_hub",
+      "text": "You are at the explored main hub of the stacks.",
+      "commands": {
+        "peer down row 1": {
+          "next_node": "stage3_hub",
+          "action": "set row1_safe = true"
+        },
+        "peer down row 2": {
+          "next_node": "stage3_hub",
+          "action": "set row2_safe = true"
+        },
+        "peer down row 3": {
+          "next_node": "stage3_hub",
+          "action": "set row3_safe = true"
+        },
+        "peer down row 4": {
+          "next_node": "stage3_hub",
+          "action": "set row4_safe = true"
+        },
+        "peer down row 5": {
+          "next_node": "stage3_hub",
+          "action": "if row5_safe == false: set row5_safe = true else: trigger_death"
+        },
+        "go down row 1": {
+          "next_node": "stage3_row1_encounter",
+          "condition": "row1_safe == true",
+          "else_death": {
+            "is_death": true,
+            "death_type": "monster_attack",
+            "death_text": "You attempt to go down row 1 without peering first and are attacked.",
+            "next_node": "stage3_death_choice"
+          }
+        },
+        "go down row 2": {
+          "next_node": "stage3_row2_encounter",
+          "condition": "row2_safe == true",
+          "else_death": {
+            "is_death": true,
+            "death_type": "monster_attack",
+            "death_text": "You attempt to go down row 2 without peering first and are attacked.",
+            "next_node": "stage3_death_choice"
+          }
+        },
+        "go down row 3": {
+          "next_node": "stage3_row3_encounter",
+          "condition": "row3_safe == true",
+          "else_death": {
+            "is_death": true,
+            "death_type": "monster_attack",
+            "death_text": "You attempt to go down row 3 without peering first and are attacked.",
+            "next_node": "stage3_death_choice"
+          }
+        },
+        "go down row 4": {
+          "next_node": "stage3_row4_encounter",
+          "condition": "row4_safe == true",
+          "else_death": {
+            "is_death": true,
+            "death_type": "monster_attack",
+            "death_text": "You attempt to go down row 4 without peering first and are attacked.",
+            "next_node": "stage3_death_choice"
+          }
+        },
+        "go down row 5": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "unknown_death",
+          "death_text": "Going down row 5 proves fatal."
+        }
+      }
+    },
+    {
+      "id": "stage3_death_choice",
+      "text": "You have died in the stacks.",
+      "commands": {
+        "try again": {
+          "next_node": "stage3_hub"
+        },
+        "give up": {
+          "next_node": "game_over"
+        }
+      }
+    },
+    {
+      "id": "stage3_row1_encounter",
+      "text": "You are at Row 1 (Reading Room Entrance).",
+      "commands": {
+        "look through the glass door": {
+          "next_node": "stage3_row1_glass_view"
+        },
+        "enter the reading room": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "A monster attacks you inside."
+        },
+        "go back": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage3_row1_glass_view",
+      "text": "You look through the glass door of Row 1.",
+      "commands": {
+        "enter the reading room": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Entering proves fatal."
+        },
+        "go back": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage3_row2_encounter",
+      "text": "You are at Row 2 (Corpse Corridor).",
+      "commands": {
+        "search corpse": {
+          "next_node": "stage3_row2_looted",
+          "items_acquired": ["pocketknife", "umbrella"]
+        },
+        "move deeper": {
+          "next_node": "stage3_row2_flashlight_check"
+        },
+        "return to hub": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage3_row2_looted",
+      "text": "You have looted the corpse in Row 2.",
+      "commands": {
+        "move deeper": {
+          "next_node": "stage3_row2_flashlight_check"
+        },
+        "return to hub": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage3_row2_flashlight_check",
+      "text": "You check for a flashlight to proceed deeper.",
+      "commands": {
+        "no flashlight check": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "It is too dark; you are attacked."
+        },
+        "with flashlight check": {
+          "next_node": "stage4_entry"
+        }
+      }
+    },
+    {
+      "id": "stage3_row3_encounter",
+      "text": "You are at Row 3 (Misleading Safe Row).",
+      "commands": {
+        "walk down row": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "It was a trap."
+        },
+        "return to hub": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage3_row4_encounter",
+      "text": "You are at Row 4 (Narrow Aisle).",
+      "commands": {
+        "search backpack": {
+          "next_node": "stage3_row4_looted",
+          "items_acquired": ["water", "flashlight", "second snack", "notebook", "dictionary", "pencil"]
+        },
+        "go deeper": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "You are attacked going deeper."
+        },
+        "return to hub": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage3_row4_looted",
+      "text": "You have looted the backpack in Row 4.",
+      "commands": {
+        "go deeper": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Going deeper here is fatal."
+        },
+        "return to hub": {
+          "next_node": "stage3_hub"
+        }
+      }
+    },
+    {
+      "id": "stage4_entry",
+      "text": "You enter the deep stacks maze.",
+      "commands": {
+        "go deeper": {
+          "next_node": "stage4_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "An environmental hazard claims you."
+        },
+        "look around": {
+          "next_node": "stage4_junction_a"
+        }
+      }
+    },
+    {
+      "id": "stage4_death_choice",
+      "text": "You have died in the deep stacks maze.",
+      "commands": {
+        "try again": {
+          "next_node": "stage3_hub"
+        },
+        "give up": {
+          "next_node": "game_over"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_a",
+      "text": "You are at Junction A.",
+      "commands": {
+        "go left": {
+          "next_node": "stage4_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Dead end hazard."
+        },
+        "go right": {
+          "next_node": "stage4_junction_b"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_b",
+      "text": "You are at Junction B.",
+      "commands": {
+        "go straight": {
+          "next_node": "stage4_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Dead end hazard."
+        },
+        "go sideways": {
+          "next_node": "stage4_junction_c"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_c",
+      "text": "You are at Junction C (The Torn Tapestry).",
+      "commands": {
+        "go around": {
+          "next_node": "stage4_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Dead end hazard."
+        },
+        "go forward": {
+          "next_node": "stage4_junction_c_check"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_c_check",
+      "text": "You check for a pocketknife at the tapestry.",
+      "commands": {
+        "no pocketknife check": {
+          "next_node": "stage3_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "You cannot pass without a pocketknife."
+        },
+        "with pocketknife check": {
+          "next_node": "stage4_junction_d"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_d",
+      "text": "You are at Junction D (Loopback 1).",
+      "commands": {
+        "go left": {
+          "next_node": "stage4_junction_a"
+        },
+        "go right": {
+          "next_node": "stage4_junction_e"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_e",
+      "text": "You are at Junction E (The Electrical Hazard).",
+      "commands": {
+        "step down": {
+          "next_node": "stage4_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Electrocution."
+        },
+        "step across": {
+          "next_node": "stage4_junction_f"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_f",
+      "text": "You are at Junction F (The Monster's Nest).",
+      "commands": {
+        "explore alcove": {
+          "next_node": "stage4_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Monster attack."
+        },
+        "bypass alcove": {
+          "next_node": "stage4_junction_g"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_g",
+      "text": "You are at Junction G.",
+      "commands": {
+        "climb aisle": {
+          "next_node": "stage4_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Hazard."
+        },
+        "duck under": {
+          "next_node": "stage4_junction_h"
+        }
+      }
+    },
+    {
+      "id": "stage4_junction_h",
+      "text": "You are at Junction H (Loopback 2).",
+      "commands": {
+        "take left corridor": {
+          "next_node": "stage4_junction_e"
+        },
+        "take right corridor": {
+          "next_node": "stage4_structural_hub"
+        }
+      }
+    },
+    {
+      "id": "stage4_structural_hub",
+      "text": "You have reached the Structural Hub (End of Maze).",
+      "commands": {
+        "go upstairs": {
+          "next_node": "stage5_mezzanine_arrival"
+        },
+        "go into basement": {
+          "next_node": "stage5_basement_arrival"
+        }
+      }
+    },
+    {
+      "id": "stage5_mezzanine_arrival",
+      "text": "You arrive at the Upper Mezzanine.",
+      "commands": {
+        "go forward": {
+          "next_node": "stage5_mezzanine_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Mezzanine hazard."
+        },
+        "look around": {
+          "next_node": "stage5_mezzanine_searched"
+        }
+      }
+    },
+    {
+      "id": "stage5_mezzanine_death_choice",
+      "text": "You have died on the mezzanine.",
+      "commands": {
+        "try again": {
+          "next_node": "stage5_mezzanine_arrival"
+        },
+        "give up": {
+          "next_node": "game_over"
+        }
+      }
+    },
+    {
+      "id": "stage5_mezzanine_searched",
+      "text": "You search the Upper Mezzanine.",
+      "commands": {
+        "look around": {
+          "next_node": "stage5_mezzanine_searched"
+        },
+        "look in the pack": {
+          "next_node": "stage5_mezzanine_searched"
+        },
+        "look over railing": {
+          "next_node": "stage5_mezzanine_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Monster attack from below."
+        },
+        "sneak through stacks": {
+          "next_node": "stage5_balcony_door"
+        }
+      }
+    },
+    {
+      "id": "stage5_balcony_door",
+      "text": "You reach the exterior balcony door.",
+      "commands": {
+        "go out on the balcony": {
+          "next_node": "stage5_mezzanine_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Balcony hazard."
+        },
+        "inspect balcony": {
+          "next_node": "stage5_balcony_inspected"
+        }
+      }
+    },
+    {
+      "id": "stage5_balcony_inspected",
+      "text": "You inspect the balcony.",
+      "commands": {
+        "go out on the balcony": {
+          "next_node": "stage5_mezzanine_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Balcony hazard."
+        },
+        "go back": {
+          "next_node": "stage5_mezzanine_umbrella_check"
+        }
+      }
+    },
+    {
+      "id": "stage5_mezzanine_umbrella_check",
+      "text": "You check your umbrella in the stairwell trap.",
+      "commands": {
+        "no umbrella check": {
+          "next_node": "game_over",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Without the umbrella, a monster attacks you in the dead end."
+        },
+        "with umbrella check": {
+          "next_node": "game_over",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "The umbrella fails against the dead-end environmental hazard on the mezzanine."
+        }
+      }
+    },
+    {
+      "id": "stage5_basement_arrival",
+      "text": "You arrive at the basement stairs.",
+      "commands": {
+        "go down the stairs": {
+          "next_node": "stage5_basement_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Basement hazard."
+        },
+        "look around": {
+          "next_node": "stage5_basement_searched"
+        }
+      }
+    },
+    {
+      "id": "stage5_basement_death_choice",
+      "text": "You have died in the basement.",
+      "commands": {
+        "try again": {
+          "next_node": "stage5_basement_arrival"
+        },
+        "give up": {
+          "next_node": "game_over"
+        }
+      }
+    },
+    {
+      "id": "stage5_basement_searched",
+      "text": "You explore the basement stairs.",
+      "commands": {
+        "go further": {
+          "next_node": "stage5_basement_umbrella_check"
+        }
+      }
+    },
+    {
+      "id": "stage5_basement_umbrella_check",
+      "text": "You check for the umbrella in the basement.",
+      "commands": {
+        "no umbrella check": {
+          "next_node": "stage5_basement_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "You need the umbrella to survive."
+        },
+        "with umbrella check": {
+          "next_node": "stage5_flooded_corridor"
+        }
+      }
+    },
+    {
+      "id": "stage5_flooded_corridor",
+      "text": "You enter the flooded corridor.",
+      "commands": {
+        "go back": {
+          "next_node": "stage5_flooded_corridor"
+        },
+        "enter the water": {
+          "next_node": "stage5_water_step_1"
+        }
+      }
+    },
+    {
+      "id": "stage5_water_step_1",
+      "text": "First movement choice in water.",
+      "commands": {
+        "jump in": {
+          "next_node": "stage5_basement_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Jumping in attracts a monster."
+        },
+        "enter the water slowly": {
+          "next_node": "stage5_water_step_2"
+        }
+      }
+    },
+    {
+      "id": "stage5_water_step_2",
+      "text": "Second movement choice in water.",
+      "commands": {
+        "start running": {
+          "next_node": "stage5_basement_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Running makes too much noise."
+        },
+        "go slowly": {
+          "next_node": "stage5_water_step_3"
+        }
+      }
+    },
+    {
+      "id": "stage5_water_step_3",
+      "text": "Third movement choice in water.",
+      "commands": {
+        "rush out of the water": {
+          "next_node": "stage5_basement_death_choice",
+          "is_death": true,
+          "death_type": "monster_attack",
+          "death_text": "Rushing out triggers an attack."
+        },
+        "slowly climb out": {
+          "next_node": "stage5_occult_archive_entry"
+        }
+      }
+    },
+    {
+      "id": "stage5_occult_archive_entry",
+      "text": "You reach dry concrete in the Occult Archive.",
+      "commands": {
+        "go towards the light": {
+          "next_node": "stage5_basement_death_choice",
+          "is_death": true,
+          "death_type": "environmental_hazard",
+          "death_text": "Hazardous light."
+        },
+        "look around": {
+          "next_node": "stage5_occult_archive_hub"
+        }
+      }
+    },
+    {
+      "id": "stage5_occult_archive_hub",
+      "text": "You are at the Occult Archive Hub.",
+      "commands": {
+        "try the windows": {
+          "next_node": "stage5_windows_tested_hub"
+        },
+        "search desk": {
+          "next_node": "stage5_desk_searched_hub"
+        },
+        "approach cave": {
+          "next_node": "stage5_cave_approach_partial"
+        }
+      }
+    },
+    {
+      "id": "stage5_windows_tested_hub",
+      "text": "You tested the windows.",
+      "commands": {
+        "search desk": {
+          "next_node": "stage5_both_tested_hub"
+        },
+        "approach cave": {
+          "next_node": "stage5_cave_approach_partial"
+        }
+      }
+    },
+    {
+      "id": "stage5_desk_searched_hub",
+      "text": "You searched the desk.",
+      "commands": {
+        "try the windows": {
+          "next_node": "stage5_both_tested_hub"
+        },
+        "approach cave": {
+          "next_node": "stage5_cave_approach_partial"
+        }
+      }
+    },
+    {
+      "id": "stage5_both_tested_hub",
+      "text": "You have fully explored the archive hub.",
+      "commands": {
+        "approach cave": {
+          "next_node": "stage5_cave_approach_final"
+        }
+      }
+    },
+    {
+      "id": "stage5_cave_approach_partial",
+      "text": "You approach the cave entrance.",
+      "commands": {
+        "go back to archive": {
+          "next_node": "stage5_occult_archive_hub"
+        },
+        "climb out to safety": {
+          "next_node": "game_win"
+        }
+      }
+    },
+    {
+      "id": "stage5_cave_approach_final",
+      "text": "You approach the final cave exit.",
+      "commands": {
+        "climb out to safety": {
+          "next_node": "game_win"
+        }
+      }
+    },
+    {
+      "id": "game_over",
+      "text": "Game Over.",
+      "commands": {}
+    },
+    {
+      "id": "game_win",
+      "text": "You win!",
+      "commands": {}
+    }
+  ]
+}
