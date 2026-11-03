@@ -30,16 +30,3 @@
 * **Phase 4: Cloudflare Deployment**
   * Build the static single-page application assets.
   * Deploy the application to Cloudflare Pages with custom domain routing configured at `thelibrary.littlefuzzydinos.com`.
-
----
-
-## Part 2: Shared Observability & Infrastructure (Separate Concern)
-
-*Note: This infrastructure operates as a centralized, shared resource stack independent of the application codebase.*
-
-### 1. Centralized OTel Collector & Grafana Pipeline
-* **Hosting:** Google Cloud Platform (GCP) Always-Free `e2-micro` virtual machine (2 vCPUs, 1 GB RAM) running in a US region with a 30 GB persistent disk.
-* **Orchestration:** Docker and Docker Compose managing containerized services for both the OpenTelemetry Collector and Grafana on the shared instance.
-* **Configuration (`otel-collector-config.yaml`):**
-  * **Receiver:** Configured to listen on port `4318` for incoming OTLP HTTP payloads originating from the frontend game and other shared applications.
-  * **Exporter:** Routes telemetry data directly into Grafana (or any OTel-compatible visualization sink) for real-time dashboard monitoring of player survival statistics and outcome distributions.
