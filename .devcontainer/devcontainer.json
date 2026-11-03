@@ -4,6 +4,10 @@
   "features": {
     "ghcr.io/devcontainers/features/sshd:1": {
       "version": "latest"
+    },
+    "ghcr.io/devcontainers-contrib/features/bun:1": {
+      "version": "latest"
     }
   }
+  
 }
