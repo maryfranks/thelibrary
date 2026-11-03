@@ -1,0 +1,100 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-brass-border: var(--brass-border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-body: var(--body);
+  --font-serif: "Spectral", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 0.375rem;
+  --background: #16181B; --foreground: #EDE6D6;
+  --card: #1D2024; --card-foreground: #C6BEB0;
+  --popover: #24282D; --popover-foreground: #C6BEB0;
+  --primary: #C7A362; --primary-foreground: #221C17;
+  --secondary: #2C4A3F; --secondary-foreground: #EDE6D6;
+  --muted: #0F1114; --muted-foreground: #8C8779;
+  --accent: #2E4A5C; --accent-foreground: #EDE6D6;
+  --destructive: #A29BBE; --destructive-foreground: #221C17;
+  --border: #333A41; --input: #4A4F57; --ring: #6E5A34;
+  --brass-border: #6E5A34; --success: #86A47E; --warning: #D2BD7A; --body: #C6BEB0;
+  --chart-1: #C7A362; --chart-2: #86A47E; --chart-3: #7FA3AD; --chart-4: #A29BBE; --chart-5: #D2BD7A;
+  --sidebar: #1D2024; --sidebar-foreground: #C6BEB0; --sidebar-primary: #C7A362; --sidebar-primary-foreground: #221C17;
+  --sidebar-accent: #24282D; --sidebar-accent-foreground: #EDE6D6; --sidebar-border: #333A41; --sidebar-ring: #6E5A34;
+  --shadow-terminal: 0 8px 24px -8px rgb(26 21 18 / 0.6), inset 0 1px 0 rgb(237 230 214 / 0.04);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+@utility cursor-blink { animation: blink 1s steps(1) infinite; }
