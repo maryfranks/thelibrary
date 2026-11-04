@@ -105,11 +105,11 @@
   - Choice 3: "peer down row 3" -> [Set row3_safe = true] -> [stage3_hub]
   - Choice 4: "peer down row 4" -> [Set row4_safe = true] -> [stage3_hub]
   - Choice 5: "peer down row 5" -> [If row5_safe == false: Set row5_safe = true | Else: [DEAD: unknown_death] -> [stage3_death_choice]] -> [stage3_hub]
-  - Choice 7: "go down row 1" -> [If row1_safe == true -> [stage3_row1_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
-  - Choice 8: "go down row 2" -> [If row2_safe == true -> [stage3_row2_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
-  - Choice 9: "go down row 3" -> [If row3_safe == true -> [stage3_row3_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
-  - Choice 10: "go down row 4" -> [If row4_safe == true -> [stage3_row4_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
-  - Choice 11: "go down row 5" -> [DEAD: unknown_death] -> [stage3_death_choice]
+  - Choice 6: "go down row 1" -> [If row1_safe == true -> [stage3_row1_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
+  - Choice 7: "go down row 2" -> [If row2_safe == true -> [stage3_row2_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
+  - Choice 8: "go down row 3" -> [If row3_safe == true -> [stage3_row3_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
+  - Choice 9: "go down row 4" -> [If row4_safe == true -> [stage3_row4_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
+  - Choice 10: "go down row 5" -> [DEAD: unknown_death] -> [stage3_death_choice]
 
 - [stage3_death_choice] Death Prompt (Stage 3)
   - Choice 1: "try again" -> [stage3_hub]
