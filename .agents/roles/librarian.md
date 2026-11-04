@@ -19,4 +19,4 @@ If documentation parameters conflict with existing repository standards or lack 
 1. All requested documentation updates are fully written and placed in the correct target paths.
 2. Token efficiency and formatting rules are strictly observed based on the target audience.
 3. No code files, source logic, or tests have been modified or touched.
-4. Changes are committed on a dedicated branch following standard repository guidelines (`docs(...)`).
+4. Changes are committed on the active PR branch (or a dedicated `docs-...` branch for standalone tasks) following standard repository guidelines (`docs(...)`).
