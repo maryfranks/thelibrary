@@ -5,6 +5,7 @@
 > - Node descriptions resolve via `content.nodes[nodeId]`.
 > - Fatal transitions (`[DEAD: <death_type>]`) resolve death screen text via `content.death_screens["<nodeId>__<normalized_choice>"]` (spaces replaced with `_`).
 > - Bracketed item-check branches (e.g., `[No Mop]`, `[With Mop]`) normalize with a `_check` suffix (e.g., `no_mop_check`, `with_mop_check`) when resolving `death_screens` keys, and automatically evaluate based on current inventory when entered.
+> - Conditional branches with a fatal else path (e.g., `[If <cond> -> [<target>] | Else -> [DEAD: <death_type>]]`) resolve death screen text via `content.death_screens["<nodeId>__<normalized_choice>__else"]` (falling back to `"<nodeId>__<normalized_choice>"` if absent).
 > - Unmatched inputs resolve via `content.parser_fallbacks`.
 
 - [stage1_vestibule] Vestibule
