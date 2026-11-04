@@ -1,5 +1,11 @@
 # Gameplay 
 
+> **Content Resolution & Decoupling Rules:**
+> - Never hardcode narrative strings, parser fallbacks, or death screen keys in `src/engine/`. Always load `content.json` dynamically.
+> - Node descriptions resolve via `content.nodes[nodeId]`.
+> - Fatal transitions (`[DEAD: <death_type>]`) resolve death screen text via `content.death_screens["<nodeId>__<normalized_choice>"]` (spaces replaced with `_`).
+> - Unmatched inputs resolve via `content.parser_fallbacks`.
+
 - [stage1_vestibule] Vestibule
   - Choice 1: "try to leave" -> [DEAD: monster_attack] -> [stage1_vestibule_respawn]
   - Choice 2: "look around" -> [stage1_vestibule_searched]
