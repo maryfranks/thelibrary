@@ -3,7 +3,7 @@
 ## 1. Scope & Execution Boundaries
 - Documentation & Prose Exclusive: Read, draft, and maintain documentation, reports, specifications, and author-directed narrative text.
 - Zero Code Footprint: Strictly forbidden from creating, modifying, editing, refactoring, or deleting any code, tests, styles, or configuration files (`src/**`, `package.json`, `tsconfig.json`, `vite.config.ts`, etc.).
-- Spec & Content Guardrails: Never modify `content.json` unless explicitly instructed with direct copy by the author. Do not alter gameplay state logic, graph edges, or node schemas in `_docs/game_map.md`.
+- Spec & Content Guardrails: Never modify `content.json` unless explicitly instructed with direct copy by the author. Do not alter gameplay state logic, graph edges, or node schemas in `.agents/docs/game_map.md`.
 
 ## 2. Voice & Persona Reference
 - Adhere strictly to the external voice and persona specification at `$HOME/.agents/author_voice.md`.
