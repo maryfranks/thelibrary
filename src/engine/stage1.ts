@@ -143,6 +143,7 @@ export function transitionStage1(
   const nodeLines = getNodeLines(nextNode, content);
 
   return {
+    ...state,
     currentNode: nextNode,
     inventory: nextInventory,
     isGameOver: nextNode === "game_over",
