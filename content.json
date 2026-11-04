@@ -1,113 +1,353 @@
 {
+  "intro": [
+    "Rain hammers the windows.",
+    "The door clicks shut behind you."
+  ],
   "nodes": {
-    "stage1_vestibule": "You are in the vestibule.",
-    "stage1_vestibule_respawn": "You respawn in the vestibule with a hint.",
-    "stage1_vestibule_searched": "You look around and discover a pack.",
-    "stage1_pack_checked": "You look inside the pack.",
-    "stage1_turnstile_check": "You reach the turnstiles without a mop.",
-    "stage1_mop_acquired": "You have acquired the mop.",
-    "stage2_foyer": "You have arrived in the foyer.",
-    "stage2_foyer_searched": "You examine the explored foyer.",
-    "stage2_corpse_looted": "You loot the corpse.",
-    "stage2_desk_looted": "You loot the desk.",
-    "stage2_both_looted": "You have fully looted the foyer.",
-    "stage2_periodicals_check": "You check the periodicals with your item status.",
-    "stage2_reading_room_door": "You stand before the reading room door.",
-    "stage2_reading_room_locked": "The reading room door is locked.",
-    "stage2_fireplace_revealed": "A fireplace has been revealed.",
-    "stage2_poker_acquired": "You acquired the fireplace poker and traded away your mop.",
-    "stage2_stacks_door_check": "You check the stacks door with your key.",
-    "stage2_stacks_door_locked_no_key": "The stacks door is locked and you lack the key.",
-    "stage2_death_choice": "You have died in Stage 2.",
-    "stage3_arrival": "You arrive at the stacks.",
-    "stage3_early_death_choice": "You died during early Stage 3.",
-    "stage3_hub_unexplored": "You are at the unexplored main hub of the stacks.",
-    "stage3_hub": "You are at the explored main hub of the stacks.",
-    "stage3_death_choice": "You have died in the stacks.",
-    "stage3_row1_encounter": "You are at Row 1 (Reading Room Entrance).",
-    "stage3_row1_glass_view": "You look through the glass door of Row 1.",
-    "stage3_row2_encounter": "You are at Row 2 (Corpse Corridor).",
-    "stage3_row2_looted": "You have looted the corpse in Row 2.",
-    "stage3_row2_flashlight_check": "You check for a flashlight to proceed deeper.",
-    "stage3_row3_encounter": "You are at Row 3 (Misleading Safe Row).",
-    "stage3_row4_encounter": "You are at Row 4 (Narrow Aisle).",
-    "stage3_row4_looted": "You have looted the backpack in Row 4.",
-    "stage4_entry": "You enter the deep stacks maze.",
-    "stage4_death_choice": "You have died in the deep stacks maze.",
-    "stage4_junction_a": "You are at Junction A.",
-    "stage4_junction_b": "You are at Junction B.",
-    "stage4_junction_c": "You are at Junction C (The Torn Tapestry).",
-    "stage4_junction_c_check": "You check for a pocketknife at the tapestry.",
-    "stage4_junction_d": "You are at Junction D (Loopback 1).",
-    "stage4_junction_e": "You are at Junction E (The Electrical Hazard).",
-    "stage4_junction_f": "You are at Junction F (The Monster's Nest).",
-    "stage4_junction_g": "You are at Junction G.",
-    "stage4_junction_h": "You are at Junction H (Loopback 2).",
-    "stage4_structural_hub": "You have reached the Structural Hub (End of Maze).",
-    "stage5_mezzanine_arrival": "You arrive at the Upper Mezzanine.",
-    "stage5_mezzanine_death_choice": "You have died on the mezzanine.",
-    "stage5_mezzanine_searched": "You search the Upper Mezzanine.",
-    "stage5_balcony_door": "You reach the exterior balcony door.",
-    "stage5_balcony_inspected": "You inspect the balcony.",
-    "stage5_mezzanine_umbrella_check": "You check your umbrella in the stairwell trap.",
-    "stage5_basement_arrival": "You arrive at the basement stairs.",
-    "stage5_basement_death_choice": "You have died in the basement.",
-    "stage5_basement_searched": "You explore the basement stairs.",
-    "stage5_basement_umbrella_check": "You check for the umbrella in the basement.",
-    "stage5_flooded_corridor": "You enter the flooded corridor.",
-    "stage5_water_step_1": "First movement choice in water.",
-    "stage5_water_step_2": "Second movement choice in water.",
-    "stage5_water_step_3": "Third movement choice in water.",
-    "stage5_occult_archive_entry": "You reach dry concrete in the Occult Archive.",
-    "stage5_occult_archive_hub": "You are at the Occult Archive Hub.",
-    "stage5_windows_tested_hub": "You tested the windows.",
-    "stage5_desk_searched_hub": "You searched the desk.",
-    "stage5_both_tested_hub": "You have fully explored the archive hub.",
-    "stage5_cave_approach_partial": "You approach the cave entrance.",
-    "stage5_cave_approach_final": "You approach the final cave exit.",
-    "game_over": "Game Over.",
-    "game_win": "You win!"
+    "stage1_vestibule": [
+      "You are in the vestibule."
+    ],
+    "stage1_vestibule_respawn": [
+      "You respawn in the vestibule with a hint."
+    ],
+    "stage1_vestibule_searched": [
+      "You look around and discover a pack."
+    ],
+    "stage1_pack_checked": [
+      "You look inside the pack."
+    ],
+    "stage1_turnstile_check": [
+      "You reach the turnstiles without a mop."
+    ],
+    "stage1_mop_acquired": [
+      "You have acquired the mop."
+    ],
+    "stage2_foyer": [
+      "You have arrived in the foyer."
+    ],
+    "stage2_foyer_searched": [
+      "You examine the explored foyer."
+    ],
+    "stage2_corpse_looted": [
+      "You loot the corpse."
+    ],
+    "stage2_desk_looted": [
+      "You loot the desk."
+    ],
+    "stage2_both_looted": [
+      "You have fully looted the foyer."
+    ],
+    "stage2_periodicals_check": [
+      "You check the periodicals with your item status."
+    ],
+    "stage2_reading_room_door": [
+      "You stand before the reading room door."
+    ],
+    "stage2_reading_room_locked": [
+      "The reading room door is locked."
+    ],
+    "stage2_fireplace_revealed": [
+      "A fireplace has been revealed."
+    ],
+    "stage2_poker_acquired": [
+      "You acquired the fireplace poker and traded away your mop."
+    ],
+    "stage2_stacks_door_check": [
+      "You check the stacks door with your key."
+    ],
+    "stage2_stacks_door_locked_no_key": [
+      "The stacks door is locked and you lack the key."
+    ],
+    "stage2_death_choice": [
+      "You have died in Stage 2."
+    ],
+    "stage3_arrival": [
+      "You arrive at the stacks."
+    ],
+    "stage3_early_death_choice": [
+      "You died during early Stage 3."
+    ],
+    "stage3_hub_unexplored": [
+      "You are at the unexplored main hub of the stacks."
+    ],
+    "stage3_hub": [
+      "You are at the explored main hub of the stacks."
+    ],
+    "stage3_death_choice": [
+      "You have died in the stacks."
+    ],
+    "stage3_row1_encounter": [
+      "You are at Row 1 (Reading Room Entrance)."
+    ],
+    "stage3_row1_glass_view": [
+      "You look through the glass door of Row 1."
+    ],
+    "stage3_row2_encounter": [
+      "You are at Row 2 (Corpse Corridor)."
+    ],
+    "stage3_row2_looted": [
+      "You have looted the corpse in Row 2."
+    ],
+    "stage3_row2_flashlight_check": [
+      "You check for a flashlight to proceed deeper."
+    ],
+    "stage3_row3_encounter": [
+      "You are at Row 3 (Misleading Safe Row)."
+    ],
+    "stage3_row4_encounter": [
+      "You are at Row 4 (Narrow Aisle)."
+    ],
+    "stage3_row4_looted": [
+      "You have looted the backpack in Row 4."
+    ],
+    "stage4_entry": [
+      "You enter the deep stacks maze."
+    ],
+    "stage4_death_choice": [
+      "You have died in the deep stacks maze."
+    ],
+    "stage4_junction_a": [
+      "You are at Junction A."
+    ],
+    "stage4_junction_b": [
+      "You are at Junction B."
+    ],
+    "stage4_junction_c": [
+      "You are at Junction C (The Torn Tapestry)."
+    ],
+    "stage4_junction_c_check": [
+      "You check for a pocketknife at the tapestry."
+    ],
+    "stage4_junction_d": [
+      "You are at Junction D (Loopback 1)."
+    ],
+    "stage4_junction_e": [
+      "You are at Junction E (The Electrical Hazard)."
+    ],
+    "stage4_junction_f": [
+      "You are at Junction F (The Monster's Nest)."
+    ],
+    "stage4_junction_g": [
+      "You are at Junction G."
+    ],
+    "stage4_junction_h": [
+      "You are at Junction H (Loopback 2)."
+    ],
+    "stage4_structural_hub": [
+      "You have reached the Structural Hub (End of Maze)."
+    ],
+    "stage5_mezzanine_arrival": [
+      "You arrive at the Upper Mezzanine."
+    ],
+    "stage5_mezzanine_death_choice": [
+      "You have died on the mezzanine."
+    ],
+    "stage5_mezzanine_searched": [
+      "You search the Upper Mezzanine."
+    ],
+    "stage5_balcony_door": [
+      "You reach the exterior balcony door."
+    ],
+    "stage5_balcony_inspected": [
+      "You inspect the balcony."
+    ],
+    "stage5_mezzanine_umbrella_check": [
+      "You check your umbrella in the stairwell trap."
+    ],
+    "stage5_basement_arrival": [
+      "You arrive at the basement stairs."
+    ],
+    "stage5_basement_death_choice": [
+      "You have died in the basement."
+    ],
+    "stage5_basement_searched": [
+      "You explore the basement stairs."
+    ],
+    "stage5_basement_umbrella_check": [
+      "You check for the umbrella in the basement."
+    ],
+    "stage5_flooded_corridor": [
+      "You enter the flooded corridor."
+    ],
+    "stage5_water_step_1": [
+      "First movement choice in water."
+    ],
+    "stage5_water_step_2": [
+      "Second movement choice in water."
+    ],
+    "stage5_water_step_3": [
+      "Third movement choice in water."
+    ],
+    "stage5_occult_archive_entry": [
+      "You reach dry concrete in the Occult Archive."
+    ],
+    "stage5_occult_archive_hub": [
+      "You are at the Occult Archive Hub."
+    ],
+    "stage5_windows_tested_hub": [
+      "You tested the windows."
+    ],
+    "stage5_desk_searched_hub": [
+      "You searched the desk."
+    ],
+    "stage5_both_tested_hub": [
+      "You have fully explored the archive hub."
+    ],
+    "stage5_cave_approach_partial": [
+      "You approach the cave entrance."
+    ],
+    "stage5_cave_approach_final": [
+      "You approach the final cave exit."
+    ],
+    "game_over": [
+      "Game Over."
+    ],
+    "game_win": [
+      "You win!"
+    ]
   },
   "death_screens": {
-    "stage1_vestibule__try_to_leave": "A monster attacks you as you try to leave.",
-    "stage2_foyer__any_other_action": "A monster attacks you for making noise.",
-    "stage2_periodicals_check__no_mop_check": "Without the mop, you perish.",
-    "stage2_reading_room_door__rattle_reading_room_door": "Rattling the door draws a monster.",
-    "stage2_stacks_door_locked_no_key__defend_yourself": "You are attacked.",
-    "stage2_stacks_door_locked_no_key__slowly_walk_backwards": "You are attacked while backing away.",
-    "stage3_arrival__with_mop_check": "The mop fails you against the hazard.",
-    "stage3_hub_unexplored__go_deeper": "Going deeper blindly leads to attack.",
-    "stage3_hub__go_down_row_1__else": "You attempt to go down row 1 without peering first and are attacked.",
-    "stage3_hub__go_down_row_2__else": "You attempt to go down row 2 without peering first and are attacked.",
-    "stage3_hub__go_down_row_3__else": "You attempt to go down row 3 without peering first and are attacked.",
-    "stage3_hub__go_down_row_4__else": "You attempt to go down row 4 without peering first and are attacked.",
-    "stage3_hub__go_down_row_5": "Going down row 5 proves fatal.",
-    "stage3_row1_encounter__enter_the_reading_room": "A monster attacks you inside.",
-    "stage3_row1_glass_view__enter_the_reading_room": "Entering proves fatal.",
-    "stage3_row2_flashlight_check__no_flashlight_check": "It is too dark; you are attacked.",
-    "stage3_row3_encounter__walk_down_row": "It was a trap.",
-    "stage3_row4_encounter__go_deeper": "You are attacked going deeper.",
-    "stage3_row4_looted__go_deeper": "Going deeper here is fatal.",
-    "stage4_entry__go_deeper": "An environmental hazard claims you.",
-    "stage4_junction_a__go_left": "Dead end hazard.",
-    "stage4_junction_b__go_straight": "Dead end hazard.",
-    "stage4_junction_c__go_around": "Dead end hazard.",
-    "stage4_junction_c_check__no_pocketknife_check": "You cannot pass without a pocketknife.",
-    "stage4_junction_e__step_down": "Electrocution.",
-    "stage4_junction_f__explore_alcove": "Monster attack.",
-    "stage4_junction_g__climb_aisle": "Hazard.",
-    "stage5_mezzanine_arrival__go_forward": "Mezzanine hazard.",
-    "stage5_mezzanine_searched__look_over_railing": "Monster attack from below.",
-    "stage5_balcony_door__go_out_on_the_balcony": "Balcony hazard.",
-    "stage5_balcony_inspected__go_out_on_the_balcony": "Balcony hazard.",
-    "stage5_mezzanine_umbrella_check__no_umbrella_check": "Without the umbrella, a monster attacks you in the dead end.",
-    "stage5_mezzanine_umbrella_check__with_umbrella_check": "The umbrella fails against the dead-end environmental hazard on the mezzanine.",
-    "stage5_basement_arrival__go_down_the_stairs": "Basement hazard.",
-    "stage5_basement_umbrella_check__no_umbrella_check": "You need the umbrella to survive.",
-    "stage5_water_step_1__jump_in": "Jumping in attracts a monster.",
-    "stage5_water_step_2__start_running": "Running makes too much noise.",
-    "stage5_water_step_3__rush_out_of_the_water": "Rushing out triggers an attack.",
-    "stage5_occult_archive_entry__go_towards_the_light": "Hazardous light."
+    "stage1_vestibule__try_to_leave": [
+      "A monster attacks you as you try to leave."
+    ],
+    "stage2_foyer__any_other_action": [
+      "A monster attacks you for making noise."
+    ],
+    "stage2_periodicals_check__no_mop_check": [
+      "Without the mop, you perish."
+    ],
+    "stage2_reading_room_door__rattle_reading_room_door": [
+      "Rattling the door draws a monster."
+    ],
+    "stage2_stacks_door_locked_no_key__defend_yourself": [
+      "You are attacked."
+    ],
+    "stage2_stacks_door_locked_no_key__slowly_walk_backwards": [
+      "You are attacked while backing away."
+    ],
+    "stage3_arrival__with_mop_check": [
+      "The mop fails you against the hazard."
+    ],
+    "stage3_hub_unexplored__go_deeper": [
+      "Going deeper blindly leads to attack."
+    ],
+    "stage3_hub__go_down_row_1__else": [
+      "You attempt to go down row 1 without peering first and are attacked."
+    ],
+    "stage3_hub__go_down_row_2__else": [
+      "You attempt to go down row 2 without peering first and are attacked."
+    ],
+    "stage3_hub__go_down_row_3__else": [
+      "You attempt to go down row 3 without peering first and are attacked."
+    ],
+    "stage3_hub__go_down_row_4__else": [
+      "You attempt to go down row 4 without peering first and are attacked."
+    ],
+    "stage3_hub__go_down_row_5": [
+      "Going down row 5 proves fatal."
+    ],
+    "stage3_row1_encounter__enter_the_reading_room": [
+      "A monster attacks you inside."
+    ],
+    "stage3_row1_glass_view__enter_the_reading_room": [
+      "Entering proves fatal."
+    ],
+    "stage3_row2_flashlight_check__no_flashlight_check": [
+      "It is too dark; you are attacked."
+    ],
+    "stage3_row3_encounter__walk_down_row": [
+      "It was a trap."
+    ],
+    "stage3_row4_encounter__go_deeper": [
+      "You are attacked going deeper."
+    ],
+    "stage3_row4_looted__go_deeper": [
+      "Going deeper here is fatal."
+    ],
+    "stage4_entry__go_deeper": [
+      "An environmental hazard claims you."
+    ],
+    "stage4_junction_a__go_left": [
+      "Dead end hazard."
+    ],
+    "stage4_junction_b__go_straight": [
+      "Dead end hazard."
+    ],
+    "stage4_junction_c__go_around": [
+      "Dead end hazard."
+    ],
+    "stage4_junction_c_check__no_pocketknife_check": [
+      "You cannot pass without a pocketknife."
+    ],
+    "stage4_junction_e__step_down": [
+      "Electrocution."
+    ],
+    "stage4_junction_f__explore_alcove": [
+      "Monster attack."
+    ],
+    "stage4_junction_g__climb_aisle": [
+      "Hazard."
+    ],
+    "stage5_mezzanine_arrival__go_forward": [
+      "Mezzanine hazard."
+    ],
+    "stage5_mezzanine_searched__look_over_railing": [
+      "Monster attack from below."
+    ],
+    "stage5_balcony_door__go_out_on_the_balcony": [
+      "Balcony hazard."
+    ],
+    "stage5_balcony_inspected__go_out_on_the_balcony": [
+      "Balcony hazard."
+    ],
+    "stage5_mezzanine_umbrella_check__no_umbrella_check": [
+      "Without the umbrella, a monster attacks you in the dead end."
+    ],
+    "stage5_mezzanine_umbrella_check__with_umbrella_check": [
+      "The umbrella fails against the dead-end environmental hazard on the mezzanine."
+    ],
+    "stage5_basement_arrival__go_down_the_stairs": [
+      "Basement hazard."
+    ],
+    "stage5_basement_umbrella_check__no_umbrella_check": [
+      "You need the umbrella to survive."
+    ],
+    "stage5_water_step_1__jump_in": [
+      "Jumping in attracts a monster."
+    ],
+    "stage5_water_step_2__start_running": [
+      "Running makes too much noise."
+    ],
+    "stage5_water_step_3__rush_out_of_the_water": [
+      "Rushing out triggers an attack."
+    ],
+    "stage5_occult_archive_entry": [
+      "You reach dry concrete in the Occult Archive."
+    ],
+    "stage5_occult_archive_hub": [
+      "You are at the Occult Archive Hub."
+    ],
+    "stage5_windows_tested_hub": [
+      "You tested the windows."
+    ],
+    "stage5_desk_searched_hub": [
+      "You searched the desk."
+    ],
+    "stage5_both_tested_hub": [
+      "You have fully explored the archive hub."
+    ],
+    "stage5_cave_approach_partial": [
+      "You approach the cave entrance."
+    ],
+    "stage5_cave_approach_final": [
+      "You approach the final cave exit."
+    ],
+    "game_over": [
+      "Game Over."
+    ],
+    "game_win": [
+      "You win!"
+    ]
   },
   "parser_fallbacks": [
     "That is not an option here.",
