@@ -36,8 +36,29 @@ export type Stage3NodeId =
   | "stage3_row4_encounter"
   | "stage3_row4_looted";
 
+export type Stage4NodeId =
+  | "stage4_entry"
+  | "stage4_death_choice"
+  | "stage4_junction_a"
+  | "stage4_junction_b"
+  | "stage4_junction_c"
+  | "stage4_junction_c_check"
+  | "stage4_junction_d"
+  | "stage4_junction_e"
+  | "stage4_junction_f"
+  | "stage4_junction_g"
+  | "stage4_junction_h"
+  | "stage4_structural_hub";
+
 export type NodeId =
-  Stage1NodeId | Stage2NodeId | Stage3NodeId | "stage4_entry" | "game_over" | "game_win";
+  | Stage1NodeId
+  | Stage2NodeId
+  | Stage3NodeId
+  | Stage4NodeId
+  | "stage5_mezzanine_arrival"
+  | "stage5_basement_arrival"
+  | "game_over"
+  | "game_win";
 
 export type ItemId =
   | "mop"
