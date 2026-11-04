@@ -3,9 +3,10 @@
 ## Git
 - **Branching:** Always create a dedicated branches from `main` using the format `<issue-number>-<short-description>`, `fix-<short-description>`, or `docs-<short-description>`.
 - **Commit Frequently:** Commits should be small and all tests should pass
+- **CLI Tooling:** Always execute scripts and package binaries via Bun (`bun run <script>` or `bunx <binary>`). Never invoke `npx` or `npm`.
 - **PRs:** Always comment on PRs with a summary of commits. Before opening a PR run: 
     * `bun run lint`
-    * `bun run format`
+    * `bun run format` (or `bunx prettier` on modified source files; never commit formatting changes to read-only files such as `content.json` or restricted docs)
     * `bun run test`
     * `bun run build`
 - **Docs:** documents should be updated in the same PR as the codechange. 
