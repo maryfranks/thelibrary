@@ -215,6 +215,7 @@ function mutateInventory(
 }
 
 function resolvePeriodicalsCheck(
+  state: GameState,
   inventory: ItemId[],
   prefixLines: string[],
   content?: ContentCatalog,
@@ -223,6 +224,7 @@ function resolvePeriodicalsCheck(
   if (hasMop) {
     const nextNode: NodeId = "stage2_reading_room_door";
     return {
+      ...state,
       currentNode: nextNode,
       inventory: [...inventory],
       isGameOver: false,
@@ -235,6 +237,7 @@ function resolvePeriodicalsCheck(
   const nextNode: NodeId = "stage2_death_choice";
   const deathLines = getDeathScreenLines("stage2_periodicals_check", NO_MOP_CHOICE, content);
   return {
+    ...state,
     currentNode: nextNode,
     inventory: [...inventory],
     isGameOver: false,
@@ -245,6 +248,7 @@ function resolvePeriodicalsCheck(
 }
 
 function resolveStacksDoorCheck(
+  state: GameState,
   inventory: ItemId[],
   prefixLines: string[],
   content?: ContentCatalog,
@@ -253,6 +257,7 @@ function resolveStacksDoorCheck(
   const nextNode: NodeId = hasStacksKey ? "stage3_arrival" : "stage2_stacks_door_locked_no_key";
 
   return {
+    ...state,
     currentNode: nextNode,
     inventory: [...inventory],
     isGameOver: false,
@@ -272,11 +277,11 @@ export function transitionStage2(
   }
 
   if (state.currentNode === "stage2_periodicals_check") {
-    return resolvePeriodicalsCheck(state.inventory, [], content);
+    return resolvePeriodicalsCheck(state, state.inventory, [], content);
   }
 
   if (state.currentNode === "stage2_stacks_door_check") {
-    return resolveStacksDoorCheck(state.inventory, [], content);
+    return resolveStacksDoorCheck(state, state.inventory, [], content);
   }
 
   const normalized = rawInput.trim().toLowerCase();
@@ -311,12 +316,12 @@ export function transitionStage2(
 
   if (nextNode === "stage2_periodicals_check") {
     const checkLines = getNodeLines(nextNode, content);
-    return resolvePeriodicalsCheck(nextInventory, checkLines, content);
+    return resolvePeriodicalsCheck(state, nextInventory, checkLines, content);
   }
 
   if (nextNode === "stage2_stacks_door_check") {
     const checkLines = getNodeLines(nextNode, content);
-    return resolveStacksDoorCheck(nextInventory, checkLines, content);
+    return resolveStacksDoorCheck(state, nextInventory, checkLines, content);
   }
 
   const deathLines = matchedChoice.deathType
@@ -325,6 +330,7 @@ export function transitionStage2(
   const nodeLines = getNodeLines(nextNode, content);
 
   return {
+    ...state,
     currentNode: nextNode,
     inventory: nextInventory,
     isGameOver: nextNode === "game_over",

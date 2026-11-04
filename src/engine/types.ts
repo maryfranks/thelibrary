@@ -21,7 +21,23 @@ export type Stage2NodeId =
   | "stage2_stacks_door_check"
   | "stage2_stacks_door_locked_no_key";
 
-export type NodeId = Stage1NodeId | Stage2NodeId | "stage3_arrival" | "game_over" | "game_win";
+export type Stage3NodeId =
+  | "stage3_arrival"
+  | "stage3_early_death_choice"
+  | "stage3_hub_unexplored"
+  | "stage3_hub"
+  | "stage3_death_choice"
+  | "stage3_row1_encounter"
+  | "stage3_row1_glass_view"
+  | "stage3_row2_encounter"
+  | "stage3_row2_looted"
+  | "stage3_row2_flashlight_check"
+  | "stage3_row3_encounter"
+  | "stage3_row4_encounter"
+  | "stage3_row4_looted";
+
+export type NodeId =
+  Stage1NodeId | Stage2NodeId | Stage3NodeId | "stage4_entry" | "game_over" | "game_win";
 
 export type ItemId =
   | "mop"
@@ -31,7 +47,17 @@ export type ItemId =
   | "hair ties"
   | "small notebook"
   | "stacks key"
-  | "fireplace poker";
+  | "fireplace poker"
+  | "pocketknife"
+  | "umbrella"
+  | "water"
+  | "flashlight"
+  | "second snack"
+  | "notebook"
+  | "dictionary"
+  | "pencil";
+
+export type RowSafetyKey = "row1_safe" | "row2_safe" | "row3_safe" | "row4_safe" | "row5_safe";
 
 export type DeathType = "monster_attack" | "environmental_hazard" | "unknown_death";
 
@@ -42,6 +68,11 @@ export interface GameState {
   isWin: boolean;
   lastDeathType: DeathType | null;
   output: string[];
+  row1_safe: boolean;
+  row2_safe: boolean;
+  row3_safe: boolean;
+  row4_safe: boolean;
+  row5_safe: boolean;
 }
 
 export interface ContentCatalog {
