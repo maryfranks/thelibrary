@@ -1,10 +1,12 @@
 import { getIntroLines, getNodeLines, getParserFallback } from "./content";
 import { getStage1Choices, isStage1Node, transitionStage1 } from "./stage1";
+import { getStage2Choices, isStage2Node, transitionStage2 } from "./stage2";
 import type { ContentCatalog, GameState, NodeId } from "./types";
 
 export * from "./types";
 export * from "./content";
 export * from "./stage1";
+export * from "./stage2";
 
 export function createInitialState(content?: ContentCatalog): GameState {
   const initialNode = "stage1_vestibule" as const;
@@ -22,6 +24,9 @@ export function getAvailableChoices(nodeId: NodeId): string[] {
   if (isStage1Node(nodeId)) {
     return getStage1Choices(nodeId);
   }
+  if (isStage2Node(nodeId)) {
+    return getStage2Choices(nodeId);
+  }
   return [];
 }
 
@@ -32,6 +37,10 @@ export function transition(state: GameState, input: string, content?: ContentCat
 
   if (isStage1Node(state.currentNode)) {
     return transitionStage1(state, input, content);
+  }
+
+  if (isStage2Node(state.currentNode)) {
+    return transitionStage2(state, input, content);
   }
 
   return {
