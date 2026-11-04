@@ -82,6 +82,3 @@ Output a structured section in chat:
 - File: `<doc_name>.md`
   - Proposed addition/modification: [Exact text or bullet to add to prevent recurrence]
 ```
-
-If updates are recommended, remind the operator that they can persist the recommendations using the `/learn` command:
-`/learn update _docs/process.md, .agents/docs/game_map.md, and AGENTS.md based on the reviewer's retrospective recommendations`
