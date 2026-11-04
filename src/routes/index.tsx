@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import content from "../../content.json";
 
 const DESC =
   "Caught in an unnatural storm, you take refuge in a library. When you get inside, the library is trashed and there's no one in sight. You can't leave—the door locks behind you. Navigate monsters, a maze, and a flooded basement to escape, and find out what happened in that library.";
@@ -10,7 +11,10 @@ export const Route = createFileRoute("/")({
       { title: "The Library — A Terminal Game" },
       { name: "description", content: DESC.slice(0, 155) },
       { property: "og:title", content: "The Library — A Terminal Game" },
-      { property: "og:description", content: "A text adventure. A storm, a locked door, a flooded basement." },
+      {
+        property: "og:description",
+        content: "A text adventure. A storm, a locked door, a flooded basement.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -22,8 +26,7 @@ type Line = { kind: "in" | "out" | "sys" | "warn"; text: string };
 
 const INTRO: Line[] = [
   { kind: "sys", text: "THE LIBRARY · v0.1 · mock session" },
-  { kind: "out", text: "Rain hammers the windows. The door clicks shut behind you." },
-  { kind: "out", text: "Shelves lie overturned. Paper drifts across the floor." },
+  ...content.intro.map((text): Line => ({ kind: "out", text })),
   { kind: "sys", text: "Type HELP for commands." },
 ];
 
@@ -33,7 +36,12 @@ function respond(cmd: string, turn: number): Line[] {
   if (c === "help")
     return [{ kind: "sys", text: "Commands: LOOK, NORTH, SOUTH, INVENTORY, WAIT, CLEAR, HELP" }];
   if (c === "look" || c === "l")
-    return [{ kind: "out", text: "Reading room. A desk, a dead lamp, a stairwell going down. Water below." }];
+    return [
+      {
+        kind: "out",
+        text: "Reading room. A desk, a dead lamp, a stairwell going down. Water below.",
+      },
+    ];
   if (["north", "n"].includes(c))
     return [{ kind: "out", text: "The stacks close in. Corridors branch. This is the maze." }];
   if (["south", "s"].includes(c))
@@ -41,7 +49,9 @@ function respond(cmd: string, turn: number): Line[] {
   if (["inventory", "i", "inv"].includes(c))
     return [{ kind: "out", text: "A wet coat. A library card, name smudged." }];
   if (c === "wait")
-    return [{ kind: "out", text: `Turn ${String(turn).padStart(3, "0")}. Something shifts in the dark.` }];
+    return [
+      { kind: "out", text: `Turn ${String(turn).padStart(3, "0")}. Something shifts in the dark.` },
+    ];
   return [{ kind: "warn", text: `Unknown command: ${cmd.trim()}` }];
 }
 
@@ -143,7 +153,12 @@ function Index() {
         <Terminal />
       </main>
       <footer className="flex gap-8 py-10 font-mono text-xs uppercase tracking-widest">
-        <a href="https://github.com/" target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-primary">
+        <a
+          href="https://github.com/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-muted-foreground transition-colors hover:text-primary"
+        >
           [ GitHub Repository ]
         </a>
         <a href="/" className="text-muted-foreground transition-colors hover:text-primary">
