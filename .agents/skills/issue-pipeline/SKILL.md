@@ -24,6 +24,9 @@ Define three role subagents (`EnableWriteTools: true`, `EnableSubagentTools: fal
 ## 2. Execution Loop
 
 Do not pause for user input between phases. After each `invoke_subagent` call, stop calling tools and wait for the subagent completion message.
+- **Pre-Flight Sync**: Before Phase 1, ensure local `main` is synced by running standalone commands `git checkout main` and `git pull --ff-only origin main`.
+- **Permission Timeouts**: If a subagent reports a 60s permission prompt timeout, do NOT instruct it to retry immediately. Pause and ask the user to confirm approval before resuming the subagent.
+- **Standalone CLI Commands**: Execute standalone CLI commands (e.g., separate `gh issue view`, `git status`, `git add`, `git commit`, `bun run test` calls rather than chaining with `&&`) across all phases so they cleanly match CLI permission allowlists.
 
 ### Phase 1: Software Engineer
 

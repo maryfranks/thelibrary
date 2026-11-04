@@ -1,6 +1,7 @@
 Rules:
 
-Use gh for Github
+- Use `gh` for GitHub.
+- Prefer single, unchained CLI commands over compound `&&` chains so commands cleanly match CLI permission allowlist rules.
 
 # Project Overview
 Terminal adventure game.
