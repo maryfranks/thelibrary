@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createInitialState, transition } from "../index";
-import type { GameState } from "../types";
+import { createInitialState, loadContent, transition } from "../index";
+import type { ContentCatalog, GameState } from "../types";
 
 describe("Stage 1 Engine (Vestibule)", () => {
   it("initializes at stage1_vestibule with empty inventory and active game flags", () => {
@@ -173,6 +173,35 @@ describe("Stage 1 Engine (Vestibule)", () => {
       expect(next.inventory).toEqual([]);
       expect(next.isGameOver).toBe(false);
       expect(next.isWin).toBe(false);
+    });
+  });
+
+  describe("content decoupling", () => {
+    it("loads narrative text dynamically from content.json and supports injected catalogs", () => {
+      const catalog = loadContent();
+      const initial = createInitialState(catalog);
+      expect(initial.output).toEqual([...catalog.intro, ...(catalog.nodes.stage1_vestibule ?? [])]);
+
+      const customCatalog: ContentCatalog = {
+        intro: ["custom-intro"],
+        nodes: {
+          stage1_vestibule: ["custom-vestibule"],
+          stage1_vestibule_respawn: ["custom-respawn"],
+        },
+        death_screens: {
+          stage1_vestibule__try_to_leave: ["custom-death"],
+        },
+        parser_fallbacks: ["custom-fallback"],
+      };
+
+      const customStart = createInitialState(customCatalog);
+      expect(customStart.output).toEqual(["custom-intro", "custom-vestibule"]);
+
+      const customFatal = transition(customStart, "try to leave", customCatalog);
+      expect(customFatal.output).toEqual(["custom-death", "custom-respawn"]);
+
+      const customInvalid = transition(customStart, "unknown", customCatalog);
+      expect(customInvalid.output).toEqual(["custom-fallback"]);
     });
   });
 });

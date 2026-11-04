@@ -1,12 +1,12 @@
 import { getIntroLines, getNodeLines, getParserFallback } from "./content";
 import { isStage1Node, transitionStage1 } from "./stage1";
-import type { GameState } from "./types";
+import type { ContentCatalog, GameState } from "./types";
 
 export * from "./types";
 export * from "./content";
 export * from "./stage1";
 
-export function createInitialState(): GameState {
+export function createInitialState(content?: ContentCatalog): GameState {
   const initialNode = "stage1_vestibule" as const;
   return {
     currentNode: initialNode,
@@ -14,23 +14,23 @@ export function createInitialState(): GameState {
     isGameOver: false,
     isWin: false,
     lastDeathType: null,
-    output: [...getIntroLines(), ...getNodeLines(initialNode)],
+    output: [...getIntroLines(content), ...getNodeLines(initialNode, content)],
   };
 }
 
-export function transition(state: GameState, input: string): GameState {
+export function transition(state: GameState, input: string, content?: ContentCatalog): GameState {
   if (state.isGameOver || state.isWin) {
     return state;
   }
 
   if (isStage1Node(state.currentNode)) {
-    return transitionStage1(state, input);
+    return transitionStage1(state, input, content);
   }
 
   return {
     ...state,
     lastDeathType: null,
-    output: [getParserFallback(0)],
+    output: getParserFallback(0, content),
   };
 }
 

@@ -1,14 +1,11 @@
 import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
-import type { DeathType, GameState, ItemId, NodeId, Stage1NodeId } from "./types";
+import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage1NodeId } from "./types";
 
 interface ChoiceDefinition {
   command: string;
   target: NodeId;
   addItems?: ItemId[];
-  death?: {
-    type: DeathType;
-    screenKey: string;
-  };
+  deathType?: DeathType;
 }
 
 export const STAGE1_TRANSITIONS: Record<Stage1NodeId, ChoiceDefinition[]> = {
@@ -16,10 +13,7 @@ export const STAGE1_TRANSITIONS: Record<Stage1NodeId, ChoiceDefinition[]> = {
     {
       command: "try to leave",
       target: "stage1_vestibule_respawn",
-      death: {
-        type: "monster_attack",
-        screenKey: "stage1_vestibule__try_to_leave",
-      },
+      deathType: "monster_attack",
     },
     {
       command: "look around",
@@ -117,7 +111,11 @@ function addUniqueItems(inventory: ItemId[], itemsToAdd?: ItemId[]): ItemId[] {
   return next;
 }
 
-export function transitionStage1(state: GameState, rawInput: string): GameState {
+export function transitionStage1(
+  state: GameState,
+  rawInput: string,
+  content?: ContentCatalog,
+): GameState {
   if (!isStage1Node(state.currentNode)) {
     return state;
   }
@@ -133,21 +131,23 @@ export function transitionStage1(state: GameState, rawInput: string): GameState 
     return {
       ...state,
       lastDeathType: null,
-      output: [getParserFallback(0)],
+      output: getParserFallback(0, content),
     };
   }
 
   const nextInventory = addUniqueItems(state.inventory, matchedChoice.addItems);
   const nextNode = matchedChoice.target;
-  const deathLines = matchedChoice.death ? getDeathScreenLines(matchedChoice.death.screenKey) : [];
-  const nodeLines = getNodeLines(nextNode);
+  const deathLines = matchedChoice.deathType
+    ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
+    : [];
+  const nodeLines = getNodeLines(nextNode, content);
 
   return {
     currentNode: nextNode,
     inventory: nextInventory,
     isGameOver: nextNode === "game_over",
     isWin: nextNode === "game_win",
-    lastDeathType: matchedChoice.death ? matchedChoice.death.type : null,
+    lastDeathType: matchedChoice.deathType ?? null,
     output: [...deathLines, ...nodeLines],
   };
 }
