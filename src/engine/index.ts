@@ -1,6 +1,6 @@
 import { getIntroLines, getNodeLines, getParserFallback } from "./content";
-import { isStage1Node, transitionStage1 } from "./stage1";
-import type { ContentCatalog, GameState } from "./types";
+import { getStage1Choices, isStage1Node, transitionStage1 } from "./stage1";
+import type { ContentCatalog, GameState, NodeId } from "./types";
 
 export * from "./types";
 export * from "./content";
@@ -16,6 +16,13 @@ export function createInitialState(content?: ContentCatalog): GameState {
     lastDeathType: null,
     output: [...getIntroLines(content), ...getNodeLines(initialNode, content)],
   };
+}
+
+export function getAvailableChoices(nodeId: NodeId): string[] {
+  if (isStage1Node(nodeId)) {
+    return getStage1Choices(nodeId);
+  }
+  return [];
 }
 
 export function transition(state: GameState, input: string, content?: ContentCatalog): GameState {
