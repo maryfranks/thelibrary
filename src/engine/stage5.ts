@@ -10,7 +10,7 @@ interface Stage5ChoiceDefinition {
 const NO_UMBRELLA_CHOICE = "no umbrella check";
 const WITH_UMBRELLA_CHOICE = "with umbrella check";
 
-const STAIRWELL_UMBRELLA_CHECK_CHOICES: Stage5ChoiceDefinition[] = [
+const MEZZANINE_UMBRELLA_CHECK_CHOICES: Stage5ChoiceDefinition[] = [
   {
     command: NO_UMBRELLA_CHOICE,
     target: "game_over",
@@ -83,11 +83,10 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
     },
     {
       command: "go back",
-      target: "stage5_stairwell_umbrella_check",
+      target: "stage5_mezzanine_umbrella_check",
     },
   ],
-  stage5_stairwell_umbrella_check: STAIRWELL_UMBRELLA_CHECK_CHOICES,
-  stage5_mezzanine_umbrella_check: STAIRWELL_UMBRELLA_CHECK_CHOICES,
+  stage5_mezzanine_umbrella_check: MEZZANINE_UMBRELLA_CHECK_CHOICES,
   stage5_basement_arrival: [
     {
       command: "go down the stairs",
@@ -246,27 +245,7 @@ export function getStage5Choices(nodeId: Stage5NodeId): string[] {
   return STAGE5_TRANSITIONS[nodeId].map((choice) => choice.command);
 }
 
-function getStairwellCheckNodeLines(content?: ContentCatalog): string[] {
-  const stairwellLines = getNodeLines("stage5_stairwell_umbrella_check", content);
-  if (stairwellLines.length > 0) {
-    return stairwellLines;
-  }
-  return getNodeLines("stage5_mezzanine_umbrella_check", content);
-}
-
-function getStairwellDeathScreenLines(choice: string, content?: ContentCatalog): string[] {
-  const stairwellDeathLines = getDeathScreenLines(
-    "stage5_stairwell_umbrella_check",
-    choice,
-    content,
-  );
-  if (stairwellDeathLines.length > 0) {
-    return stairwellDeathLines;
-  }
-  return getDeathScreenLines("stage5_mezzanine_umbrella_check", choice, content);
-}
-
-function resolveStairwellUmbrellaCheck(
+function resolveMezzanineUmbrellaCheck(
   state: GameState,
   inventory: ItemId[],
   prefixLines: string[],
@@ -275,7 +254,7 @@ function resolveStairwellUmbrellaCheck(
   const hasUmbrella = inventory.includes("umbrella");
   const choice = hasUmbrella ? WITH_UMBRELLA_CHOICE : NO_UMBRELLA_CHOICE;
   const nextNode: NodeId = "game_over";
-  const deathLines = getStairwellDeathScreenLines(choice, content);
+  const deathLines = getDeathScreenLines("stage5_mezzanine_umbrella_check", choice, content);
 
   return {
     ...state,
@@ -334,11 +313,8 @@ export function transitionStage5(
     return state;
   }
 
-  if (
-    state.currentNode === "stage5_stairwell_umbrella_check" ||
-    state.currentNode === "stage5_mezzanine_umbrella_check"
-  ) {
-    return resolveStairwellUmbrellaCheck(state, state.inventory, [], content);
+  if (state.currentNode === "stage5_mezzanine_umbrella_check") {
+    return resolveMezzanineUmbrellaCheck(state, state.inventory, [], content);
   }
 
   if (state.currentNode === "stage5_basement_umbrella_check") {
@@ -369,12 +345,9 @@ export function transitionStage5(
 
   const nextNode = matchedChoice.target;
 
-  if (
-    nextNode === "stage5_stairwell_umbrella_check" ||
-    nextNode === "stage5_mezzanine_umbrella_check"
-  ) {
-    const checkLines = getStairwellCheckNodeLines(content);
-    return resolveStairwellUmbrellaCheck(state, state.inventory, checkLines, content);
+  if (nextNode === "stage5_mezzanine_umbrella_check") {
+    const checkLines = getNodeLines(nextNode, content);
+    return resolveMezzanineUmbrellaCheck(state, state.inventory, checkLines, content);
   }
 
   if (nextNode === "stage5_basement_umbrella_check") {

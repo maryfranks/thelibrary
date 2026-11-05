@@ -226,9 +226,9 @@
 
 - [stage5_balcony_inspected] Exterior Balcony Door (Inspected)
   - Choice 1: "go out on the balcony" -> [DEAD: environmental_hazard] -> [stage5_mezzanine_death_choice]
-  - Choice 2: "go back" -> [stage5_stairwell_umbrella_check]
+  - Choice 2: "go back" -> [stage5_mezzanine_umbrella_check]
 
-- [stage5_stairwell_umbrella_check] Stairwell Retreat (Umbrella Check)
+- [stage5_mezzanine_umbrella_check] Stairwell Retreat (Umbrella Check)
   - Choice 1: [No Umbrella] -> [DEAD: monster_attack] -> [game_over]
   - Choice 2: [With Umbrella] -> [DEAD: monster_attack] -> [game_over]
 

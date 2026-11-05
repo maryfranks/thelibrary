@@ -56,7 +56,6 @@ export type Stage5NodeId =
   | "stage5_mezzanine_searched"
   | "stage5_balcony_door"
   | "stage5_balcony_inspected"
-  | "stage5_stairwell_umbrella_check"
   | "stage5_mezzanine_umbrella_check"
   | "stage5_basement_arrival"
   | "stage5_basement_death_choice"

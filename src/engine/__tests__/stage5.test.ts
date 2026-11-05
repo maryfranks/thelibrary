@@ -85,7 +85,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(inspectedFatal.lastDeathType).toBe("environmental_hazard");
     });
 
-    it("handles stairwell umbrella check from stage5_balcony_inspected ('go back') as fatal monster_attack to game_over both with and without umbrella", () => {
+    it("handles mezzanine umbrella check from stage5_balcony_inspected ('go back') as fatal monster_attack to game_over both with and without umbrella", () => {
       const withoutUmbrella = makeState("stage5_balcony_inspected", ["flashlight", "pocketknife"]);
       const deadNoUmbrella = transition(withoutUmbrella, "go back");
       expect(deadNoUmbrella.currentNode).toBe("game_over");
@@ -105,14 +105,14 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(deadWithUmbrella.isWin).toBe(false);
     });
 
-    it("evaluates direct transitions from stage5_stairwell_umbrella_check based on umbrella presence", () => {
-      const directNoUmbrella = makeState("stage5_stairwell_umbrella_check", []);
+    it("evaluates direct transitions from stage5_mezzanine_umbrella_check based on umbrella presence", () => {
+      const directNoUmbrella = makeState("stage5_mezzanine_umbrella_check", []);
       const resNo = transition(directNoUmbrella, "1");
       expect(resNo.currentNode).toBe("game_over");
       expect(resNo.lastDeathType).toBe("monster_attack");
       expect(resNo.isGameOver).toBe(true);
 
-      const directWithUmbrella = makeState("stage5_stairwell_umbrella_check", ["umbrella"]);
+      const directWithUmbrella = makeState("stage5_mezzanine_umbrella_check", ["umbrella"]);
       const resWith = transition(directWithUmbrella, "2");
       expect(resWith.currentNode).toBe("game_over");
       expect(resWith.lastDeathType).toBe("monster_attack");
@@ -341,7 +341,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
         intro: ["intro"],
         nodes: {
           stage5_balcony_inspected: ["balcony-inspected-node"],
-          stage5_stairwell_umbrella_check: ["stairwell-check-node"],
+          stage5_mezzanine_umbrella_check: ["mezzanine-check-node"],
           stage5_basement_searched: ["basement-searched-node"],
           stage5_basement_umbrella_check: ["basement-umbrella-check-node"],
           stage5_flooded_corridor: ["flooded-corridor-node"],
@@ -350,32 +350,32 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
           game_win: ["game-win-node"],
         },
         death_screens: {
-          stage5_stairwell_umbrella_check__no_umbrella_check: ["stairwell-no-umbrella-death"],
-          stage5_stairwell_umbrella_check__with_umbrella_check: ["stairwell-with-umbrella-death"],
+          stage5_mezzanine_umbrella_check__no_umbrella_check: ["mezzanine-no-umbrella-death"],
+          stage5_mezzanine_umbrella_check__with_umbrella_check: ["mezzanine-with-umbrella-death"],
           stage5_basement_umbrella_check__no_umbrella_check: ["basement-no-umbrella-death"],
         },
         parser_fallbacks: ["fallback"],
       };
 
-      const stairwellNoUmbrella = transition(
+      const mezzanineNoUmbrella = transition(
         makeState("stage5_balcony_inspected"),
         "go back",
         customCatalog,
       );
-      expect(stairwellNoUmbrella.output).toEqual([
-        "stairwell-check-node",
-        "stairwell-no-umbrella-death",
+      expect(mezzanineNoUmbrella.output).toEqual([
+        "mezzanine-check-node",
+        "mezzanine-no-umbrella-death",
         "game-over-node",
       ]);
 
-      const stairwellWithUmbrella = transition(
+      const mezzanineWithUmbrella = transition(
         makeState("stage5_balcony_inspected", ["umbrella"]),
         "go back",
         customCatalog,
       );
-      expect(stairwellWithUmbrella.output).toEqual([
-        "stairwell-check-node",
-        "stairwell-with-umbrella-death",
+      expect(mezzanineWithUmbrella.output).toEqual([
+        "mezzanine-check-node",
+        "mezzanine-with-umbrella-death",
         "game-over-node",
       ]);
 
