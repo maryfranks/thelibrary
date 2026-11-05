@@ -1,4 +1,5 @@
 import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
+import { recordDeath, recordRunCompleted } from "./telemetry";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage2NodeId } from "./types";
 
 interface Stage2ChoiceDefinition {
@@ -235,6 +236,11 @@ function resolvePeriodicalsCheck(
   }
 
   const nextNode: NodeId = "stage2_death_choice";
+  recordDeath({
+    stage: "stage2",
+    death_type: "monster_attack",
+    node_id: "stage2_periodicals_check",
+  });
   const deathLines = getDeathScreenLines("stage2_periodicals_check", NO_MOP_CHOICE, content);
   return {
     ...state,
@@ -322,6 +328,26 @@ export function transitionStage2(
   if (nextNode === "stage2_stacks_door_check") {
     const checkLines = getNodeLines(nextNode, content);
     return resolveStacksDoorCheck(state, nextInventory, checkLines, content);
+  }
+
+  if (matchedChoice.deathType) {
+    recordDeath({
+      stage: "stage2",
+      death_type: matchedChoice.deathType,
+      node_id: state.currentNode,
+    });
+  }
+
+  if (nextNode === "game_over") {
+    recordRunCompleted({
+      outcome: "loss",
+      final_stage: "stage2",
+    });
+  } else if (nextNode === "game_win") {
+    recordRunCompleted({
+      outcome: "win",
+      final_stage: "stage2",
+    });
   }
 
   const deathLines = matchedChoice.deathType

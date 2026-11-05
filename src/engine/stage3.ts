@@ -1,4 +1,5 @@
 import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
+import { recordDeath, recordRunCompleted } from "./telemetry";
 import type {
   ContentCatalog,
   DeathType,
@@ -302,6 +303,11 @@ function resolveArrivalCheck(
   }
 
   const nextNode: NodeId = "stage3_early_death_choice";
+  recordDeath({
+    stage: "stage3",
+    death_type: "environmental_hazard",
+    node_id: "stage3_arrival",
+  });
   const deathLines = getDeathScreenLines("stage3_arrival", WITH_MOP_CHOICE, content);
   return {
     ...state,
@@ -335,6 +341,11 @@ function resolveFlashlightCheck(
   }
 
   const nextNode: NodeId = "stage3_death_choice";
+  recordDeath({
+    stage: "stage3",
+    death_type: "monster_attack",
+    node_id: "stage3_row2_flashlight_check",
+  });
   const deathLines = getDeathScreenLines(
     "stage3_row2_flashlight_check",
     NO_FLASHLIGHT_CHOICE,
@@ -399,6 +410,22 @@ export function transitionStage3(
     matchedChoice.elseDeathType
   ) {
     const nextNode = matchedChoice.elseTarget;
+    recordDeath({
+      stage: "stage3",
+      death_type: matchedChoice.elseDeathType,
+      node_id: state.currentNode,
+    });
+    if (nextNode === "game_over") {
+      recordRunCompleted({
+        outcome: "loss",
+        final_stage: "stage3",
+      });
+    } else if (nextNode === "game_win") {
+      recordRunCompleted({
+        outcome: "win",
+        final_stage: "stage3",
+      });
+    }
     const deathLines = getConditionalDeathScreenLines(
       state.currentNode,
       matchedChoice.command,
@@ -422,6 +449,22 @@ export function transitionStage3(
     matchedChoice.elseDeathType
   ) {
     const nextNode = matchedChoice.elseTarget;
+    recordDeath({
+      stage: "stage3",
+      death_type: matchedChoice.elseDeathType,
+      node_id: state.currentNode,
+    });
+    if (nextNode === "game_over") {
+      recordRunCompleted({
+        outcome: "loss",
+        final_stage: "stage3",
+      });
+    } else if (nextNode === "game_win") {
+      recordRunCompleted({
+        outcome: "win",
+        final_stage: "stage3",
+      });
+    }
     const deathLines = getConditionalDeathScreenLines(
       state.currentNode,
       matchedChoice.command,
@@ -450,6 +493,26 @@ export function transitionStage3(
   if (nextNode === "stage3_row2_flashlight_check") {
     const checkLines = getNodeLines(nextNode, content);
     return resolveFlashlightCheck(nextState, nextInventory, checkLines, content);
+  }
+
+  if (matchedChoice.deathType) {
+    recordDeath({
+      stage: "stage3",
+      death_type: matchedChoice.deathType,
+      node_id: state.currentNode,
+    });
+  }
+
+  if (nextNode === "game_over") {
+    recordRunCompleted({
+      outcome: "loss",
+      final_stage: "stage3",
+    });
+  } else if (nextNode === "game_win") {
+    recordRunCompleted({
+      outcome: "win",
+      final_stage: "stage3",
+    });
   }
 
   const deathLines = matchedChoice.deathType
