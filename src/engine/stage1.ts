@@ -1,4 +1,5 @@
 import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
+import { recordDeath, recordRunCompleted } from "./telemetry";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage1NodeId } from "./types";
 
 interface ChoiceDefinition {
@@ -137,6 +138,27 @@ export function transitionStage1(
 
   const nextInventory = addUniqueItems(state.inventory, matchedChoice.addItems);
   const nextNode = matchedChoice.target;
+
+  if (matchedChoice.deathType) {
+    recordDeath({
+      stage: "stage1",
+      death_type: matchedChoice.deathType,
+      node_id: state.currentNode,
+    });
+  }
+
+  if (nextNode === "game_over") {
+    recordRunCompleted({
+      outcome: "loss",
+      final_stage: "stage1",
+    });
+  } else if (nextNode === "game_win") {
+    recordRunCompleted({
+      outcome: "win",
+      final_stage: "stage1",
+    });
+  }
+
   const deathLines = matchedChoice.deathType
     ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
     : [];

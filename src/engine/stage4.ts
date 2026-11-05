@@ -1,4 +1,5 @@
 import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
+import { recordDeath, recordRunCompleted } from "./telemetry";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage4NodeId } from "./types";
 
 interface Stage4ChoiceDefinition {
@@ -170,6 +171,11 @@ function resolvePocketknifeCheck(
   }
 
   const nextNode: NodeId = "stage3_death_choice";
+  recordDeath({
+    stage: "stage4",
+    death_type: "environmental_hazard",
+    node_id: "stage4_junction_c_check",
+  });
   const deathLines = getDeathScreenLines("stage4_junction_c_check", NO_POCKETKNIFE_CHOICE, content);
   return {
     ...state,
@@ -222,6 +228,26 @@ export function transitionStage4(
   if (nextNode === "stage4_junction_c_check") {
     const checkLines = getNodeLines(nextNode, content);
     return resolvePocketknifeCheck(state, state.inventory, checkLines, content);
+  }
+
+  if (matchedChoice.deathType) {
+    recordDeath({
+      stage: "stage4",
+      death_type: matchedChoice.deathType,
+      node_id: state.currentNode,
+    });
+  }
+
+  if (nextNode === "game_over") {
+    recordRunCompleted({
+      outcome: "loss",
+      final_stage: "stage4",
+    });
+  } else if (nextNode === "game_win") {
+    recordRunCompleted({
+      outcome: "win",
+      final_stage: "stage4",
+    });
   }
 
   const deathLines = matchedChoice.deathType

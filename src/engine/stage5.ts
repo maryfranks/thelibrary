@@ -1,4 +1,5 @@
 import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
+import { recordDeath, recordRunCompleted } from "./telemetry";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage5NodeId } from "./types";
 
 interface Stage5ChoiceDefinition {
@@ -254,6 +255,15 @@ function resolveMezzanineUmbrellaCheck(
   const hasUmbrella = inventory.includes("umbrella");
   const choice = hasUmbrella ? WITH_UMBRELLA_CHOICE : NO_UMBRELLA_CHOICE;
   const nextNode: NodeId = "game_over";
+  recordDeath({
+    stage: "stage5",
+    death_type: "monster_attack",
+    node_id: "stage5_mezzanine_umbrella_check",
+  });
+  recordRunCompleted({
+    outcome: "loss",
+    final_stage: "stage5",
+  });
   const deathLines = getDeathScreenLines("stage5_mezzanine_umbrella_check", choice, content);
 
   return {
@@ -288,6 +298,15 @@ function resolveBasementUmbrellaCheck(
   }
 
   const nextNode: NodeId = "game_over";
+  recordDeath({
+    stage: "stage5",
+    death_type: "environmental_hazard",
+    node_id: "stage5_basement_umbrella_check",
+  });
+  recordRunCompleted({
+    outcome: "loss",
+    final_stage: "stage5",
+  });
   const deathLines = getDeathScreenLines(
     "stage5_basement_umbrella_check",
     NO_UMBRELLA_CHOICE,
@@ -353,6 +372,26 @@ export function transitionStage5(
   if (nextNode === "stage5_basement_umbrella_check") {
     const checkLines = getNodeLines(nextNode, content);
     return resolveBasementUmbrellaCheck(state, state.inventory, checkLines, content);
+  }
+
+  if (matchedChoice.deathType) {
+    recordDeath({
+      stage: "stage5",
+      death_type: matchedChoice.deathType,
+      node_id: state.currentNode,
+    });
+  }
+
+  if (nextNode === "game_over") {
+    recordRunCompleted({
+      outcome: "loss",
+      final_stage: "stage5",
+    });
+  } else if (nextNode === "game_win") {
+    recordRunCompleted({
+      outcome: "win",
+      final_stage: "stage5",
+    });
   }
 
   const deathLines = matchedChoice.deathType
