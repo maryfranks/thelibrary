@@ -50,13 +50,36 @@ export type Stage4NodeId =
   | "stage4_junction_h"
   | "stage4_structural_hub";
 
+export type Stage5NodeId =
+  | "stage5_mezzanine_arrival"
+  | "stage5_mezzanine_death_choice"
+  | "stage5_mezzanine_searched"
+  | "stage5_balcony_door"
+  | "stage5_balcony_inspected"
+  | "stage5_stairwell_umbrella_check"
+  | "stage5_mezzanine_umbrella_check"
+  | "stage5_basement_arrival"
+  | "stage5_basement_death_choice"
+  | "stage5_basement_searched"
+  | "stage5_basement_umbrella_check"
+  | "stage5_flooded_corridor"
+  | "stage5_water_step_1"
+  | "stage5_water_step_2"
+  | "stage5_water_step_3"
+  | "stage5_occult_archive_entry"
+  | "stage5_occult_archive_hub"
+  | "stage5_windows_tested_hub"
+  | "stage5_desk_searched_hub"
+  | "stage5_both_tested_hub"
+  | "stage5_cave_approach_partial"
+  | "stage5_cave_approach_final";
+
 export type NodeId =
   | Stage1NodeId
   | Stage2NodeId
   | Stage3NodeId
   | Stage4NodeId
-  | "stage5_mezzanine_arrival"
-  | "stage5_basement_arrival"
+  | Stage5NodeId
   | "game_over"
   | "game_win";
 

@@ -3,6 +3,7 @@ import { getStage1Choices, isStage1Node, transitionStage1 } from "./stage1";
 import { getStage2Choices, isStage2Node, transitionStage2 } from "./stage2";
 import { getStage3Choices, isStage3Node, transitionStage3 } from "./stage3";
 import { getStage4Choices, isStage4Node, transitionStage4 } from "./stage4";
+import { getStage5Choices, isStage5Node, transitionStage5 } from "./stage5";
 import type { ContentCatalog, GameState, NodeId } from "./types";
 
 export * from "./types";
@@ -11,6 +12,7 @@ export * from "./stage1";
 export * from "./stage2";
 export * from "./stage3";
 export * from "./stage4";
+export * from "./stage5";
 
 export function createInitialState(content?: ContentCatalog): GameState {
   const initialNode = "stage1_vestibule" as const;
@@ -42,6 +44,9 @@ export function getAvailableChoices(nodeId: NodeId): string[] {
   if (isStage4Node(nodeId)) {
     return getStage4Choices(nodeId);
   }
+  if (isStage5Node(nodeId)) {
+    return getStage5Choices(nodeId);
+  }
   return [];
 }
 
@@ -64,6 +69,10 @@ export function transition(state: GameState, input: string, content?: ContentCat
 
   if (isStage4Node(state.currentNode)) {
     return transitionStage4(state, input, content);
+  }
+
+  if (isStage5Node(state.currentNode)) {
+    return transitionStage5(state, input, content);
   }
 
   return {
