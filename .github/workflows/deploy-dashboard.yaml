@@ -18,9 +18,11 @@ jobs:
       - name: Deploy dashboard to Grafana
         env:
           GRAFANA_TOKEN: ${{ secrets.GRAFANA_SERVICE_ACCOUNT_TOKEN }}
+          CF_SECRET: ${{ secrets.CLOUDFLARE_CI_SECRET }}
         run: |
           RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://stats.littlefuzzydinos.com/api/dashboards/db" \
             -H "Authorization: Bearer ${GRAFANA_TOKEN}" \
+            -H "x-deploy-secret: ${CF_SECRET}" \
             -H "Content-Type: application/json" \
             -d @monitoring/dashboards/game-telemetry.json)
 
