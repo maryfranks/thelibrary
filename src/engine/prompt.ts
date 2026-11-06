@@ -1,4 +1,4 @@
-import { getAvailableChoices } from "./index";
+import { getAvailableChoices } from "./choices";
 import type { GameState, NodeId } from "./types";
 
 export const CHOICE_PROMPT_HEADER = "Do you want to:";
