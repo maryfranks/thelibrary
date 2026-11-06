@@ -1,13 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import {
-  createInitialState,
-  formatChoicePrompt,
-  getAvailableChoices,
-  getTransitionPrompt,
-  transition,
-  type GameState,
-} from "@/engine";
+import { createInitialState, getSceneEntries, processCommand, type GameState } from "@/engine";
 
 const DESC =
   "Caught in an unnatural storm, you take refuge in a library. When you get inside, the library is trashed and there's no one in sight. You can't leave—the door locks behind you. Navigate monsters, a maze, and a flooded basement to escape, and find out what happened in that library.";
@@ -34,9 +27,7 @@ type Line = { kind: "in" | "out" | "sys" | "warn"; text: string };
 function buildInitialLines(initialState: GameState): Line[] {
   return [
     { kind: "sys", text: "THE LIBRARY · v0.1" },
-    ...[...initialState.output, ...formatChoicePrompt(initialState.currentNode)].map(
-      (text): Line => ({ kind: "out", text }),
-    ),
+    ...getSceneEntries(initialState),
     { kind: "sys", text: "Type HELP for commands." },
   ];
 }
@@ -65,50 +56,18 @@ function Terminal() {
   const submit = () => {
     const cmd = input;
     const trimmed = cmd.trim();
-    const lower = trimmed.toLowerCase();
     setInput("");
     setHIdx(-1);
     if (!trimmed) return;
 
     setHist((h) => [cmd, ...h]);
-    if (lower === "clear") {
+    const result = processCommand(gameState, cmd);
+    if (result.clear) {
       setLines([]);
       return;
     }
-
-    if (lower === "help") {
-      const choices = getAvailableChoices(gameState.currentNode);
-      const actionsText = choices.length > 0 ? choices.join(", ") : "none";
-      setLines((l) => [
-        ...l,
-        { kind: "in", text: `> ${cmd}` },
-        { kind: "sys", text: `Actions: ${actionsText} | System: INVENTORY, CLEAR, HELP` },
-      ]);
-      setTurn((t) => t + 1);
-      return;
-    }
-
-    if (["inventory", "i", "inv"].includes(lower)) {
-      const invText =
-        gameState.inventory.length > 0
-          ? `Inventory: ${gameState.inventory.join(", ")}`
-          : "Inventory: empty";
-      setLines((l) => [...l, { kind: "in", text: `> ${cmd}` }, { kind: "sys", text: invText }]);
-      setTurn((t) => t + 1);
-      return;
-    }
-
-    const nextState = transition(gameState, trimmed);
-    setGameState(nextState);
-    const responseLines: Line[] = [
-      ...nextState.output,
-      ...getTransitionPrompt(gameState, nextState),
-    ].map((text) => ({
-      kind: "out",
-      text,
-    }));
-
-    setLines((l) => [...l, { kind: "in", text: `> ${cmd}` }, ...responseLines]);
+    setGameState(result.state);
+    setLines((l) => [...l, { kind: "in", text: `> ${cmd}` }, ...result.entries]);
     setTurn((t) => t + 1);
   };
 
