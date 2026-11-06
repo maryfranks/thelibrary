@@ -14,6 +14,12 @@ The application is structured as a client-side Single Page Application (SPA) dep
   - Handles state management, command parsing, inventory checks, condition evaluation, and dynamic DOM rendering without embedding narrative strings.
   - May define fixed UI-chrome labels (e.g., `CHOICE_PROMPT_HEADER` in `src/engine/prompt.ts`) as exported constants. These are not narrative content. All story, death, and parser text must still come from `content.json`.
   - No circular dependencies of any kind (imports, module references, or logic).
+- **Check-Node Resolution (`src/engine/transition.ts`):**
+  - `transition()` dispatches the input to the stage handler, then loops (max 10 steps) while the resulting node is in `AUTO_RESOLVE_NODES`, re-dispatching with empty input and concatenating output. Check nodes (respawn, periodicals, stacks door, flashlight, pocketknife, umbrella, etc.) therefore never rest as menus, and chained checks resolve in one call.
+  - Weapon checks (`stage2_respawn_check`, `stage2_periodicals_check`) accept the mop OR the fireplace poker.
+  - Unmatched input in stage 2 yields a parser fallback, not a death; deaths occur only on explicit choices (e.g., `go deeper` at `stage2_foyer`).
+- **Inventory Display (`src/engine/commands.ts`):**
+  - `processCommand` emits a `sys` line `Inventory: ...` when inventory changes (pick up, search, fireplace) and on `look in the pack` at `stage1_pack_checked` and stage 2 search nodes.
 - **Choice Prompt (`src/engine/prompt.ts`):**
   - Pure helpers that render the numbered `Do you want to:` list from `getAvailableChoices(nodeId)`; empty for terminal nodes.
   - `formatChoicePrompt(nodeId)` is appended to the initial output on load; `getTransitionPrompt(prev, next)` appends it after a transition only when `currentNode` changed.
@@ -23,7 +29,7 @@ The application is structured as a client-side Single Page Application (SPA) dep
 - **Telemetry (`src/engine/telemetry.ts`):**
   - OpenTelemetry metrics instrumentation (`the-library-engine` meter) integrated into the game engine with graceful fallback when collectors are absent or unreachable.
   - Emits monotonic counters for completed runs (`game.runs.completed` with `outcome` and `final_stage` attributes) and fatal transitions (`game.deaths` with `stage`, `death_type`, and `node_id` attributes).
-  - Exports metrics over OpenTelemetry Protocol (OTLP) Hypertext Transfer Protocol (HTTP) (`OTLPMetricExporter` targeting `https://collector.littlefuzzydinos.com/v1/metrics`) via a `PeriodicExportingMetricReader` (`5000ms` interval), and invokes `flushTelemetry()` (`meterProvider.forceFlush()`) on `recordRunCompleted()` so terminal outcomes flush immediately.
+  - Exports metrics over OpenTelemetry Protocol (OTLP) Hypertext Transfer Protocol (HTTP) (`OTLPMetricExporter` targeting `https://collector.littlefuzzydinos.com/v1/metrics`) via a `PeriodicExportingMetricReader` (`5000ms` interval), and invokes `flushTelemetry()` (`meterProvider.forceFlush()`) on both `recordRunCompleted()` and `recordDeath()` so terminal outcomes and deaths flush immediately.
 
 ---
 
