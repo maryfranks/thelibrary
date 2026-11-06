@@ -121,10 +121,11 @@ describe("Stage 1 Engine (Vestibule)", () => {
       expect(next.inventory).toEqual(["mop"]);
     });
 
-    it("transitions to stage2_foyer without mop on 'proceed anyway'", () => {
+    it("transitions to stage2_foyer without mop on 'proceed anyway' and saves empty Stage 2 inventory snapshot", () => {
       const next = transition(turnstileCheckState, "proceed anyway");
       expect(next.currentNode).toBe("stage2_foyer");
       expect(next.inventory).toEqual([]);
+      expect(next.stage2InventorySnapshot).toEqual([]);
       expect(next.isGameOver).toBe(false);
       expect(next.isWin).toBe(false);
     });
@@ -149,10 +150,11 @@ describe("Stage 1 Engine (Vestibule)", () => {
       expect(next.inventory).toEqual(["mop"]);
     });
 
-    it("transitions to stage2_foyer on 'hop turnstiles' with mop in inventory", () => {
+    it("transitions to stage2_foyer on 'hop turnstiles' with mop in inventory and saves Stage 2 inventory snapshot", () => {
       const next = transition(mopAcquiredState, "hop turnstiles");
       expect(next.currentNode).toBe("stage2_foyer");
       expect(next.inventory).toEqual(["mop"]);
+      expect(next.stage2InventorySnapshot).toEqual(["mop"]);
       expect(next.isGameOver).toBe(false);
       expect(next.isWin).toBe(false);
     });

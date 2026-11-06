@@ -456,12 +456,9 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(state.inventory).not.toContain("mop");
 
       state = transition(state, "go deeper");
-      expect(state.currentNode).toBe("stage3_arrival");
-
-      // Stage 3: Stacks -> survive arrival ambush with poker -> loot Row 4 (flashlight) & Row 2 (pocketknife, umbrella) -> advance to Stage 4
-      state = transition(state, "with poker check");
       expect(state.currentNode).toBe("stage3_hub_unexplored");
 
+      // Stage 3: Stacks -> arrival ambush auto-resolves with poker -> loot Row 4 (flashlight) & Row 2 (pocketknife, umbrella) -> advance to Stage 4
       state = transition(state, "look around");
       expect(state.currentNode).toBe("stage3_hub");
 

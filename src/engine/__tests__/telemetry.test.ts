@@ -300,7 +300,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
   describe("Stage 2 Fatal Transitions (game.deaths)", () => {
     it("emits game.deaths on all Stage 2 fatal transitions", () => {
       // 1. stage2_foyer any other movement/action
-      transition(makeState("stage2_foyer", ["mop"]), "run forward");
+      transition(makeState("stage2_foyer", ["mop"]), "go deeper");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage2",
         death_type: "monster_attack",
@@ -641,7 +641,40 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
 
       expect(deathSpy).toHaveBeenCalledTimes(3);
       expect(runCompletedSpy).toHaveBeenCalledTimes(3);
-      expect(providerForceFlushSpy).toHaveBeenCalledTimes(3);
+      // each death and each run completion flushes once
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(6);
+    });
+  });
+
+  describe("Death flushing & exactly-once recording", () => {
+    it("flushes telemetry on every recorded death", () => {
+      transition(makeState("stage2_foyer", ["mop"]), "go deeper");
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("records exactly one death for Stage 2 foyer, periodicals, reading room door, stacks door and Stage 3 arrival", () => {
+      transition(makeState("stage2_foyer", ["mop"]), "go deeper");
+      expect(deathSpy).toHaveBeenCalledTimes(1);
+      transition(makeState("stage2_foyer_searched", []), "explore periodicals");
+      expect(deathSpy).toHaveBeenCalledTimes(2);
+      transition(makeState("stage2_reading_room_door", ["mop"]), "rattle reading room door");
+      expect(deathSpy).toHaveBeenCalledTimes(3);
+      transition(makeState("stage2_stacks_door_locked_no_key", ["mop"]), "defend yourself");
+      expect(deathSpy).toHaveBeenCalledTimes(4);
+      transition(makeState("stage2_poker_acquired", ["mop", "stacks key"]), "go deeper");
+      expect(deathSpy).toHaveBeenCalledTimes(5);
+      expect(deathSpy).toHaveBeenLastCalledWith(1, {
+        stage: "stage3",
+        death_type: "environmental_hazard",
+        node_id: "stage3_arrival",
+      });
+    });
+
+    it("does not record an extra death on 'try again' respawn", () => {
+      transition(makeState("stage2_death_choice", ["mop"]), "try again");
+      transition(makeState("stage2_death_choice", []), "try again");
+      transition(makeState("stage3_early_death_choice", ["mop"]), "try again");
+      expect(deathSpy).not.toHaveBeenCalled();
     });
   });
 

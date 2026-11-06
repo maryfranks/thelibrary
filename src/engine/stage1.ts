@@ -164,10 +164,14 @@ export function transitionStage1(
     : [];
   const nodeLines = getNodeLines(nextNode, content);
 
+  const stage2InventorySnapshot =
+    nextNode === "stage2_foyer" ? [...nextInventory] : state.stage2InventorySnapshot;
+
   return {
     ...state,
     currentNode: nextNode,
     inventory: nextInventory,
+    stage2InventorySnapshot,
     isGameOver: nextNode === "game_over",
     isWin: nextNode === "game_win",
     lastDeathType: matchedChoice.deathType ?? null,

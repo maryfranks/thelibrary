@@ -9,6 +9,7 @@ export type Stage1NodeId =
 export type Stage2NodeId =
   | "stage2_foyer"
   | "stage2_death_choice"
+  | "stage2_respawn_check"
   | "stage2_foyer_searched"
   | "stage2_corpse_looted"
   | "stage2_desk_looted"
@@ -118,6 +119,8 @@ export interface GameState {
   row3_safe: boolean;
   row4_safe: boolean;
   row5_safe: boolean;
+  stage2InventorySnapshot?: ItemId[] | null;
+  stage3InventorySnapshot?: ItemId[] | null;
 }
 
 export interface ContentCatalog {
