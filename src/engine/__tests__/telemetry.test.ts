@@ -5,15 +5,26 @@ import {
   type Meter,
   type MeterProvider,
 } from "@opentelemetry/api";
+import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
+import {
+  MeterProvider as SdkMeterProvider,
+  PeriodicExportingMetricReader,
+} from "@opentelemetry/sdk-metrics";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  COLLECTOR_URL,
   DEATHS_COUNTER_NAME,
+  EXPORT_INTERVAL_MILLIS,
   METER_NAME,
   RUNS_COMPLETED_COUNTER_NAME,
   createInitialState,
   deathsCounter,
+  flushTelemetry,
   getStageFromNodeId,
   meter,
+  meterProvider,
+  metricExporter,
+  metricReader,
   recordDeath,
   recordRunCompleted,
   runsCompletedCounter,
@@ -41,8 +52,19 @@ function makeState(
 describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => {
   let deathSpy: ReturnType<typeof vi.spyOn>;
   let runCompletedSpy: ReturnType<typeof vi.spyOn>;
+  let exportSpy: ReturnType<typeof vi.spyOn>;
+  let exporterForceFlushSpy: ReturnType<typeof vi.spyOn>;
+  let providerForceFlushSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    exportSpy = vi
+      .spyOn(metricExporter, "export")
+      .mockImplementation((_metrics, resultCallback) => {
+        resultCallback({ code: 0 });
+      });
+    exporterForceFlushSpy = vi.spyOn(metricExporter, "forceFlush").mockResolvedValue(undefined);
+    vi.spyOn(metricExporter, "shutdown").mockResolvedValue(undefined);
+    providerForceFlushSpy = vi.spyOn(meterProvider, "forceFlush");
     deathSpy = vi.spyOn(deathsCounter, "add");
     runCompletedSpy = vi.spyOn(runsCompletedCounter, "add");
   });
@@ -50,12 +72,16 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
   afterEach(() => {
     vi.restoreAllMocks();
     metrics.disable();
+    metrics.setGlobalMeterProvider(meterProvider);
   });
 
-  describe("Meter, Counters, and Typed Helpers", () => {
-    it("exports initialized Meter, distinct monotonic counters, and stage helper", () => {
+  describe("Meter, Counters, OTLP Exporter, and Typed Helpers", () => {
+    it("exports initialized Meter, distinct monotonic counters, flushTelemetry, and stage helper", () => {
       expect(meter).toBeDefined();
       expect(typeof meter.createCounter).toBe("function");
+      expect(typeof recordDeath).toBe("function");
+      expect(typeof recordRunCompleted).toBe("function");
+      expect(typeof flushTelemetry).toBe("function");
       expect(runsCompletedCounter).toBeDefined();
       expect(deathsCounter).toBeDefined();
       expect(runsCompletedCounter).not.toBe(deathsCounter);
@@ -65,6 +91,89 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       expect(getStageFromNodeId("stage3_hub")).toBe("stage3");
       expect(getStageFromNodeId("stage4_entry")).toBe("stage4");
       expect(getStageFromNodeId("stage5_occult_archive_hub")).toBe("stage5");
+    });
+
+    it("configures OTLPMetricExporter directly to production collector URL and PeriodicExportingMetricReader with 5000ms interval", () => {
+      expect(COLLECTOR_URL).toBe("https://collector.littlefuzzydinos.com/v1/metrics");
+      expect(EXPORT_INTERVAL_MILLIS).toBe(5000);
+      expect(metricExporter).toBeInstanceOf(OTLPMetricExporter);
+      expect(metricReader).toBeInstanceOf(PeriodicExportingMetricReader);
+      expect(meterProvider).toBeInstanceOf(SdkMeterProvider);
+
+      const readerInternal = metricReader as unknown as {
+        _exportInterval: number;
+        _exporter: unknown;
+      };
+      expect(readerInternal._exportInterval).toBe(5000);
+      expect(readerInternal._exporter).toBe(metricExporter);
+    });
+
+    it("flushes buffered metrics immediately via flushTelemetry() and when recordRunCompleted() is called", async () => {
+      recordRunCompleted({
+        outcome: "win",
+        final_stage: "stage5",
+      });
+
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(1);
+
+      await flushTelemetry();
+
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(2);
+      expect(exportSpy).toHaveBeenCalled();
+      expect(exporterForceFlushSpy).toHaveBeenCalled();
+    });
+
+    it("degrades silently on network drops, offline execution, and collector timeouts without throwing", async () => {
+      // 1. Exporter callback reports failed export (e.g. HTTP 500 / connection refused)
+      exportSpy.mockImplementation((_metrics, resultCallback) => {
+        resultCallback({
+          code: 1,
+          error: new Error("Network drop: connect ECONNREFUSED"),
+        });
+      });
+
+      recordDeath({
+        stage: "stage1",
+        death_type: "monster_attack",
+        node_id: "stage1_vestibule",
+      });
+      await expect(flushTelemetry()).resolves.toBeUndefined();
+
+      // 2. Exporter export() throws synchronously (e.g. offline socket error)
+      exportSpy.mockImplementation(() => {
+        throw new Error("Offline execution: network unreachable");
+      });
+      recordDeath({
+        stage: "stage2",
+        death_type: "monster_attack",
+        node_id: "stage2_foyer",
+      });
+      await expect(flushTelemetry()).resolves.toBeUndefined();
+
+      // 3. Exporter forceFlush() rejects (e.g. collector timeout)
+      exporterForceFlushSpy.mockRejectedValue(new Error("Collector request timed out"));
+      await expect(flushTelemetry()).resolves.toBeUndefined();
+
+      // 4. meterProvider.forceFlush() rejects or throws synchronously during recordRunCompleted()
+      providerForceFlushSpy.mockRejectedValueOnce(new Error("ForceFlush network timeout"));
+      expect(() =>
+        recordRunCompleted({
+          outcome: "loss",
+          final_stage: "stage3",
+        }),
+      ).not.toThrow();
+      await expect(flushTelemetry()).resolves.toBeUndefined();
+
+      providerForceFlushSpy.mockImplementationOnce(() => {
+        throw new Error("Synchronous forceFlush failure");
+      });
+      expect(() =>
+        recordRunCompleted({
+          outcome: "win",
+          final_stage: "stage5",
+        }),
+      ).not.toThrow();
+      await expect(flushTelemetry()).resolves.toBeUndefined();
     });
 
     it("records metrics via typed helper functions and dispatches to a registered GlobalMeterProvider", () => {
@@ -91,6 +200,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         getMeter: getMeterMock,
       };
 
+      metrics.disable();
       metrics.setGlobalMeterProvider(mockProvider);
 
       const deathAttrs: DeathAttributes = {
@@ -531,6 +641,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
 
       expect(deathSpy).toHaveBeenCalledTimes(3);
       expect(runCompletedSpy).toHaveBeenCalledTimes(3);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -559,6 +670,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       }
 
       expect(runCompletedSpy).toHaveBeenCalledTimes(deathPromptCases.length);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(deathPromptCases.length);
       expect(deathSpy).not.toHaveBeenCalled();
     });
 
@@ -586,11 +698,13 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       });
 
       expect(runCompletedSpy).toHaveBeenCalledTimes(2);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(2);
       expect(deathSpy).not.toHaveBeenCalled();
 
       // Verify no duplicate metrics after run is already completed
       transition(winFromFinal, "climb out to safety");
       expect(runCompletedSpy).toHaveBeenCalledTimes(2);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(2);
     });
   });
 });

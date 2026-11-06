@@ -2,6 +2,7 @@ Rules:
 
 - Use `gh` for GitHub.
 - Prefer single, unchained CLI commands over compound `&&` chains so commands cleanly match CLI permission allowlist rules.
+- Always commit `bun.lock` alongside any `package.json` change; never leave it uncommitted or out of sync with `package.json`.
 
 # Project Overview
 Terminal adventure game.
