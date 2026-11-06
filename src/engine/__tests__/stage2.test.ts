@@ -30,9 +30,13 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(next.isWin).toBe(false);
     });
 
-    it("triggers monster_attack and transitions to stage2_death_choice on any other movement or action", () => {
+    it("offers exactly 'look around' and 'go deeper'", () => {
+      expect(getAvailableChoices("stage2_foyer")).toEqual(["look around", "go deeper"]);
+    });
+
+    it("triggers monster_attack and transitions to stage2_death_choice on 'go deeper'", () => {
       const state = makeState("stage2_foyer", ["mop"]);
-      const next = transition(state, "walk forward");
+      const next = transition(state, "go deeper");
 
       expect(next.currentNode).toBe("stage2_death_choice");
       expect(next.lastDeathType).toBe("monster_attack");
@@ -40,17 +44,79 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(next.isGameOver).toBe(false);
       expect(next.isWin).toBe(false);
     });
+
+    it("yields the parser fallback (not death) on unmatched input", () => {
+      const catalog = loadContent();
+      const next = transition(makeState("stage2_foyer", ["mop"]), "walk forward", catalog);
+
+      expect(next.currentNode).toBe("stage2_foyer");
+      expect(next.lastDeathType).toBeNull();
+      expect(next.output).toEqual([catalog.parser_fallbacks[0]]);
+    });
   });
 
-  describe("stage2_death_choice", () => {
-    it("respawns at stage1_pack_checked on 'try again'", () => {
-      const state = makeState("stage2_death_choice");
-      const next = transition(state, "try again");
+  describe("stage2_death_choice & stage2_respawn_check", () => {
+    it("routes 'try again' through stage2_respawn_check: no weapon lands at stage1_vestibule_searched", () => {
+      const catalog = loadContent();
+      const next = transition(makeState("stage2_death_choice"), "try again", catalog);
 
-      expect(next.currentNode).toBe("stage1_pack_checked");
+      expect(next.currentNode).toBe("stage1_vestibule_searched");
       expect(next.lastDeathType).toBeNull();
       expect(next.isGameOver).toBe(false);
-      expect(next.isWin).toBe(false);
+      expect(next.output).toEqual([
+        ...catalog.nodes.stage2_respawn_check,
+        ...catalog.nodes.stage1_vestibule_searched,
+      ]);
+    });
+
+    it("lands at stage2_foyer with a mop", () => {
+      const next = transition(makeState("stage2_death_choice", ["mop"]), "try again");
+
+      expect(next.currentNode).toBe("stage2_foyer");
+      expect(next.inventory).toEqual(["mop"]);
+    });
+
+    it("lands at stage2_foyer with a fireplace poker only", () => {
+      const next = transition(makeState("stage2_death_choice", ["fireplace poker"]), "try again");
+
+      expect(next.currentNode).toBe("stage2_foyer");
+    });
+
+    it("resolves stage2_respawn_check directly on entry", () => {
+      expect(transition(makeState("stage2_respawn_check", []), "").currentNode).toBe(
+        "stage1_vestibule_searched",
+      );
+      expect(transition(makeState("stage2_respawn_check", ["mop"]), "").currentNode).toBe(
+        "stage2_foyer",
+      );
+    });
+
+    it("keeps inventory across deaths", () => {
+      const died = transition(
+        makeState("stage2_stacks_door_locked_no_key", ["mop"]),
+        "defend yourself",
+      );
+      expect(died.inventory).toEqual(["mop"]);
+    });
+
+    it("allows exploring periodicals unsearched; with mop and no key dies at the stacks door", () => {
+      let state = makeState("stage2_foyer_searched", ["mop"]);
+      state = transition(state, "explore periodicals");
+      expect(state.currentNode).toBe("stage2_reading_room_door");
+      state = transition(state, "try the lock quietly");
+      state = transition(state, "look around");
+      state = transition(state, "go deeper");
+      expect(state.currentNode).toBe("stage2_stacks_door_locked_no_key");
+      state = transition(state, "defend yourself");
+      expect(state.currentNode).toBe("stage2_death_choice");
+    });
+
+    it("does not soft-lock a poker-only respawn at periodicals", () => {
+      const next = transition(
+        makeState("stage2_foyer_searched", ["fireplace poker"]),
+        "explore periodicals",
+      );
+      expect(next.currentNode).toBe("stage2_reading_room_door");
     });
 
     it("transitions to game_over and sets isGameOver on 'give up'", () => {
@@ -199,11 +265,11 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(next.lastDeathType).toBeNull();
     });
 
-    it("transitions to stage3_arrival when going deeper with stacks key", () => {
+    it("resolves stage3_arrival on entry (no menu) when going deeper with stacks key and poker", () => {
       const fromPoker = makeState("stage2_poker_acquired", ["stacks key", "fireplace poker"]);
       const next = transition(fromPoker, "go deeper");
 
-      expect(next.currentNode).toBe("stage3_arrival");
+      expect(next.currentNode).toBe("stage3_hub_unexplored");
       expect(next.lastDeathType).toBeNull();
       expect(next.inventory).toEqual(["stacks key", "fireplace poker"]);
     });
@@ -215,7 +281,7 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
 
       const checkWithKey = makeState("stage2_stacks_door_check", ["fireplace poker", "stacks key"]);
       const arrived = transition(checkWithKey, "2");
-      expect(arrived.currentNode).toBe("stage3_arrival");
+      expect(arrived.currentNode).toBe("stage3_hub_unexplored");
     });
 
     it("triggers monster_attack and transitions to stage2_death_choice on both choices at stage2_stacks_door_locked_no_key", () => {
@@ -262,13 +328,13 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
           stage2_periodicals_check: ["periodicals-check-node"],
         },
         death_screens: {
-          stage2_foyer__any_other_action: ["foyer-noise-death"],
+          stage2_foyer__go_deeper: ["foyer-noise-death"],
           stage2_periodicals_check__no_mop_check: ["no-mop-death"],
         },
         parser_fallbacks: ["fallback"],
       };
 
-      const foyerNoise = transition(makeState("stage2_foyer"), "shout loudly", customCatalog);
+      const foyerNoise = transition(makeState("stage2_foyer"), "go deeper", customCatalog);
       expect(foyerNoise.output).toEqual(["foyer-noise-death", "death-choice-node"]);
 
       const noMop = transition(

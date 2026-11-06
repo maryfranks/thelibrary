@@ -44,11 +44,11 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(next.isGameOver).toBe(false);
     });
 
-    it("respawns at stage2_stacks_door_check on 'try again' and ends game on 'give up' from stage3_early_death_choice", () => {
+    it("respawns at stage2_fireplace_revealed on 'try again' and ends game on 'give up' from stage3_early_death_choice", () => {
       const state = makeState("stage3_early_death_choice", ["mop", "stacks key"]);
 
       const retried = transition(state, "try again");
-      expect(retried.currentNode).toBe("stage2_stacks_door_check");
+      expect(retried.currentNode).toBe("stage2_fireplace_revealed");
       expect(retried.lastDeathType).toBeNull();
       expect(retried.isGameOver).toBe(false);
 
@@ -56,6 +56,28 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(gaveUp.currentNode).toBe("game_over");
       expect(gaveUp.lastDeathType).toBeNull();
       expect(gaveUp.isGameOver).toBe(true);
+    });
+    it("lets a mop holder who died at arrival retry, get the poker and reach stage3_hub_unexplored (no soft-lock)", () => {
+      let state = makeState("stage2_stacks_door_check", ["mop", "stacks key"]);
+      state = transition(state, "");
+      expect(state.currentNode).toBe("stage3_early_death_choice");
+      expect(state.lastDeathType).toBe("environmental_hazard");
+
+      state = transition(state, "try again");
+      expect(state.currentNode).toBe("stage2_fireplace_revealed");
+      state = transition(state, "search fireplace");
+      expect(state.inventory).toContain("fireplace poker");
+      state = transition(state, "go deeper");
+      expect(state.currentNode).toBe("stage3_hub_unexplored");
+    });
+
+    it("never rests on stage3_arrival: resolves on entry from stage 2", () => {
+      const withMop = transition(
+        makeState("stage2_poker_acquired", ["mop", "stacks key"]),
+        "go deeper",
+      );
+      expect(withMop.currentNode).toBe("stage3_early_death_choice");
+      expect(withMop.lastDeathType).toBe("environmental_hazard");
     });
   });
 

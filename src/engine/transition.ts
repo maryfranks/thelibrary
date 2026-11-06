@@ -4,7 +4,7 @@ import { isStage2Node, transitionStage2 } from "./stage2";
 import { isStage3Node, transitionStage3 } from "./stage3";
 import { isStage4Node, transitionStage4 } from "./stage4";
 import { isStage5Node, transitionStage5 } from "./stage5";
-import type { ContentCatalog, GameState } from "./types";
+import type { ContentCatalog, GameState, NodeId } from "./types";
 
 export function createInitialState(content?: ContentCatalog): GameState {
   const initialNode = "stage1_vestibule" as const;
@@ -23,7 +23,33 @@ export function createInitialState(content?: ContentCatalog): GameState {
   };
 }
 
+/** Check nodes that resolve immediately on entry and never rest as a menu. */
+export const AUTO_RESOLVE_NODES: ReadonlySet<NodeId> = new Set<NodeId>([
+  "stage2_respawn_check",
+  "stage2_periodicals_check",
+  "stage2_stacks_door_check",
+  "stage3_arrival",
+  "stage3_row2_flashlight_check",
+  "stage4_junction_c_check",
+  "stage5_mezzanine_umbrella_check",
+  "stage5_basement_umbrella_check",
+]);
+
+const MAX_AUTO_RESOLVE_STEPS = 10;
+
 export function transition(state: GameState, input: string, content?: ContentCatalog): GameState {
+  let next = dispatchTransition(state, input, content);
+  for (let i = 0; i < MAX_AUTO_RESOLVE_STEPS; i++) {
+    if (next.isGameOver || next.isWin || !AUTO_RESOLVE_NODES.has(next.currentNode)) {
+      break;
+    }
+    const resolved = dispatchTransition(next, "", content);
+    next = { ...resolved, output: [...next.output, ...resolved.output] };
+  }
+  return next;
+}
+
+function dispatchTransition(state: GameState, input: string, content?: ContentCatalog): GameState {
   if (state.isGameOver || state.isWin) {
     return state;
   }

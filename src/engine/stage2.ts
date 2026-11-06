@@ -8,7 +8,6 @@ interface Stage2ChoiceDefinition {
   addItems?: ItemId[];
   removeItems?: ItemId[];
   deathType?: DeathType;
-  matchAnyOtherInput?: boolean;
 }
 
 export const CORPSE_ITEMS: ItemId[] = ["lemon candy", "pack of gum", "mace", "hair ties"];
@@ -26,22 +25,22 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
       target: "stage2_foyer_searched",
     },
     {
-      command: "any other action",
+      command: "go deeper",
       target: "stage2_death_choice",
       deathType: "monster_attack",
-      matchAnyOtherInput: true,
     },
   ],
   stage2_death_choice: [
     {
       command: "try again",
-      target: "stage1_pack_checked",
+      target: "stage2_respawn_check",
     },
     {
       command: "give up",
       target: "game_over",
     },
   ],
+  stage2_respawn_check: [],
   stage2_foyer_searched: [
     {
       command: "look around",
@@ -215,14 +214,39 @@ function mutateInventory(
   return next;
 }
 
+export const WEAPON_ITEMS: ItemId[] = ["mop", "fireplace poker"];
+
+export function hasWeapon(inventory: ItemId[]): boolean {
+  return WEAPON_ITEMS.some((item) => inventory.includes(item));
+}
+
+function resolveRespawnCheck(
+  state: GameState,
+  inventory: ItemId[],
+  prefixLines: string[],
+  content?: ContentCatalog,
+): GameState {
+  const nextNode: NodeId = hasWeapon(inventory) ? "stage2_foyer" : "stage1_vestibule_searched";
+  const hintLines =
+    nextNode === "stage2_foyer" ? [] : getNodeLines("stage2_respawn_check", content);
+  return {
+    ...state,
+    currentNode: nextNode,
+    inventory: [...inventory],
+    isGameOver: false,
+    isWin: false,
+    lastDeathType: null,
+    output: [...prefixLines, ...hintLines, ...getNodeLines(nextNode, content)],
+  };
+}
+
 function resolvePeriodicalsCheck(
   state: GameState,
   inventory: ItemId[],
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  const hasMop = inventory.includes("mop");
-  if (hasMop) {
+  if (hasWeapon(inventory)) {
     const nextNode: NodeId = "stage2_reading_room_door";
     return {
       ...state,
@@ -282,6 +306,10 @@ export function transitionStage2(
     return state;
   }
 
+  if (state.currentNode === "stage2_respawn_check") {
+    return resolveRespawnCheck(state, state.inventory, [], content);
+  }
+
   if (state.currentNode === "stage2_periodicals_check") {
     return resolvePeriodicalsCheck(state, state.inventory, [], content);
   }
@@ -300,10 +328,9 @@ export function transitionStage2(
   }
 
   const choices = STAGE2_TRANSITIONS[state.currentNode];
-  const matchedChoice =
-    choices.find((choice, index) => {
-      return choice.command === normalized || String(index + 1) === normalized;
-    }) ?? choices.find((choice) => choice.matchAnyOtherInput);
+  const matchedChoice = choices.find((choice, index) => {
+    return choice.command === normalized || String(index + 1) === normalized;
+  });
 
   if (!matchedChoice) {
     return {
@@ -319,6 +346,10 @@ export function transitionStage2(
     matchedChoice.removeItems,
   );
   const nextNode = matchedChoice.target;
+
+  if (nextNode === "stage2_respawn_check") {
+    return resolveRespawnCheck(state, nextInventory, [], content);
+  }
 
   if (nextNode === "stage2_periodicals_check") {
     const checkLines = getNodeLines(nextNode, content);

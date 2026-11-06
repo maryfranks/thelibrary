@@ -103,6 +103,9 @@
       "You approach the door and try the handle but the door is locked. You don't have a key.",
       "Your about to turn around when you hear something large come up behind you."
     ],
+    "stage2_respawn_check": [
+      "You come to back in the vestibule with nothing to defend yourself. You need the mop."
+    ],
     "stage2_death_choice": [
       "Game Over."
     ],
@@ -260,7 +263,7 @@
       "on your back and kills you. You die never knowing what it was.",
       " Game Over "
     ],
-    "stage2_foyer__any_other_action": [
+    "stage2_foyer__go_deeper": [
       "You walk into the dimly lit foyer, past the circulation desk towrds",
       "the shelves of books. You're looking at the windows for one that opens",
       "so you don't see the body on the floor. You trip and fall flat on your",

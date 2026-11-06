@@ -52,7 +52,7 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
   stage3_early_death_choice: [
     {
       command: "try again",
-      target: "stage2_stacks_door_check",
+      target: "stage2_fireplace_revealed",
     },
     {
       command: "give up",

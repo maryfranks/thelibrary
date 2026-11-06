@@ -4,7 +4,8 @@
 > - Never hardcode narrative strings, parser fallbacks, or death screen keys in `src/engine/`. Always load `content.json` dynamically.
 > - Node descriptions resolve via `content.nodes[nodeId]`.
 > - Fatal transitions (`[DEAD: <death_type>]`) resolve death screen text via `content.death_screens["<nodeId>__<normalized_choice>"]` (spaces replaced with `_`).
-> - Bracketed item-check branches (e.g., `[No Mop]`, `[With Mop]`) normalize with a `_check` suffix (e.g., `no_mop_check`, `with_mop_check`) when resolving `death_screens` keys, and automatically evaluate based on current inventory when entered.
+> - Bracketed item-check branches (e.g., `[No Mop]`, `[With Mop]`) normalize with a `_check` suffix (e.g., `no_mop_check`, `with_mop_check`) when resolving `death_screens` keys, and automatically evaluate based on current inventory when entered from any stage (no menu is ever shown; a shared entry-resolution loop in `transition` resolves them).
+> - Every death calls `recordDeath` exactly once (which flushes telemetry), including deaths followed by "try again". The inventory is printed whenever it changes and on "look in the pack".
 > - Conditional branches with a fatal else path (e.g., `[If <cond> -> [<target>] | Else -> [DEAD: <death_type>]]`) resolve death screen text via `content.death_screens["<nodeId>__<normalized_choice>__else"]` (falling back to `"<nodeId>__<normalized_choice>"` if absent).
 > - Unmatched inputs resolve via `content.parser_fallbacks`.
 
@@ -38,11 +39,16 @@
 
 - [stage2_foyer] Foyer (Arrival)
   - Choice 1: "look around" -> [stage2_foyer_searched]
-  - Choice 2: *any other movement/action* -> [DEAD: monster_attack] -> [stage2_death_choice]
+  - Choice 2: "go deeper" -> [DEAD: monster_attack] -> [stage2_death_choice]
+  - (Unmatched input yields the parser fallback, not death.)
 
-- [stage2_death_choice] Death Prompt (Stage 2)
-  - Choice 1: "try again" -> [stage1_pack_checked]
+- [stage2_death_choice] Death Prompt (Stage 2). Inventory persists across deaths.
+  - Choice 1: "try again" -> [stage2_respawn_check]
   - Choice 2: "give up" -> [game_over]
+
+- [stage2_respawn_check] Respawn Check (Weapon Check; auto-resolves on entry, no menu)
+  - [No Weapon: neither mop nor fireplace poker] -> prints the "you need the mop" text -> [stage1_vestibule_searched]
+  - [With Weapon: mop OR fireplace poker] -> [stage2_foyer]
 
 - [stage2_foyer_searched] Foyer (Explored)  
   - Choice 1: "look around" -> [stage2_foyer_searched]  
@@ -68,9 +74,9 @@
   - Choice 2: "look in the pack" -> [stage2_both_looted]  
   - Choice 3: "explore periodicals" -> [stage2_periodicals_check]
 
-- [stage2_periodicals_check] Periodicals Check (Mop Item Check)  
-  - Choice 1: [No Mop] -> [DEAD: monster_attack] -> [stage2_death_choice]
-  - Choice 2: [With Mop] -> [stage2_reading_room_door]
+- [stage2_periodicals_check] Periodicals Check (Weapon Item Check; auto-resolves, no menu; searching corpse/desk first is optional)  
+  - [No Weapon] -> [DEAD: monster_attack] -> [stage2_death_choice]
+  - [With Weapon: mop OR fireplace poker] -> [stage2_reading_room_door]
 
 - [stage2_reading_room_door] Reading Room Door
   - Choice 1: "rattle reading room door" -> [DEAD: monster_attack] -> [stage2_death_choice]  
@@ -86,20 +92,20 @@
 - [stage2_poker_acquired] Foyer (Poker Acquired)
   - Choice 1: "go deeper" -> [stage2_stacks_door_check]
 
-- [stage2_stacks_door_check] Stacks Door (Key Item Check)
-  - Choice 1: [No Stacks Key] -> [stage2_stacks_door_locked_no_key]
-  - Choice 2: [With Stacks Key] -> [stage3_arrival]
+- [stage2_stacks_door_check] Stacks Door (Key Item Check; auto-resolves, no menu)
+  - [No Stacks Key] -> [stage2_stacks_door_locked_no_key]
+  - [With Stacks Key] -> [stage3_arrival]
 
 - [stage2_stacks_door_locked_no_key] Stacks Door Locked (No Key)  
   - Choice 1: "defend yourself" -> [DEAD: monster_attack] -> [stage2_death_choice]
   - Choice 2: "slowly walk backwards" -> [DEAD: monster_attack] -> [stage2_death_choice]
 
-- [stage3_arrival] Stacks (Arrival Ambush)
-  - Choice 1: [With Mop] -> [DEAD: environmental_hazard] -> [stage3_early_death_choice]
-  - Choice 2: [With Poker] -> [stage3_hub_unexplored]
+- [stage3_arrival] Stacks (Arrival Ambush; auto-resolves on entry, no menu)
+  - [With Mop] -> [DEAD: environmental_hazard] -> [stage3_early_death_choice]
+  - [With Poker] -> [stage3_hub_unexplored]
 
 - [stage3_early_death_choice] Death Prompt (Early Stage 3)
-  - Choice 1: "try again" -> [stage2_stacks_door_check]
+  - Choice 1: "try again" -> [stage2_fireplace_revealed] (inventory kept; lets a mop holder get the poker)
   - Choice 2: "give up" -> [game_over]
 
 - [stage3_hub_unexplored] Stacks (Main Hub - Unexplored)
