@@ -12,6 +12,8 @@ The application is structured as a client-side Single Page Application (SPA) dep
 - **Game Engine:**
   - Pure execution logic.
   - Handles state management, command parsing, inventory checks, condition evaluation, and dynamic DOM rendering without embedding narrative strings.
+  - May define fixed UI-chrome labels (e.g., `CHOICE_PROMPT_HEADER` in `src/engine/prompt.ts`) as exported constants. These are not narrative content. All story, death, and parser text must still come from `content.json`.
+  - No circular dependencies of any kind (imports, module references, or logic).
 - **Choice Prompt (`src/engine/prompt.ts`):**
   - Pure helpers that render the numbered `Do you want to:` list from `getAvailableChoices(nodeId)`; empty for terminal nodes.
   - `formatChoicePrompt(nodeId)` is appended to the initial output on load; `getTransitionPrompt(prev, next)` appends it after a transition only when `currentNode` changed.
