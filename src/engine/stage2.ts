@@ -220,19 +220,23 @@ export function hasWeapon(inventory: ItemId[]): boolean {
   return WEAPON_ITEMS.some((item) => inventory.includes(item));
 }
 
-function resolveRespawnCheck(
+export function resolveRespawnCheck(
   state: GameState,
   inventory: ItemId[],
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  const nextNode: NodeId = hasWeapon(inventory) ? "stage2_foyer" : "stage1_vestibule_searched";
+  const restoredInventory =
+    state.stage2InventorySnapshot != null ? [...state.stage2InventorySnapshot] : [...inventory];
+  const hasMop = restoredInventory.includes("mop");
+  const nextNode: NodeId = hasMop ? "stage2_foyer" : "stage1_vestibule_searched";
   const hintLines =
     nextNode === "stage2_foyer" ? [] : getNodeLines("stage2_respawn_check", content);
   return {
     ...state,
     currentNode: nextNode,
-    inventory: [...inventory],
+    inventory: restoredInventory,
+    stage2InventorySnapshot: state.stage2InventorySnapshot ?? (hasMop ? ["mop"] : []),
     isGameOver: false,
     isWin: false,
     lastDeathType: null,
@@ -246,7 +250,7 @@ function resolvePeriodicalsCheck(
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  if (hasWeapon(inventory)) {
+  if (inventory.includes("mop")) {
     const nextNode: NodeId = "stage2_reading_room_door";
     return {
       ...state,
@@ -385,11 +389,15 @@ export function transitionStage2(
     ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
     : [];
   const nodeLines = getNodeLines(nextNode, content);
+  const stage2InventorySnapshot =
+    state.stage2InventorySnapshot ??
+    (state.currentNode === "stage2_foyer" ? [...state.inventory] : null);
 
   return {
     ...state,
     currentNode: nextNode,
     inventory: nextInventory,
+    stage2InventorySnapshot,
     isGameOver: nextNode === "game_over",
     isWin: nextNode === "game_win",
     lastDeathType: matchedChoice.deathType ?? null,

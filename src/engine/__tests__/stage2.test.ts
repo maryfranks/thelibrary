@@ -76,10 +76,51 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(next.inventory).toEqual(["mop"]);
     });
 
-    it("lands at stage2_foyer with a fireplace poker only", () => {
-      const next = transition(makeState("stage2_death_choice", ["fireplace poker"]), "try again");
+    it("restores Stage 2 snapshot after reading room door death and retrying", () => {
+      let state = {
+        ...makeState("stage2_reading_room_door", ["mop", "stacks key", "lemon candy"]),
+        stage2InventorySnapshot: ["mop" as ItemId],
+      };
+      state = transition(state, "rattle reading room door");
+      expect(state.currentNode).toBe("stage2_death_choice");
+      expect(state.lastDeathType).toBe("monster_attack");
+      expect(state.inventory).toEqual(["mop", "stacks key", "lemon candy"]);
+
+      state = transition(state, "try again");
+      expect(state.currentNode).toBe("stage2_foyer");
+      expect(state.inventory).toEqual(["mop"]);
+    });
+
+    it("restores Stage 2 snapshot on respawn: poker, key, and corpse/desk items are lost", () => {
+      const state = {
+        ...makeState("stage2_death_choice", [
+          "mop",
+          "stacks key",
+          "lemon candy",
+          "fireplace poker",
+        ]),
+        stage2InventorySnapshot: ["mop" as ItemId],
+      };
+      const next = transition(state, "try again");
 
       expect(next.currentNode).toBe("stage2_foyer");
+      expect(next.inventory).toEqual(["mop"]);
+    });
+
+    it("respawn without mop restores empty Stage 2 snapshot, shows hint and lands at stage1_vestibule_searched", () => {
+      const state = {
+        ...makeState("stage2_death_choice", ["lemon candy"]),
+        stage2InventorySnapshot: [] as ItemId[],
+      };
+      const catalog = loadContent();
+      const next = transition(state, "try again", catalog);
+
+      expect(next.currentNode).toBe("stage1_vestibule_searched");
+      expect(next.inventory).toEqual([]);
+      expect(next.output).toEqual([
+        ...catalog.nodes.stage2_respawn_check,
+        ...catalog.nodes.stage1_vestibule_searched,
+      ]);
     });
 
     it("resolves stage2_respawn_check directly on entry", () => {
@@ -111,12 +152,13 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(state.currentNode).toBe("stage2_death_choice");
     });
 
-    it("does not soft-lock a poker-only respawn at periodicals", () => {
+    it("fails periodicals check with monster_attack without mop (poker alone does not pass)", () => {
       const next = transition(
         makeState("stage2_foyer_searched", ["fireplace poker"]),
         "explore periodicals",
       );
-      expect(next.currentNode).toBe("stage2_reading_room_door");
+      expect(next.currentNode).toBe("stage2_death_choice");
+      expect(next.lastDeathType).toBe("monster_attack");
     });
 
     it("transitions to game_over and sets isGameOver on 'give up'", () => {

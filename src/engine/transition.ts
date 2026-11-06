@@ -20,6 +20,8 @@ export function createInitialState(content?: ContentCatalog): GameState {
     row3_safe: false,
     row4_safe: false,
     row5_safe: false,
+    stage2InventorySnapshot: null,
+    stage3InventorySnapshot: null,
   };
 }
 
