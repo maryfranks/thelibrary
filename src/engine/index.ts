@@ -14,6 +14,7 @@ export * from "./stage2";
 export * from "./stage3";
 export * from "./stage4";
 export * from "./stage5";
+export * from "./prompt";
 
 export function createInitialState(content?: ContentCatalog): GameState {
   const initialNode = "stage1_vestibule" as const;

@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { createInitialState, getAvailableChoices, transition, type GameState } from "@/engine";
+import {
+  createInitialState,
+  formatChoicePrompt,
+  getAvailableChoices,
+  getTransitionPrompt,
+  transition,
+  type GameState,
+} from "@/engine";
 
 const DESC =
   "Caught in an unnatural storm, you take refuge in a library. When you get inside, the library is trashed and there's no one in sight. You can't leave—the door locks behind you. Navigate monsters, a maze, and a flooded basement to escape, and find out what happened in that library.";
@@ -27,7 +34,9 @@ type Line = { kind: "in" | "out" | "sys" | "warn"; text: string };
 function buildInitialLines(initialState: GameState): Line[] {
   return [
     { kind: "sys", text: "THE LIBRARY · v0.1" },
-    ...initialState.output.map((text): Line => ({ kind: "out", text })),
+    ...[...initialState.output, ...formatChoicePrompt(initialState.currentNode)].map(
+      (text): Line => ({ kind: "out", text }),
+    ),
     { kind: "sys", text: "Type HELP for commands." },
   ];
 }
@@ -91,7 +100,10 @@ function Terminal() {
 
     const nextState = transition(gameState, trimmed);
     setGameState(nextState);
-    const responseLines: Line[] = nextState.output.map((text) => ({
+    const responseLines: Line[] = [
+      ...nextState.output,
+      ...getTransitionPrompt(gameState, nextState),
+    ].map((text) => ({
       kind: "out",
       text,
     }));
