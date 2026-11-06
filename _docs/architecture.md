@@ -12,6 +12,10 @@ The application is structured as a client-side Single Page Application (SPA) dep
 - **Game Engine:**
   - Pure execution logic.
   - Handles state management, command parsing, inventory checks, condition evaluation, and dynamic DOM rendering without embedding narrative strings.
+- **Choice Prompt (`src/engine/prompt.ts`):**
+  - Pure helpers that render the numbered `Do you want to:` list from `getAvailableChoices(nodeId)`; empty for terminal nodes.
+  - `formatChoicePrompt(nodeId)` is appended to the initial output on load; `getTransitionPrompt(prev, next)` appends it after a transition only when `currentNode` changed.
+  - The UI shell (`src/routes/index.tsx`) calls these helpers and does not build prompt text itself.
 - **Content Payload (`content.json`):**
   - Fully populated and finalized data payload
 - **Telemetry (`src/engine/telemetry.ts`):**
