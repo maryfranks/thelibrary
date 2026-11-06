@@ -1,65 +1,110 @@
 {
   "intro": [
-    "Rain hammers the windows.",
-    "The door clicks shut behind you."
+    "Walking home you encounter a strange storm. Intense lightning makes you seek cover.",
+    "Up ahead you see an old library. It doesn't look open but you might be able.",
+    "to take cover on the porch. You try the door and are surprised to find it unlocked.",
+    "You open the door and slip inside."
   ],
   "nodes": {
     "stage1_vestibule": [
-      "You are in the vestibule."
+      "You hear the door slam shut behind you and the lock slide into place. You try.",
+      "the handle but the door is locked. You find yourself in a large entryway.",
+      "The library is strangely deserted but there are books and papers strewn aboout.",
+      "You have a bad feeling about this..."
     ],
     "stage1_vestibule_respawn": [
-      "You respawn in the vestibule with a hint."
+      "Oh no! Died so soon? Where is the fun in that. Let's try this again. You're in the",
+      "Vestibule, what do you want to do?"
     ],
     "stage1_vestibule_searched": [
-      "You look around and discover a pack."
+      "The vestibule is mostly empty except for some books and newspapers.",
+      "You spot a backpack on the floor over by an overturned mop bucket,",
+      "the mop lying on the floor next to the puddle of water as though",
+      "whoever was using left in a hurry. Maybe you should check that pack",
+      "for supplies."
     ],
     "stage1_pack_checked": [
-      "You look inside the pack."
+      "You pick up the pack and look inside. You find [INVENTORY].",
+      "No weapons though. That mop looks pretty sturdy and might com in",
+      "handy. You're going to have to find another way out and you may",
+      "need to defend yourself."
     ],
     "stage1_turnstile_check": [
-      "You reach the turnstiles without a mop."
+      "As you approach the turnstyles and look into the foyer past the.",
+      "circulation desk, you think you see something moving down low to",
+      "the floor...something big, with a tail. Maybe you should grab that",
+      "mop after all."
     ],
     "stage1_mop_acquired": [
-      "You have acquired the mop."
+      "You turn back and grab the mop, it's wooden handle feels solid in",
+      "your hands. It's not your first choice because it's still wet from",
+      "mopping, but it's better than nothing."
     ],
     "stage2_foyer": [
-      "You have arrived in the foyer."
+      "You hop over the turnstiles and find yourself in the foyer near the",
+      "circulation desk."
     ],
     "stage2_foyer_searched": [
-      "You examine the explored foyer."
+      "The room is large and although there are large stained glass windows,",
+      "the papers and books scattered on the floor are shrouded in gloom.",
+      "In front of you is a large semicurcular circulation desk. Just out of",
+      "site appears to be a dead body, the leg of a woman wearing jeans is",
+      "to the left of the circulation desk. Beyond the circulation desk is",
+      "the periodicals section. There are several rows of chest height shelves",
+      "with stands to hold newspapers. The newspapers are scattered all over",
+      "floor. Whatever happened here made quite the mess."
     ],
     "stage2_corpse_looted": [
-      "You loot the corpse."
+      "You've never been a fan of dead bodies (who is), but if the woman was",
+      "the librarian she might have a key to the front door. You approach the",
+      "body slowly. She's wearing a dress with no pockets, why don't they put",
+      "pockets in more womens clothes? Next to her arm you see her purse. Inside",
+      "you find [INVENTORY]. No key, but this stuff might come in handy."
     ],
     "stage2_desk_looted": [
-      "You loot the desk."
+      "The circulation desk is mostly empty, surprising for a library. There's no",
+      "computers of any kind. How are they checking out the books? There almost",
+      "nothing on the desk and the drawers are empty. Hanging on a hook is a key",
+      "labeled 'stacks'. Not the front door key, but maybe the stacks will lead",
+      "to another way out."
     ],
     "stage2_both_looted": [
-      "You have fully looted the foyer."
+      "There's nothing else here except all these newspapers on the ground. They're",
+      "all yellowed with age. You pick one up, 1802. Maybe this was an archive of some",
+      "kind. You don't see a way out from here, but maybe there's something on the other",
+      "side of the room."
     ],
     "stage2_periodicals_check": [
-      "You check the periodicals with your item status."
+      "You walk into the periodicals section, moving slowly, extremely aware of the sounds",
+      "of your footsteps crinkling the newspaper under your feet. You try not to step on",
+      "them, but you can't help it. They're all from 1802. What kind of library is this?",
+      "You stop because you hear something moving in the rows between the shelves. You can't",
+      "see it, You don't know if you want to, but there is defnitely something big crawling",
+      "down the next aisle."
     ],
     "stage2_reading_room_door": [
-      "You stand before the reading room door."
+      "To the left you see a large double doorway with a bronze plaque that says 'READING ROOM."
     ],
     "stage2_reading_room_locked": [
-      "The reading room door is locked."
+      "You try the handle, careful not to make too much noise. It doesn't move, it must be locked."
     ],
     "stage2_fireplace_revealed": [
-      "A fireplace has been revealed."
+      "A little ahead of you, you see an antique fireplace."
     ],
     "stage2_poker_acquired": [
-      "You acquired the fireplace poker and traded away your mop."
+      "In a small black stand next to the hearth, you see a fireplace poker. I looks like a much",
+      "more formidable weapon than your mop, so you gently rest the mop against the bricks and",
+      "pick up the fireplace poker."
     ],
     "stage2_stacks_door_check": [
-      "You check the stacks door with your key."
+      "Up ahead you see a red door marked 'STACKS'."
     ],
     "stage2_stacks_door_locked_no_key": [
-      "The stacks door is locked and you lack the key."
+      "You approach the door and try the handle but the door is locked. You don't have a key.",
+      "Your about to turn around when you hear something large come up behind you."
     ],
     "stage2_death_choice": [
-      "You have died in Stage 2."
+      "Game Over."
     ],
     "stage3_arrival": [
       "You arrive at the stacks."
@@ -208,22 +253,39 @@
   },
   "death_screens": {
     "stage1_vestibule__try_to_leave": [
-      "A monster attacks you as you try to leave."
+      "You turn and grab the door handle. You have to get out of here. The door won't budge.",
+      "You panic and yell out 'Somebody help me!' You bang loudly on the door hoping to",
+      "catch the attention of a passerby. You're so busy banging on the door you don't notice",
+      "that the sound has gotten the attention of something lurking in the library. I jumps",
+      "on your back and kills you. You die never knowing what it was.",
+      " Game Over "
     ],
     "stage2_foyer__any_other_action": [
-      "A monster attacks you for making noise."
+      "You walk into the dimly lit foyer, past the circulation desk towrds",
+      "the shelves of books. You're looking at the windows for one that opens",
+      "so you don't see the body on the floor. You trip and fall flat on your",
+      "face. When you roll to your side to get back up, you see a reptile like",
+      "creature low on the ground coming at you with surprising speed. You try",
+      "to get up but you aren't fast enough. It pounces on you and you're dead",
+      "before you know what hit you."
     ],
     "stage2_periodicals_check__no_mop_check": [
       "Without the mop, you perish."
     ],
     "stage2_reading_room_door__rattle_reading_room_door": [
-      "Rattling the door draws a monster."
+      "The door is locked. Frustrated, you grab both handles and pull",
+      "hard, shaking the door in its frame. You hear a noise behind you.",
+      "The monster you heard earlier is 5 feet away, drawn by the noise,",
+      "its approach masked by your panicked rattling of the door. It eats",
+      "you. You die."
     ],
     "stage2_stacks_door_locked_no_key__defend_yourself": [
-      "You are attacked."
+      "You turn to face the monster but before you can swing your weapon,",
+      "it pounces. You're dead, but at least the monster isn't hungry anymore."
     ],
     "stage2_stacks_door_locked_no_key__slowly_walk_backwards": [
-      "You are attacked while backing away."
+      "You back away slowly. 'Nice hideous monster' you say in a soothing voice.",
+      "Nice or not, it's hungry and it eats you. You die."
     ],
     "stage3_arrival__with_mop_check": [
       "The mop fails you against the hazard."
