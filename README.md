@@ -81,14 +81,16 @@ I organized the codebase around a strict three-tier separation of concerns: pres
 
 ## 🚀 Deployment 🦖
 
-The application is deployed to Cloudflare Pages as a Single-Page Application (SPA) using Nitro and Vite.
+COMING SOON: 
 
 ### Telemetry & Observability Pipeline
 
-Client-side gameplay metrics (such as run completions and fatal transitions) are dispatched over OpenTelemetry Protocol (OTLP) via Hypertext Transfer Protocol (HTTP) to an OpenTelemetry (OTel) collector hosted on a free-tier Google Cloud Platform (GCP) e2-micro Virtual Machine (VM). The collector fans metrics out to Supabase for persistence and a Grafana instance (`stats.littlefuzzydinos.com`) for visualization.
+Client-side gameplay metrics (such as run completions and fatal transitions) are dispatched over OpenTelemetry Protocol (OTLP) to an OpenTelemetry (OTel) collector hosted on Google Cloud Platform (GCP) Virtual Machine (VM). The collector fans metrics out to Victoriametrics for persistence and a Grafana instance (`stats.littlefuzzydinos.com`) for visualization. The configuration for that infrastructure is stored in another, private repo. 
 
 Continuous Integration (CI) automatically updates the Grafana dashboard (`monitoring/dashboards/game-telemetry.json`) on pushes to `main` via GitHub Actions (`.github/workflows/deploy-dashboard.yaml`).
 
-### Cloudflare Bot Fight Mode Caveat
+## Roadmap
 
-A practical friction point with Cloudflare: Cloudflare's default "Bot Fight Mode" flags automated GitHub Actions runner Internet Protocol (IP) addresses and serves an HTTP 403 challenge. To ensure dashboard deployments succeed through the proxied endpoint, Bot Fight Mode must be disabled in the Cloudflare dashboard (**Security** → **Settings** → **Bot traffic settings**).
+Testing of core game logic is still underway. The text remains largely a placeholder after the first two stages. There are tickets in the github issue backlog to address testing and expanding placeholder text. The real game text needs to be typed up and entered into the game once final logic is verified.
+
+The app will be deployed to a static cloudflare page at `thelibrary.littlefuzzydinos.com` whenever changes are made to the repo via a github action. 
