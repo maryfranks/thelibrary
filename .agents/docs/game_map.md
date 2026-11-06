@@ -42,13 +42,13 @@
   - Choice 2: "go deeper" -> [DEAD: monster_attack] -> [stage2_death_choice]
   - (Unmatched input yields the parser fallback, not death.)
 
-- [stage2_death_choice] Death Prompt (Stage 2). Inventory persists across deaths.
+- [stage2_death_choice] Death Prompt (Stage 2). Retrying restores the Stage 2 inventory snapshot.
   - Choice 1: "try again" -> [stage2_respawn_check]
   - Choice 2: "give up" -> [game_over]
 
-- [stage2_respawn_check] Respawn Check (Weapon Check; auto-resolves on entry, no menu)
-  - [No Weapon: neither mop nor fireplace poker] -> prints the "you need the mop" text -> [stage1_vestibule_searched]
-  - [With Weapon: mop OR fireplace poker] -> [stage2_foyer]
+- [stage2_respawn_check] Respawn Check (Mop Check; auto-resolves on entry, no menu)
+  - [No Mop in snapshot] -> prints the "you need the mop" text -> [stage1_vestibule_searched]
+  - [With Mop in snapshot] -> [stage2_foyer]
 
 - [stage2_foyer_searched] Foyer (Explored)  
   - Choice 1: "look around" -> [stage2_foyer_searched]  
@@ -74,9 +74,9 @@
   - Choice 2: "look in the pack" -> [stage2_both_looted]  
   - Choice 3: "explore periodicals" -> [stage2_periodicals_check]
 
-- [stage2_periodicals_check] Periodicals Check (Weapon Item Check; auto-resolves, no menu; searching corpse/desk first is optional)  
-  - [No Weapon] -> [DEAD: monster_attack] -> [stage2_death_choice]
-  - [With Weapon: mop OR fireplace poker] -> [stage2_reading_room_door]
+- [stage2_periodicals_check] Periodicals Check (Mop Item Check; auto-resolves, no menu; searching corpse/desk first is optional)  
+  - [No Mop] -> [DEAD: monster_attack] -> [stage2_death_choice]
+  - [With Mop] -> [stage2_reading_room_door]
 
 - [stage2_reading_room_door] Reading Room Door
   - Choice 1: "rattle reading room door" -> [DEAD: monster_attack] -> [stage2_death_choice]  
@@ -105,7 +105,7 @@
   - [With Poker] -> [stage3_hub_unexplored]
 
 - [stage3_early_death_choice] Death Prompt (Early Stage 3)
-  - Choice 1: "try again" -> [stage2_fireplace_revealed] (inventory kept; lets a mop holder get the poker)
+  - Choice 1: "try again" -> restores Stage 2 snapshot -> [stage2_foyer] (allows acquiring fireplace poker)
   - Choice 2: "give up" -> [game_over]
 
 - [stage3_hub_unexplored] Stacks (Main Hub - Unexplored)
@@ -126,7 +126,7 @@
   - Choice 10: "go down row 5" -> [DEAD: unknown_death] -> [stage3_death_choice]
 
 - [stage3_death_choice] Death Prompt (Stage 3)
-  - Choice 1: "try again" -> [stage3_hub]
+  - Choice 1: "try again" -> restores Stage 3 snapshot -> [stage3_hub_unexplored]
   - Choice 2: "give up" -> [game_over]
 
 - [stage3_row1_encounter] Row 1 (Reading Room Entrance)
