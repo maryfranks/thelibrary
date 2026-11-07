@@ -2,7 +2,11 @@
 
 Caught in an unnatural storm, you take refuge in a library. When you get inside, the library is trashed and there's no one in sight. You can't leave—the door locks behind you. Navigate monsters, a maze, and a flooded basement to escape, and find out what happened in that library.
 
-![The Library](.thelibrary.png "The Library")
+![The Library](./thelibrary.png "The Library")
+
+Check out the [dashboard](https://stats.littlefuzzydinos.com/d/littlefuzzydinos-game/littlefuzzydinos-game-engine-telemetry?orgId=1&refresh=10s&from=now-24h&to=now). 
+
+All dev metrics are sent to otel by default. Watch the dahsboard update in real time.
 
 ## Built with
 
@@ -24,7 +28,7 @@ bun install
 bun run dev
 ```
 
-Open the URL it prints (by default **http://localhost:5173**) in your browser.
+Open the URL it prints in your browser.
 
 ## Scripts
 
