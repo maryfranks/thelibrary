@@ -1,20 +1,21 @@
 {
   "intro": [
     "Walking home you encounter a strange storm. Intense lightning makes you seek cover.",
-    "Up ahead you see an old library. It doesn't look open but you might be able.",
+    "Up ahead you see an old library. It doesn't look open but you might be able",
     "to take cover on the porch. You try the door and are surprised to find it unlocked.",
     "You open the door and slip inside."
   ],
   "nodes": {
     "stage1_vestibule": [
-      "You hear the door slam shut behind you and the lock slide into place. You try.",
+      "You hear the door slam shut behind you and the lock slide into place. You try",
       "the handle but the door is locked. You find yourself in a large entryway.",
-      "The library is strangely deserted but there are books and papers strewn aboout.",
+      "The library is strangely deserted but there are books and papers strewn about.",
       "You have a bad feeling about this..."
     ],
     "stage1_vestibule_respawn": [
-      "Oh no! Died so soon? Where is the fun in that. Let's try this again. You're in the",
-      "Vestibule, what do you want to do?"
+      "Oh no! Died so soon? Where is the fun in that. Let's try this again. Shrieking",
+      "into the dark didn't work out so well, did it?",
+      "You're stuck in the Vestibule. Maybe look around before you get us eaten again."
     ],
     "stage1_vestibule_searched": [
       "The vestibule is mostly empty except for some books and newspapers.",
@@ -30,7 +31,7 @@
       "need to defend yourself."
     ],
     "stage1_turnstile_check": [
-      "As you approach the turnstyles and look into the foyer past the.",
+      "As you approach the turnstyles and look into the foyer past the",
       "circulation desk, you think you see something moving down low to",
       "the floor...something big, with a tail. Maybe you should grab that",
       "mop after all."
@@ -103,8 +104,23 @@
       "You approach the door and try the handle but the door is locked. You don't have a key.",
       "Your about to turn around when you hear something large come up behind you."
     ],
-    "stage2_respawn_check": [
-      "You come to back in the vestibule with nothing to defend yourself. You need the mop."
+    "stage2_respawn_no_mop": [
+      "You wake up back on the wrong side of the turnstiles, bruised and deeply",
+      "disappointed in your life choices. Wandering unarmed into a darkened",
+      "library was ambitious, but stupid. Grab that wet mop by the bucket",
+      "before attempting that again."
+    ],
+    "stage2_respawn_no_key": [
+      "You sit up behind the circulation desk, rubbing the back of your neck.",
+      "Throwing yourself against a locked iron door with a creature on your heels",
+      "is a great way to end up on the evening news. You need that Stacks key.",
+      "Check the desk."
+    ],
+    "stage2_reading_room_door_respawn": [
+      "You peel yourself up off the floor outside the double doors, ears still",
+      "ringing. Panicking and violently rattling brass handles in a silent,",
+      "monster-infested library is an excellent way to get yourself killed.",
+      "Be quiet. Try the lock gently."
     ],
     "stage2_death_choice": [
       "Game Over."
@@ -258,9 +274,9 @@
     "stage1_vestibule__try_to_leave": [
       "You turn and grab the door handle. You have to get out of here. The door won't budge.",
       "You panic and yell out 'Somebody help me!' You bang loudly on the door hoping to",
-      "catch the attention of a passerby. You're so busy banging on the door you don't notice",
-      "that the sound has gotten the attention of something lurking in the library. I jumps",
-      "on your back and kills you. You die never knowing what it was.",
+      "catch the attention of a passerby. You're so busy banging on the door you don't",
+      "notice that the sound has gotten the attention of something lurking in the library.",
+      "It jumps on your back and kills you. You die never knowing what it was.",
       " Game Over "
     ],
     "stage2_foyer__go_deeper": [

@@ -5,9 +5,12 @@
 > - Node descriptions resolve via `content.nodes[nodeId]`.
 > - Fatal transitions (`[DEAD: <death_type>]`) resolve death screen text via `content.death_screens["<nodeId>__<normalized_choice>"]` (spaces replaced with `_`).
 > - Bracketed item-check branches (e.g., `[No Mop]`, `[With Mop]`) normalize with a `_check` suffix (e.g., `no_mop_check`, `with_mop_check`) when resolving `death_screens` keys, and automatically evaluate based on current inventory when entered from any stage (no menu is ever shown; a shared entry-resolution loop in `transition` resolves them).
-> - Every death calls `recordDeath` exactly once (which flushes telemetry), including deaths followed by "try again". The inventory is printed whenever it changes and on "look in the pack".
+> - Every death calls `recordDeath` exactly once (which flushes telemetry), including deaths followed by "try again".
 > - Conditional branches with a fatal else path (e.g., `[If <cond> -> [<target>] | Else -> [DEAD: <death_type>]]`) resolve death screen text via `content.death_screens["<nodeId>__<normalized_choice>__else"]` (falling back to `"<nodeId>__<normalized_choice>"` if absent).
 > - Unmatched inputs resolve via `content.parser_fallbacks`.
+> - **Ambient Engine Commands (Global):**
+>   - `look in the pack`: Available globally at any decision point. Prints current inventory and redisplays the current stage's valid choices without triggering a node transition.
+>   - `look around`: Available globally. If not defined as a specific progression choice in the current node, it re-prints the current node's description and redisplays the valid choices without triggering a state change.
 
 - [stage1_vestibule] Vestibule
   - Choice 1: "try to leave" -> [DEAD: monster_attack] -> [stage1_vestibule_respawn]
@@ -17,70 +20,70 @@
   - Choice 1: "look around" -> [stage1_vestibule_searched]
 
 - [stage1_vestibule_searched] Vestibule (Explored & Pack Discovered)
-  - Choice 1: "look around" -> [stage1_vestibule_searched]
-  - Choice 2: "look in the pack" -> [stage1_pack_checked]
+  - Choice 1: "look in the pack" -> [stage1_pack_checked]
 
 - [stage1_pack_checked] Vestibule (Pack Checked)
-  - Choice 1: "look around" -> [stage1_vestibule_searched]
-  - Choice 2: "look in the pack" -> [stage1_pack_checked]
-  - Choice 3: "hop turnstiles" -> [stage1_turnstile_check]
-  - Choice 4: "pick up mop" -> [stage1_mop_acquired]
+  - Choice 1: "hop turnstiles" -> [stage1_turnstile_check]
+  - Choice 2: "pick up mop" -> [stage1_mop_acquired]
 
-- [stage1_turnstile_check] Turnstile Check (No Mop)
-  - Choice 1: "look around" -> [stage1_vestibule_searched]
-  - Choice 2: "look in the pack" -> [stage1_pack_checked]
-  - Choice 3: "go back for mop" -> [stage1_mop_acquired]
-  - Choice 4: "proceed anyway" -> [stage2_foyer]
+- [stage1_turnstile_check] Turnstile Check (No Mop Warning)
+  - Choice 1: "go back for mop" -> [stage1_mop_acquired]
+  - Choice 2: "proceed anyway" -> [stage2_foyer]
 
 - [stage1_mop_acquired] Vestibule (Mop Acquired)
-  - Choice 1: "look around" -> [stage1_mop_acquired]
-  - Choice 2: "look in the pack" -> [stage1_pack_checked]
-  - Choice 3: "hop turnstiles" -> [stage2_foyer]
+  - Choice 1: "hop turnstiles" -> [stage2_foyer]
 
 - [stage2_foyer] Foyer (Arrival)
   - Choice 1: "look around" -> [stage2_foyer_searched]
   - Choice 2: "go deeper" -> [DEAD: monster_attack] -> [stage2_death_choice]
-  - (Unmatched input yields the parser fallback, not death.)
 
 - [stage2_death_choice] Death Prompt (Stage 2). Retrying restores the Stage 2 inventory snapshot.
   - Choice 1: "try again" -> [stage2_respawn_check]
   - Choice 2: "give up" -> [game_over]
 
 - [stage2_respawn_check] Respawn Check (Mop Check; auto-resolves on entry, no menu)
-  - [No Mop in snapshot] -> prints the "you need the mop" text -> [stage1_vestibule_searched]
+  - [No Mop in snapshot] -> [stage2_respawn_no_mop]
   - [With Mop in snapshot] -> [stage2_foyer]
 
+- [stage2_respawn_no_mop] Vestibule Respawn (Need Mop)
+  - Choice 1: "pick up mop" -> [stage1_mop_acquired]
+  - Choice 2: "proceed anyway" -> [stage2_foyer]
+
+- [stage2_respawn_no_key] Foyer Respawn (Need Key)
+  - Choice 1: "search desk" -> [stage2_desk_looted] (Acquire: small notebook, stacks key)
+  - Choice 2: "search corpse" -> [stage2_corpse_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)
+  - Choice 3: "explore periodicals" -> [stage2_periodicals_check]
+
 - [stage2_foyer_searched] Foyer (Explored)  
-  - Choice 1: "look around" -> [stage2_foyer_searched]  
-  - Choice 2: "look in the pack" -> [stage2_foyer_searched]  
-  - Choice 3: "search corpse" -> [stage2_corpse_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)  
-  - Choice 4: "search desk" -> [stage2_desk_looted] (Acquire: small notebook, stacks key)  
-  - Choice 5: "explore periodicals" -> [stage2_periodicals_check]
+  - Choice 1: "search corpse" -> [stage2_corpse_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)  
+  - Choice 2: "search desk" -> [stage2_desk_looted] (Acquire: small notebook, stacks key)  
+  - Choice 3: "explore periodicals" -> [stage2_periodicals_check]
 
 - [stage2_corpse_looted] Foyer (Corpse Looted)  
-  - Choice 1: "look around" -> [stage2_corpse_looted]  
-  - Choice 2: "look in the pack" -> [stage2_corpse_looted]  
-  - Choice 3: "search desk" -> [stage2_both_looted] (Acquire: small notebook, stacks key)  
-  - Choice 4: "explore periodicals" -> [stage2_periodicals_check]
+  - Choice 1: "search desk" -> [stage2_both_looted] (Acquire: small notebook, stacks key)  
+  - Choice 2: "explore periodicals" -> [stage2_periodicals_check]
 
 - [stage2_desk_looted] Foyer (Desk Looted)  
-  - Choice 1: "look around" -> [stage2_desk_looted]  
-  - Choice 2: "look in the pack" -> [stage2_desk_looted]  
-  - Choice 3: "search corpse" -> [stage2_both_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)  
-  - Choice 4: "explore periodicals" -> [stage2_periodicals_check]
+  - Choice 1: "search corpse" -> [stage2_both_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)  
+  - Choice 2: "explore periodicals" -> [stage2_periodicals_check]
 
 - [stage2_both_looted] Foyer (Fully Looted)  
-  - Choice 1: "look around" -> [stage2_both_looted]  
-  - Choice 2: "look in the pack" -> [stage2_both_looted]  
-  - Choice 3: "explore periodicals" -> [stage2_periodicals_check]
+  - Choice 1: "explore periodicals" -> [stage2_periodicals_check]
 
 - [stage2_periodicals_check] Periodicals Check (Mop Item Check; auto-resolves, no menu; searching corpse/desk first is optional)  
   - [No Mop] -> [DEAD: monster_attack] -> [stage2_death_choice]
   - [With Mop] -> [stage2_reading_room_door]
 
 - [stage2_reading_room_door] Reading Room Door
-  - Choice 1: "rattle reading room door" -> [DEAD: monster_attack] -> [stage2_death_choice]  
+  - Choice 1: "rattle reading room door" -> [DEAD: monster_attack] -> [stage2_rattle_death_choice]  
   - Choice 2: "try the lock quietly" -> [stage2_reading_room_locked]
+
+- [stage2_rattle_death_choice] Death Prompt (Reading Room Rattle)
+  - Choice 1: "try again" -> [stage2_reading_room_door_respawn]
+  - Choice 2: "give up" -> [game_over]
+
+- [stage2_reading_room_door_respawn] Reading Room Door (Respawn with Hint)
+  - Choice 1: "try the lock quietly" -> [stage2_reading_room_locked]
 
 - [stage2_reading_room_locked] Reading Room Locked  
   - Choice 1: "look around" -> [stage2_fireplace_revealed]
@@ -147,9 +150,9 @@
   - Choice 1: "move deeper" -> [stage3_row2_flashlight_check]
   - Choice 2: "return to hub" -> [stage3_hub]
 
-- [stage3_row2_flashlight_check] Row 2 (Deeper Flashlight Check)
-  - Choice 1: [No Flashlight] -> [DEAD: monster_attack] -> [stage3_death_choice]
-  - Choice 2: [With Flashlight] -> [stage4_entry]
+- [stage3_row2_flashlight_check] Row 2 (Deeper Flashlight Check; auto-resolves on entry, no menu)
+  - [No Flashlight] -> [DEAD: monster_attack] -> [stage3_death_choice]
+  - [With Flashlight] -> [stage4_entry]
 
 - [stage3_row3_encounter] Row 3 (Misleading Safe Row)
   - Choice 1: "walk down row" -> [DEAD: monster_attack] -> [stage3_death_choice]
@@ -184,9 +187,9 @@
   - Choice 1: "go around" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
   - Choice 2: "go forward" -> [stage4_junction_c_check]
 
-- [stage4_junction_c_check] Junction C (Pocketknife Check)
-  - Choice 1: [No Pocketknife] -> [DEAD: environmental_hazard] -> [stage3_death_choice] (the player needs to go back further to find the pocketknife)
-  - Choice 2: [With Pocketknife] -> [stage4_junction_d]
+- [stage4_junction_c_check] Junction C (Pocketknife Check; auto-resolves on entry, no menu)
+  - [No Pocketknife] -> [DEAD: environmental_hazard] -> [stage3_death_choice]
+  - [With Pocketknife] -> [stage4_junction_d]
 
 - [stage4_junction_d] Junction D (Loopback 1)
   - Choice 1: "go left" -> [stage4_junction_a]
@@ -221,10 +224,8 @@
   - Choice 2: "give up" -> [game_over]
 
 - [stage5_mezzanine_searched] Upper Mezzanine (Explored)
-  - Choice 1: "look around" -> [stage5_mezzanine_searched]
-  - Choice 2: "look in the pack" -> [stage5_mezzanine_searched]
-  - Choice 3: "look over railing" -> [DEAD: monster_attack] -> [stage5_mezzanine_death_choice]
-  - Choice 4: "sneak through stacks" -> [stage5_balcony_door]
+  - Choice 1: "look over railing" -> [DEAD: monster_attack] -> [stage5_mezzanine_death_choice]
+  - Choice 2: "sneak through stacks" -> [stage5_balcony_door]
 
 - [stage5_balcony_door] Exterior Balcony Door
   - Choice 1: "go out on the balcony" -> [DEAD: environmental_hazard] -> [stage5_mezzanine_death_choice]
@@ -234,9 +235,9 @@
   - Choice 1: "go out on the balcony" -> [DEAD: environmental_hazard] -> [stage5_mezzanine_death_choice]
   - Choice 2: "go back" -> [stage5_mezzanine_umbrella_check]
 
-- [stage5_mezzanine_umbrella_check] Stairwell Retreat (Umbrella Check)
-  - Choice 1: [No Umbrella] -> [DEAD: monster_attack] -> [game_over]
-  - Choice 2: [With Umbrella] -> [DEAD: monster_attack] -> [game_over]
+- [stage5_mezzanine_umbrella_check] Stairwell Retreat (Umbrella Check; auto-resolves on entry, no menu)
+  - [No Umbrella] -> [DEAD: monster_attack] -> [game_over]
+  - [With Umbrella] -> [DEAD: monster_attack] -> [game_over]
 
 - [stage5_basement_arrival] Basement Stairs (Initial Entry)
   - Choice 1: "go down the stairs" -> [DEAD: environmental_hazard] -> [stage5_basement_death_choice]
@@ -249,9 +250,9 @@
 - [stage5_basement_searched] Basement Stairs (Explored)
   - Choice 1: "go further" -> [stage5_basement_umbrella_check]
 
-- [stage5_basement_umbrella_check] Basement Stairs (Umbrella Check)
-  - Choice 1: [No Umbrella] -> [DEAD: environmental_hazard] -> [game_over]
-  - Choice 2: [With Umbrella] -> [stage5_flooded_corridor]
+- [stage5_basement_umbrella_check] Basement Stairs (Umbrella Check; auto-resolves on entry, no menu)
+  - [No Umbrella] -> [DEAD: environmental_hazard] -> [game_over]
+  - [With Umbrella] -> [stage5_flooded_corridor]
 
 - [stage5_flooded_corridor] Flooded Corridor (Bottom of Stairs)
   - Choice 1: "go back" -> [stage5_flooded_corridor] (Blocked / stairs have collapsed behind you)
