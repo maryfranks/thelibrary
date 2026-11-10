@@ -100,8 +100,12 @@
   - [With Stacks Key] -> [stage3_arrival]
 
 - [stage2_stacks_door_locked_no_key] Stacks Door Locked (No Key)  
-  - Choice 1: "defend yourself" -> [DEAD: monster_attack] -> [stage2_death_choice]
-  - Choice 2: "slowly walk backwards" -> [DEAD: monster_attack] -> [stage2_death_choice]
+  - Choice 1: "defend yourself" -> [DEAD: monster_attack] -> [stage2_no_key_death_choice]
+  - Choice 2: "slowly walk backwards" -> [DEAD: monster_attack] -> [stage2_no_key_death_choice]
+
+- [stage2_no_key_death_choice] Death Prompt (Stacks Door No Key)
+  - Choice 1: "try again" -> [stage2_respawn_no_key]
+  - Choice 2: "give up" -> [game_over]
 
 - [stage3_arrival] Stacks (Arrival Ambush; auto-resolves on entry, no menu)
   - [With Mop] -> [DEAD: environmental_hazard] -> [stage3_early_death_choice]
