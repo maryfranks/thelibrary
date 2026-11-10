@@ -22,6 +22,23 @@ const INVENTORY_ALIASES = ["inventory", "i", "inv"];
 
 const asOut = (lines: string[]): OutputEntry[] => lines.map((text) => ({ kind: "out", text }));
 
+function formatInventory(state: GameState): string {
+  return state.inventory.length > 0
+    ? `Inventory: ${state.inventory.join(", ")}`
+    : "Inventory: empty";
+}
+
+function shouldShowInventory(prev: GameState, next: GameState, lower: string): boolean {
+  if (prev.isGameOver || prev.isWin) return false;
+  const changed =
+    prev.inventory.length !== next.inventory.length ||
+    prev.inventory.some((item, i) => next.inventory[i] !== item);
+  if (changed) return true;
+  const choices = getAvailableChoices(prev.currentNode);
+  const chosen = choices[Number(lower) - 1] ?? lower;
+  return chosen === "look in the pack";
+}
+
 /** Scene narrative followed by the choice prompt for the given state. */
 export function getSceneEntries(state: GameState): OutputEntry[] {
   return asOut([...state.output, ...formatChoicePrompt(state.currentNode)]);
@@ -47,15 +64,23 @@ export function processCommand(state: GameState, rawInput: string): CommandResul
   }
 
   if (INVENTORY_ALIASES.includes(lower)) {
-    const text =
-      state.inventory.length > 0 ? `Inventory: ${state.inventory.join(", ")}` : "Inventory: empty";
-    return { state, entries: [{ kind: "sys", text }], clear: false, isSystem: true };
+    return {
+      state,
+      entries: [{ kind: "sys", text: formatInventory(state) }],
+      clear: false,
+      isSystem: true,
+    };
   }
 
   const next = transition(state, rawInput.trim());
+  const entries = asOut(next.output);
+  if (shouldShowInventory(state, next, lower)) {
+    entries.push({ kind: "sys", text: formatInventory(next) });
+  }
+  entries.push(...asOut(getTransitionPrompt(state, next)));
   return {
     state: next,
-    entries: asOut([...next.output, ...getTransitionPrompt(state, next)]),
+    entries,
     clear: false,
     isSystem: false,
   };

@@ -9,17 +9,23 @@ export type Stage1NodeId =
 export type Stage2NodeId =
   | "stage2_foyer"
   | "stage2_death_choice"
+  | "stage2_respawn_check"
+  | "stage2_respawn_no_mop"
+  | "stage2_respawn_no_key"
   | "stage2_foyer_searched"
   | "stage2_corpse_looted"
   | "stage2_desk_looted"
   | "stage2_both_looted"
   | "stage2_periodicals_check"
   | "stage2_reading_room_door"
+  | "stage2_rattle_death_choice"
+  | "stage2_reading_room_door_respawn"
   | "stage2_reading_room_locked"
   | "stage2_fireplace_revealed"
   | "stage2_poker_acquired"
   | "stage2_stacks_door_check"
-  | "stage2_stacks_door_locked_no_key";
+  | "stage2_stacks_door_locked_no_key"
+  | "stage2_no_key_death_choice";
 
 export type Stage3NodeId =
   | "stage3_arrival"
@@ -118,6 +124,8 @@ export interface GameState {
   row3_safe: boolean;
   row4_safe: boolean;
   row5_safe: boolean;
+  stage2InventorySnapshot?: ItemId[] | null;
+  stage3InventorySnapshot?: ItemId[] | null;
 }
 
 export interface ContentCatalog {

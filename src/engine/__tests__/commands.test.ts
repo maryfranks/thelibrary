@@ -41,11 +41,29 @@ describe("processCommand", () => {
     expect(byIndex.state.currentNode).toBe(byText.state.currentNode);
   });
 
-  it("does not prompt for invalid input", () => {
+  it("re-displays the choice prompt after invalid input", () => {
     const initial = createInitialState();
     const r = processCommand(initial, "xyzzy");
     expect(r.state.currentNode).toBe(initial.currentNode);
-    expect(promptCount(r.entries)).toBe(0);
+    expect(promptCount(r.entries)).toBe(1);
+  });
+
+  it("handles global ambient 'look in the pack' and 'look around' without changing node state", () => {
+    const state: GameState = {
+      ...createInitialState(),
+      currentNode: "stage2_reading_room_door",
+      inventory: ["mop"],
+    };
+
+    const packResult = processCommand(state, "look in the pack");
+    expect(packResult.state.currentNode).toBe("stage2_reading_room_door");
+    expect(packResult.entries).toContainEqual({ kind: "sys", text: "Inventory: mop" });
+    expect(promptCount(packResult.entries)).toBe(1);
+
+    const lookResult = processCommand(state, "look around");
+    expect(lookResult.state.currentNode).toBe("stage2_reading_room_door");
+    expect(lookResult.state.output.length).toBeGreaterThan(0);
+    expect(promptCount(lookResult.entries)).toBe(1);
   });
 
   it("does not prompt when the game is already over", () => {
@@ -98,5 +116,56 @@ describe("processCommand", () => {
     expect(r.clear).toBe(true);
     expect(r.entries).toEqual([]);
     expect(r.state).toBe(initial);
+  });
+});
+
+describe("inventory display", () => {
+  const at = (
+    node: GameState["currentNode"],
+    inventory: GameState["inventory"] = [],
+  ): GameState => ({
+    ...createInitialState(),
+    currentNode: node,
+    inventory,
+  });
+  const invLines = (entries: { kind: string; text: string }[]) =>
+    entries.filter((e) => e.kind === "sys" && e.text.startsWith("Inventory:"));
+
+  it("prints inventory when it changes (pick up mop, search corpse, search desk, fireplace)", () => {
+    expect(invLines(processCommand(at("stage1_pack_checked"), "pick up mop").entries)).toEqual([
+      { kind: "sys", text: "Inventory: mop" },
+    ]);
+    expect(
+      invLines(processCommand(at("stage2_foyer_searched"), "search corpse").entries),
+    ).toHaveLength(1);
+    expect(
+      invLines(processCommand(at("stage2_foyer_searched"), "search desk").entries),
+    ).toHaveLength(1);
+    expect(
+      invLines(
+        processCommand(at("stage2_fireplace_revealed", ["mop"]), "search fireplace").entries,
+      ),
+    ).toEqual([{ kind: "sys", text: "Inventory: fireplace poker" }]);
+  });
+
+  it("prints inventory on 'look in the pack' at stage1_pack_checked and stage 2 nodes", () => {
+    expect(
+      invLines(processCommand(at("stage1_pack_checked"), "look in the pack").entries),
+    ).toHaveLength(1);
+    for (const node of [
+      "stage2_foyer_searched",
+      "stage2_corpse_looted",
+      "stage2_desk_looted",
+      "stage2_both_looted",
+    ] as const) {
+      const r = processCommand(at(node, ["mop"]), "look in the pack");
+      expect(invLines(r.entries)).toEqual([{ kind: "sys", text: "Inventory: mop" }]);
+    }
+  });
+
+  it("does not print inventory when nothing changed and no pack look", () => {
+    expect(
+      invLines(processCommand(at("stage2_foyer", ["mop"]), "look around").entries),
+    ).toHaveLength(0);
   });
 });

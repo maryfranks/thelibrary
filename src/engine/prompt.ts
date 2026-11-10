@@ -10,8 +10,8 @@ export function formatChoicePrompt(nodeId: NodeId): string[] {
   return [CHOICE_PROMPT_HEADER, ...choices.map((choice, i) => `  ${i + 1}. ${choice}`)];
 }
 
-/** Prompt lines to append after a transition; empty unless the node changed. */
-export function getTransitionPrompt(prev: GameState, next: GameState): string[] {
-  if (prev.currentNode === next.currentNode) return [];
+/** Prompt lines to append after a transition; empty for terminal nodes. */
+export function getTransitionPrompt(_prev: GameState, next: GameState): string[] {
+  if (next.isGameOver || next.isWin) return [];
   return formatChoicePrompt(next.currentNode);
 }

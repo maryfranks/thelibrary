@@ -8,7 +8,6 @@ interface Stage2ChoiceDefinition {
   addItems?: ItemId[];
   removeItems?: ItemId[];
   deathType?: DeathType;
-  matchAnyOtherInput?: boolean;
 }
 
 export const CORPSE_ITEMS: ItemId[] = ["lemon candy", "pack of gum", "mace", "hair ties"];
@@ -26,31 +25,50 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
       target: "stage2_foyer_searched",
     },
     {
-      command: "any other action",
+      command: "go deeper",
       target: "stage2_death_choice",
       deathType: "monster_attack",
-      matchAnyOtherInput: true,
     },
   ],
   stage2_death_choice: [
     {
       command: "try again",
-      target: "stage1_pack_checked",
+      target: "stage2_respawn_check",
     },
     {
       command: "give up",
       target: "game_over",
     },
   ],
+  stage2_respawn_check: [],
+  stage2_respawn_no_mop: [
+    {
+      command: "pick up mop",
+      target: "stage1_mop_acquired",
+      addItems: ["mop"],
+    },
+    {
+      command: "proceed anyway",
+      target: "stage2_foyer",
+    },
+  ],
+  stage2_respawn_no_key: [
+    {
+      command: "search desk",
+      target: "stage2_desk_looted",
+      addItems: DESK_ITEMS,
+    },
+    {
+      command: "search corpse",
+      target: "stage2_corpse_looted",
+      addItems: CORPSE_ITEMS,
+    },
+    {
+      command: "explore periodicals",
+      target: "stage2_periodicals_check",
+    },
+  ],
   stage2_foyer_searched: [
-    {
-      command: "look around",
-      target: "stage2_foyer_searched",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_foyer_searched",
-    },
     {
       command: "search corpse",
       target: "stage2_corpse_looted",
@@ -68,14 +86,6 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   ],
   stage2_corpse_looted: [
     {
-      command: "look around",
-      target: "stage2_corpse_looted",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_corpse_looted",
-    },
-    {
       command: "search desk",
       target: "stage2_both_looted",
       addItems: DESK_ITEMS,
@@ -87,14 +97,6 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   ],
   stage2_desk_looted: [
     {
-      command: "look around",
-      target: "stage2_desk_looted",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_desk_looted",
-    },
-    {
       command: "search corpse",
       target: "stage2_both_looted",
       addItems: CORPSE_ITEMS,
@@ -105,14 +107,6 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
     },
   ],
   stage2_both_looted: [
-    {
-      command: "look around",
-      target: "stage2_both_looted",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_both_looted",
-    },
     {
       command: "explore periodicals",
       target: "stage2_periodicals_check",
@@ -132,9 +126,25 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   stage2_reading_room_door: [
     {
       command: "rattle reading room door",
-      target: "stage2_death_choice",
+      target: "stage2_rattle_death_choice",
       deathType: "monster_attack",
     },
+    {
+      command: "try the lock quietly",
+      target: "stage2_reading_room_locked",
+    },
+  ],
+  stage2_rattle_death_choice: [
+    {
+      command: "try again",
+      target: "stage2_reading_room_door_respawn",
+    },
+    {
+      command: "give up",
+      target: "game_over",
+    },
+  ],
+  stage2_reading_room_door_respawn: [
     {
       command: "try the lock quietly",
       target: "stage2_reading_room_locked",
@@ -177,13 +187,23 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   stage2_stacks_door_locked_no_key: [
     {
       command: "defend yourself",
-      target: "stage2_death_choice",
+      target: "stage2_no_key_death_choice",
       deathType: "monster_attack",
     },
     {
       command: "slowly walk backwards",
-      target: "stage2_death_choice",
+      target: "stage2_no_key_death_choice",
       deathType: "monster_attack",
+    },
+  ],
+  stage2_no_key_death_choice: [
+    {
+      command: "try again",
+      target: "stage2_respawn_no_key",
+    },
+    {
+      command: "give up",
+      target: "game_over",
     },
   ],
 };
@@ -215,14 +235,41 @@ function mutateInventory(
   return next;
 }
 
+export const WEAPON_ITEMS: ItemId[] = ["mop", "fireplace poker"];
+
+export function hasWeapon(inventory: ItemId[]): boolean {
+  return WEAPON_ITEMS.some((item) => inventory.includes(item));
+}
+
+export function resolveRespawnCheck(
+  state: GameState,
+  inventory: ItemId[],
+  prefixLines: string[],
+  content?: ContentCatalog,
+): GameState {
+  const restoredInventory =
+    state.stage2InventorySnapshot != null ? [...state.stage2InventorySnapshot] : [...inventory];
+  const hasMop = restoredInventory.includes("mop");
+  const nextNode: NodeId = hasMop ? "stage2_foyer" : "stage2_respawn_no_mop";
+  return {
+    ...state,
+    currentNode: nextNode,
+    inventory: restoredInventory,
+    stage2InventorySnapshot: state.stage2InventorySnapshot ?? (hasMop ? ["mop"] : []),
+    isGameOver: false,
+    isWin: false,
+    lastDeathType: null,
+    output: [...prefixLines, ...getNodeLines(nextNode, content)],
+  };
+}
+
 function resolvePeriodicalsCheck(
   state: GameState,
   inventory: ItemId[],
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  const hasMop = inventory.includes("mop");
-  if (hasMop) {
+  if (hasWeapon(inventory)) {
     const nextNode: NodeId = "stage2_reading_room_door";
     return {
       ...state,
@@ -282,6 +329,10 @@ export function transitionStage2(
     return state;
   }
 
+  if (state.currentNode === "stage2_respawn_check") {
+    return resolveRespawnCheck(state, state.inventory, [], content);
+  }
+
   if (state.currentNode === "stage2_periodicals_check") {
     return resolvePeriodicalsCheck(state, state.inventory, [], content);
   }
@@ -300,10 +351,9 @@ export function transitionStage2(
   }
 
   const choices = STAGE2_TRANSITIONS[state.currentNode];
-  const matchedChoice =
-    choices.find((choice, index) => {
-      return choice.command === normalized || String(index + 1) === normalized;
-    }) ?? choices.find((choice) => choice.matchAnyOtherInput);
+  const matchedChoice = choices.find((choice, index) => {
+    return choice.command === normalized || String(index + 1) === normalized;
+  });
 
   if (!matchedChoice) {
     return {
@@ -319,6 +369,10 @@ export function transitionStage2(
     matchedChoice.removeItems,
   );
   const nextNode = matchedChoice.target;
+
+  if (nextNode === "stage2_respawn_check") {
+    return resolveRespawnCheck(state, nextInventory, [], content);
+  }
 
   if (nextNode === "stage2_periodicals_check") {
     const checkLines = getNodeLines(nextNode, content);
@@ -354,11 +408,15 @@ export function transitionStage2(
     ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
     : [];
   const nodeLines = getNodeLines(nextNode, content);
+  const stage2InventorySnapshot =
+    state.stage2InventorySnapshot ??
+    (state.currentNode === "stage2_foyer" ? [...state.inventory] : null);
 
   return {
     ...state,
     currentNode: nextNode,
     inventory: nextInventory,
+    stage2InventorySnapshot,
     isGameOver: nextNode === "game_over",
     isWin: nextNode === "game_win",
     lastDeathType: matchedChoice.deathType ?? null,

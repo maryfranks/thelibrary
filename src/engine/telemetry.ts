@@ -140,6 +140,7 @@ export function recordRunCompleted(attributes: RunCompletedAttributes): void {
 export function recordDeath(attributes: DeathAttributes): void {
   try {
     deathsCounter.add(1, attributes);
+    void flushTelemetry();
   } catch {
     // Gracefully handle missing or failing collectors during tests or offline gameplay
   }
