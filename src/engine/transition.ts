@@ -1,3 +1,4 @@
+import { getAvailableChoices } from "./choices";
 import { getIntroLines, getNodeLines, getParserFallback } from "./content";
 import { isStage1Node, transitionStage1 } from "./stage1";
 import { isStage2Node, transitionStage2 } from "./stage2";
@@ -54,6 +55,34 @@ export function transition(state: GameState, input: string, content?: ContentCat
 function dispatchTransition(state: GameState, input: string, content?: ContentCatalog): GameState {
   if (state.isGameOver || state.isWin) {
     return state;
+  }
+
+  const normalized = input.trim().toLowerCase();
+  if (!AUTO_RESOLVE_NODES.has(state.currentNode)) {
+    const choices = getAvailableChoices(state.currentNode);
+    const matchesNodeChoice = choices.some(
+      (choice, index) => choice === normalized || String(index + 1) === normalized,
+    );
+
+    if (!matchesNodeChoice) {
+      if (normalized === "look around") {
+        return {
+          ...state,
+          inventory: [...state.inventory],
+          lastDeathType: null,
+          output: getNodeLines(state.currentNode, content),
+        };
+      }
+
+      if (normalized === "look in the pack") {
+        return {
+          ...state,
+          inventory: [...state.inventory],
+          lastDeathType: null,
+          output: [],
+        };
+      }
+    }
   }
 
   if (isStage1Node(state.currentNode)) {

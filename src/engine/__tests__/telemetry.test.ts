@@ -685,6 +685,8 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         stage: RunCompletedAttributes["final_stage"];
       }> = [
         { node: "stage2_death_choice", stage: "stage2" },
+        { node: "stage2_rattle_death_choice", stage: "stage2" },
+        { node: "stage2_no_key_death_choice", stage: "stage2" },
         { node: "stage3_early_death_choice", stage: "stage3" },
         { node: "stage3_death_choice", stage: "stage3" },
         { node: "stage4_death_choice", stage: "stage4" },

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import rawContent from "../../content.json";
-import type { ContentCatalog, NodeId } from "./types";
+import type { ContentCatalog, ItemId, NodeId } from "./types";
 
 export const ContentCatalogSchema = z.object({
   intro: z.array(z.string()),
@@ -19,8 +19,26 @@ export function getIntroLines(content: ContentCatalog = catalog): string[] {
   return [...content.intro];
 }
 
+const NODE_DISCOVERED_ITEMS: Partial<Record<NodeId, readonly ItemId[]>> = {
+  stage1_pack_checked: [],
+  stage2_corpse_looted: ["lemon candy", "pack of gum", "mace", "hair ties"],
+};
+
+function resolveInventoryPlaceholder(nodeId: NodeId): string {
+  const items = NODE_DISCOVERED_ITEMS[nodeId];
+  if (!items || items.length === 0) {
+    return "nothing";
+  }
+  return items.join(", ");
+}
+
 export function getNodeLines(nodeId: NodeId, content: ContentCatalog = catalog): string[] {
-  return [...(content.nodes[nodeId] ?? [])];
+  const lines = content.nodes[nodeId] ?? [];
+  if (!lines.some((line) => line.includes("[INVENTORY]"))) {
+    return [...lines];
+  }
+  const replacement = resolveInventoryPlaceholder(nodeId);
+  return lines.map((line) => line.replaceAll("[INVENTORY]", replacement));
 }
 
 export function toDeathScreenKey(nodeId: NodeId, choice: string): string {

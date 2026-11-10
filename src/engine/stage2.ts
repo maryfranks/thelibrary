@@ -41,15 +41,34 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
     },
   ],
   stage2_respawn_check: [],
+  stage2_respawn_no_mop: [
+    {
+      command: "pick up mop",
+      target: "stage1_mop_acquired",
+      addItems: ["mop"],
+    },
+    {
+      command: "proceed anyway",
+      target: "stage2_foyer",
+    },
+  ],
+  stage2_respawn_no_key: [
+    {
+      command: "search desk",
+      target: "stage2_desk_looted",
+      addItems: DESK_ITEMS,
+    },
+    {
+      command: "search corpse",
+      target: "stage2_corpse_looted",
+      addItems: CORPSE_ITEMS,
+    },
+    {
+      command: "explore periodicals",
+      target: "stage2_periodicals_check",
+    },
+  ],
   stage2_foyer_searched: [
-    {
-      command: "look around",
-      target: "stage2_foyer_searched",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_foyer_searched",
-    },
     {
       command: "search corpse",
       target: "stage2_corpse_looted",
@@ -67,14 +86,6 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   ],
   stage2_corpse_looted: [
     {
-      command: "look around",
-      target: "stage2_corpse_looted",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_corpse_looted",
-    },
-    {
       command: "search desk",
       target: "stage2_both_looted",
       addItems: DESK_ITEMS,
@@ -86,14 +97,6 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   ],
   stage2_desk_looted: [
     {
-      command: "look around",
-      target: "stage2_desk_looted",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_desk_looted",
-    },
-    {
       command: "search corpse",
       target: "stage2_both_looted",
       addItems: CORPSE_ITEMS,
@@ -104,14 +107,6 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
     },
   ],
   stage2_both_looted: [
-    {
-      command: "look around",
-      target: "stage2_both_looted",
-    },
-    {
-      command: "look in the pack",
-      target: "stage2_both_looted",
-    },
     {
       command: "explore periodicals",
       target: "stage2_periodicals_check",
@@ -131,9 +126,25 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   stage2_reading_room_door: [
     {
       command: "rattle reading room door",
-      target: "stage2_death_choice",
+      target: "stage2_rattle_death_choice",
       deathType: "monster_attack",
     },
+    {
+      command: "try the lock quietly",
+      target: "stage2_reading_room_locked",
+    },
+  ],
+  stage2_rattle_death_choice: [
+    {
+      command: "try again",
+      target: "stage2_reading_room_door_respawn",
+    },
+    {
+      command: "give up",
+      target: "game_over",
+    },
+  ],
+  stage2_reading_room_door_respawn: [
     {
       command: "try the lock quietly",
       target: "stage2_reading_room_locked",
@@ -176,13 +187,23 @@ export const STAGE2_TRANSITIONS: Record<Stage2NodeId, Stage2ChoiceDefinition[]> 
   stage2_stacks_door_locked_no_key: [
     {
       command: "defend yourself",
-      target: "stage2_death_choice",
+      target: "stage2_no_key_death_choice",
       deathType: "monster_attack",
     },
     {
       command: "slowly walk backwards",
-      target: "stage2_death_choice",
+      target: "stage2_no_key_death_choice",
       deathType: "monster_attack",
+    },
+  ],
+  stage2_no_key_death_choice: [
+    {
+      command: "try again",
+      target: "stage2_respawn_no_key",
+    },
+    {
+      command: "give up",
+      target: "game_over",
     },
   ],
 };
@@ -229,9 +250,7 @@ export function resolveRespawnCheck(
   const restoredInventory =
     state.stage2InventorySnapshot != null ? [...state.stage2InventorySnapshot] : [...inventory];
   const hasMop = restoredInventory.includes("mop");
-  const nextNode: NodeId = hasMop ? "stage2_foyer" : "stage1_vestibule_searched";
-  const hintLines =
-    nextNode === "stage2_foyer" ? [] : getNodeLines("stage2_respawn_check", content);
+  const nextNode: NodeId = hasMop ? "stage2_foyer" : "stage2_respawn_no_mop";
   return {
     ...state,
     currentNode: nextNode,
@@ -240,7 +259,7 @@ export function resolveRespawnCheck(
     isGameOver: false,
     isWin: false,
     lastDeathType: null,
-    output: [...prefixLines, ...hintLines, ...getNodeLines(nextNode, content)],
+    output: [...prefixLines, ...getNodeLines(nextNode, content)],
   };
 }
 
@@ -250,7 +269,7 @@ function resolvePeriodicalsCheck(
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  if (inventory.includes("mop")) {
+  if (hasWeapon(inventory)) {
     const nextNode: NodeId = "stage2_reading_room_door";
     return {
       ...state,

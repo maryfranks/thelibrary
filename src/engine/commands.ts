@@ -1,5 +1,4 @@
 import { getAvailableChoices } from "./choices";
-import { isStage2Node } from "./stage2";
 import { formatChoicePrompt, getTransitionPrompt } from "./prompt";
 import { transition } from "./transition";
 import type { GameState } from "./types";
@@ -30,16 +29,14 @@ function formatInventory(state: GameState): string {
 }
 
 function shouldShowInventory(prev: GameState, next: GameState, lower: string): boolean {
+  if (prev.isGameOver || prev.isWin) return false;
   const changed =
     prev.inventory.length !== next.inventory.length ||
     prev.inventory.some((item, i) => next.inventory[i] !== item);
   if (changed) return true;
   const choices = getAvailableChoices(prev.currentNode);
   const chosen = choices[Number(lower) - 1] ?? lower;
-  return (
-    chosen === "look in the pack" &&
-    (next.currentNode === "stage1_pack_checked" || isStage2Node(next.currentNode))
-  );
+  return chosen === "look in the pack";
 }
 
 /** Scene narrative followed by the choice prompt for the given state. */

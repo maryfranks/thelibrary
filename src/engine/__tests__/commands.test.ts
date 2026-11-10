@@ -41,11 +41,29 @@ describe("processCommand", () => {
     expect(byIndex.state.currentNode).toBe(byText.state.currentNode);
   });
 
-  it("does not prompt for invalid input", () => {
+  it("re-displays the choice prompt after invalid input", () => {
     const initial = createInitialState();
     const r = processCommand(initial, "xyzzy");
     expect(r.state.currentNode).toBe(initial.currentNode);
-    expect(promptCount(r.entries)).toBe(0);
+    expect(promptCount(r.entries)).toBe(1);
+  });
+
+  it("handles global ambient 'look in the pack' and 'look around' without changing node state", () => {
+    const state: GameState = {
+      ...createInitialState(),
+      currentNode: "stage2_reading_room_door",
+      inventory: ["mop"],
+    };
+
+    const packResult = processCommand(state, "look in the pack");
+    expect(packResult.state.currentNode).toBe("stage2_reading_room_door");
+    expect(packResult.entries).toContainEqual({ kind: "sys", text: "Inventory: mop" });
+    expect(promptCount(packResult.entries)).toBe(1);
+
+    const lookResult = processCommand(state, "look around");
+    expect(lookResult.state.currentNode).toBe("stage2_reading_room_door");
+    expect(lookResult.state.output.length).toBeGreaterThan(0);
+    expect(promptCount(lookResult.entries)).toBe(1);
   });
 
   it("does not prompt when the game is already over", () => {

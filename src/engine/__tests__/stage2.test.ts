@@ -4,6 +4,7 @@ import {
   DESK_ITEMS,
   createInitialState,
   getAvailableChoices,
+  getNodeLines,
   loadContent,
   transition,
 } from "../index";
@@ -55,18 +56,31 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
     });
   });
 
-  describe("stage2_death_choice & stage2_respawn_check", () => {
-    it("routes 'try again' through stage2_respawn_check: no weapon lands at stage1_vestibule_searched", () => {
+  describe("stage2_death_choice, stage2_respawn_check & stage2_respawn_no_mop", () => {
+    it("routes 'try again' through stage2_respawn_check: no mop lands at stage2_respawn_no_mop", () => {
       const catalog = loadContent();
       const next = transition(makeState("stage2_death_choice"), "try again", catalog);
 
-      expect(next.currentNode).toBe("stage1_vestibule_searched");
+      expect(next.currentNode).toBe("stage2_respawn_no_mop");
       expect(next.lastDeathType).toBeNull();
       expect(next.isGameOver).toBe(false);
-      expect(next.output).toEqual([
-        ...catalog.nodes.stage2_respawn_check,
-        ...catalog.nodes.stage1_vestibule_searched,
+      expect(next.output).toEqual([...catalog.nodes.stage2_respawn_no_mop]);
+    });
+
+    it("handles stage2_respawn_no_mop choices: 'pick up mop' -> stage1_mop_acquired (adds mop), 'proceed anyway' -> stage2_foyer", () => {
+      const noMopRespawn = makeState("stage2_respawn_no_mop", []);
+      expect(getAvailableChoices("stage2_respawn_no_mop")).toEqual([
+        "pick up mop",
+        "proceed anyway",
       ]);
+
+      const pickedMop = transition(noMopRespawn, "pick up mop");
+      expect(pickedMop.currentNode).toBe("stage1_mop_acquired");
+      expect(pickedMop.inventory).toEqual(["mop"]);
+
+      const proceeded = transition(noMopRespawn, "proceed anyway");
+      expect(proceeded.currentNode).toBe("stage2_foyer");
+      expect(proceeded.inventory).toEqual([]);
     });
 
     it("lands at stage2_foyer with a mop", () => {
@@ -76,22 +90,25 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(next.inventory).toEqual(["mop"]);
     });
 
-    it("restores Stage 2 snapshot after reading room door death and retrying", () => {
+    it("routes reading room door rattle death to stage2_rattle_death_choice and 'try again' to stage2_reading_room_door_respawn preserving inventory", () => {
       let state = {
         ...makeState("stage2_reading_room_door", ["mop", "stacks key", "lemon candy"]),
         stage2InventorySnapshot: ["mop" as ItemId],
       };
       state = transition(state, "rattle reading room door");
-      expect(state.currentNode).toBe("stage2_death_choice");
+      expect(state.currentNode).toBe("stage2_rattle_death_choice");
       expect(state.lastDeathType).toBe("monster_attack");
       expect(state.inventory).toEqual(["mop", "stacks key", "lemon candy"]);
 
       state = transition(state, "try again");
-      expect(state.currentNode).toBe("stage2_foyer");
-      expect(state.inventory).toEqual(["mop"]);
+      expect(state.currentNode).toBe("stage2_reading_room_door_respawn");
+      expect(state.inventory).toEqual(["mop", "stacks key", "lemon candy"]);
+
+      state = transition(state, "try the lock quietly");
+      expect(state.currentNode).toBe("stage2_reading_room_locked");
     });
 
-    it("restores Stage 2 snapshot on respawn: poker, key, and corpse/desk items are lost", () => {
+    it("restores Stage 2 snapshot on respawn from stage2_death_choice: poker, key, and corpse/desk items are lost", () => {
       const state = {
         ...makeState("stage2_death_choice", [
           "mop",
@@ -107,7 +124,7 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(next.inventory).toEqual(["mop"]);
     });
 
-    it("respawn without mop restores empty Stage 2 snapshot, shows hint and lands at stage1_vestibule_searched", () => {
+    it("respawn without mop restores empty Stage 2 snapshot and lands at stage2_respawn_no_mop", () => {
       const state = {
         ...makeState("stage2_death_choice", ["lemon candy"]),
         stage2InventorySnapshot: [] as ItemId[],
@@ -115,17 +132,14 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       const catalog = loadContent();
       const next = transition(state, "try again", catalog);
 
-      expect(next.currentNode).toBe("stage1_vestibule_searched");
+      expect(next.currentNode).toBe("stage2_respawn_no_mop");
       expect(next.inventory).toEqual([]);
-      expect(next.output).toEqual([
-        ...catalog.nodes.stage2_respawn_check,
-        ...catalog.nodes.stage1_vestibule_searched,
-      ]);
+      expect(next.output).toEqual([...catalog.nodes.stage2_respawn_no_mop]);
     });
 
     it("resolves stage2_respawn_check directly on entry", () => {
       expect(transition(makeState("stage2_respawn_check", []), "").currentNode).toBe(
-        "stage1_vestibule_searched",
+        "stage2_respawn_no_mop",
       );
       expect(transition(makeState("stage2_respawn_check", ["mop"]), "").currentNode).toBe(
         "stage2_foyer",
@@ -140,25 +154,42 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(died.inventory).toEqual(["mop"]);
     });
 
-    it("allows exploring periodicals unsearched; with mop and no key dies at the stacks door", () => {
+    it("allows exploring periodicals unsearched; with mop and no key dies at the stacks door and respawns at stage2_respawn_no_key", () => {
       let state = makeState("stage2_foyer_searched", ["mop"]);
       state = transition(state, "explore periodicals");
       expect(state.currentNode).toBe("stage2_reading_room_door");
       state = transition(state, "try the lock quietly");
       state = transition(state, "look around");
+      state = transition(state, "search fireplace");
+      expect(state.inventory).toEqual(["fireplace poker"]);
       state = transition(state, "go deeper");
       expect(state.currentNode).toBe("stage2_stacks_door_locked_no_key");
       state = transition(state, "defend yourself");
-      expect(state.currentNode).toBe("stage2_death_choice");
+      expect(state.currentNode).toBe("stage2_no_key_death_choice");
+      state = transition(state, "try again");
+      expect(state.currentNode).toBe("stage2_respawn_no_key");
+      expect(state.inventory).toEqual(["fireplace poker"]);
+      state = transition(state, "search desk");
+      expect(state.currentNode).toBe("stage2_desk_looted");
+      expect(state.inventory).toContain("stacks key");
+      state = transition(state, "explore periodicals");
+      expect(state.currentNode).toBe("stage2_reading_room_door");
     });
 
-    it("fails periodicals check with monster_attack without mop (poker alone does not pass)", () => {
-      const next = transition(
+    it("passes periodicals check with either mop or fireplace poker, and fails without either weapon", () => {
+      const withPoker = transition(
         makeState("stage2_foyer_searched", ["fireplace poker"]),
         "explore periodicals",
       );
-      expect(next.currentNode).toBe("stage2_death_choice");
-      expect(next.lastDeathType).toBe("monster_attack");
+      expect(withPoker.currentNode).toBe("stage2_reading_room_door");
+      expect(withPoker.lastDeathType).toBeNull();
+
+      const unarmed = transition(
+        makeState("stage2_foyer_searched", ["lemon candy"]),
+        "explore periodicals",
+      );
+      expect(unarmed.currentNode).toBe("stage2_death_choice");
+      expect(unarmed.lastDeathType).toBe("monster_attack");
     });
 
     it("transitions to game_over and sets isGameOver on 'give up'", () => {
@@ -263,13 +294,17 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
     });
   });
 
-  describe("stage2_reading_room_door & stage2_reading_room_locked", () => {
-    it("triggers monster_attack and transitions to stage2_death_choice on 'rattle reading room door'", () => {
+  describe("stage2_reading_room_door, stage2_rattle_death_choice, stage2_reading_room_door_respawn & stage2_reading_room_locked", () => {
+    it("triggers monster_attack and transitions to stage2_rattle_death_choice on 'rattle reading room door'", () => {
       const state = makeState("stage2_reading_room_door", ["mop"]);
       const next = transition(state, "rattle reading room door");
 
-      expect(next.currentNode).toBe("stage2_death_choice");
+      expect(next.currentNode).toBe("stage2_rattle_death_choice");
       expect(next.lastDeathType).toBe("monster_attack");
+
+      const gaveUp = transition(next, "give up");
+      expect(gaveUp.currentNode).toBe("game_over");
+      expect(gaveUp.isGameOver).toBe(true);
     });
 
     it("transitions to stage2_reading_room_locked on 'try the lock quietly' and then stage2_fireplace_revealed on 'look around'", () => {
@@ -298,7 +333,7 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
     });
   });
 
-  describe("stage2_stacks_door_check & stage2_stacks_door_locked_no_key", () => {
+  describe("stage2_stacks_door_check, stage2_stacks_door_locked_no_key, stage2_no_key_death_choice & stage2_respawn_no_key", () => {
     it("transitions to stage2_stacks_door_locked_no_key when going deeper without stacks key", () => {
       const fromFireplace = makeState("stage2_fireplace_revealed", ["mop"]);
       const next = transition(fromFireplace, "go deeper");
@@ -326,16 +361,48 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(arrived.currentNode).toBe("stage3_hub_unexplored");
     });
 
-    it("triggers monster_attack and transitions to stage2_death_choice on both choices at stage2_stacks_door_locked_no_key", () => {
+    it("triggers monster_attack and transitions to stage2_no_key_death_choice on both choices at stage2_stacks_door_locked_no_key", () => {
       const state = makeState("stage2_stacks_door_locked_no_key", ["fireplace poker"]);
 
       const defend = transition(state, "defend yourself");
-      expect(defend.currentNode).toBe("stage2_death_choice");
+      expect(defend.currentNode).toBe("stage2_no_key_death_choice");
       expect(defend.lastDeathType).toBe("monster_attack");
 
       const backAway = transition(state, "slowly walk backwards");
-      expect(backAway.currentNode).toBe("stage2_death_choice");
+      expect(backAway.currentNode).toBe("stage2_no_key_death_choice");
       expect(backAway.lastDeathType).toBe("monster_attack");
+
+      const gaveUp = transition(defend, "give up");
+      expect(gaveUp.currentNode).toBe("game_over");
+      expect(gaveUp.isGameOver).toBe(true);
+    });
+
+    it("defines stage2_respawn_no_key transitions per game_map.md ('search desk', 'search corpse', 'explore periodicals')", () => {
+      expect(getAvailableChoices("stage2_respawn_no_key")).toEqual([
+        "search desk",
+        "search corpse",
+        "explore periodicals",
+      ]);
+
+      const fromNoKey = makeState("stage2_respawn_no_key", ["mop"]);
+      const deskLooted = transition(fromNoKey, "search desk");
+      expect(deskLooted.currentNode).toBe("stage2_desk_looted");
+      expect(deskLooted.inventory).toEqual(["mop", ...DESK_ITEMS]);
+
+      const corpseLooted = transition(fromNoKey, "search corpse");
+      expect(corpseLooted.currentNode).toBe("stage2_corpse_looted");
+      expect(corpseLooted.inventory).toEqual(["mop", ...CORPSE_ITEMS]);
+
+      const periodicals = transition(fromNoKey, "explore periodicals");
+      expect(periodicals.currentNode).toBe("stage2_reading_room_door");
+    });
+
+    it("interpolates [INVENTORY] placeholder in stage2_corpse_looted with discovered corpse items", () => {
+      const text = getNodeLines("stage2_corpse_looted").join(" ");
+      expect(text).not.toContain("[INVENTORY]");
+      for (const item of CORPSE_ITEMS) {
+        expect(text).toContain(item);
+      }
     });
   });
 
