@@ -298,6 +298,7 @@ function resolveArrivalCheck(
   const hasPoker = inventory.includes("fireplace poker");
   if (hasPoker) {
     const nextNode: NodeId = "stage3_hub_unexplored";
+    const arrivalLines = getNodeLines("stage3_arrival", content);
     return {
       ...state,
       currentNode: nextNode,
@@ -306,7 +307,11 @@ function resolveArrivalCheck(
       isGameOver: false,
       isWin: false,
       lastDeathType: null,
-      output: [...prefixLines, ...getNodeLines(nextNode, content)],
+      output: [
+        ...prefixLines,
+        ...arrivalLines,
+        ...getNodeLines(nextNode, content),
+      ],
     };
   }
 

@@ -130,19 +130,22 @@
       "Game Over."
     ],
     "stage3_arrival": [
-      "You arrive at the stacks."
+      "You step into the stacks. Before you can get your bearings, a",
+      "horrendous flying creature shrieks and dives at you out of the", 
+      "gloom! You swing the fireplace poker with both hands, striking",
+      "it with a dull crack and driving it back into the shadows."
     ],
     "stage3_early_death_choice": [
-      "You died during early Stage 3."
+      "Your journey ended before you could find your footing in the stacks."
     ],
     "stage3_hub_unexplored": [
-      "You are at the unexplored main hub of the stacks."
+      "Five rows of bookshelves are in front of you. it's hard to see down them. ."
     ],
     "stage3_foyer_blocked": [
       "You try to retreat toward the foyer, but you find the monster from earlier waiting for you near the door, forcing you back into the stacks."
     ],
     "stage3_hub": [
-      "You are at the main hub of the stacks. Dimly lit aisles stretch ahead."
+      "Five rows of bookshelves are arranged in front of you. You can't see much from here, but hopefully one of them leads to a way out"
     ],
     "stage3_death_choice": [
       "You have died in the stacks."
@@ -311,7 +314,9 @@
       "Nice or not, it's hungry and it eats you. You die."
     ],
     "stage3_arrival__with_mop_check": [
-      "You tripped over the unwieldy mop while trying to swing at the creature, resulting in a fatal fall."
+      "You step into the stacks. Before you can get your bearings, a horrendous",
+      "flying creature shrieks and dives at you out of the gloom! You try to",
+      "swing the unwieldy mop, but trip over the handle and die."
     ],
     "stage3_foyer_blocked__go_deeper": [
       "Panicking at the monster blocking the foyer, you rushed blindly deeper into the stacks without looking around, and something waiting in the shadows struck instantly."
