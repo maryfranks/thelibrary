@@ -20,7 +20,6 @@ interface Stage3ChoiceDefinition {
   requireSafeRow?: RowSafetyKey;
   elseTarget?: NodeId;
   elseDeathType?: DeathType;
-  failIfAlreadySafeRow?: RowSafetyKey;
 }
 
 export const ROW2_CORPSE_ITEMS: ItemId[] = ["pocketknife", "umbrella"];
@@ -67,8 +66,19 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
       deathType: "monster_attack",
     },
     {
-      command: "go back toward foyer",
-      target: "stage3_hub_unexplored",
+      command: "go back",
+      target: "stage3_foyer_blocked",
+    },
+    {
+      command: "look around",
+      target: "stage3_hub",
+    },
+  ],
+  stage3_foyer_blocked: [
+    {
+      command: "go deeper",
+      target: "stage3_early_death_choice",
+      deathType: "monster_attack",
     },
     {
       command: "look around",
@@ -89,7 +99,6 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
     {
       command: "peer down row 3",
       target: "stage3_hub",
-      setSafeRow: "row3_safe",
     },
     {
       command: "peer down row 4",
@@ -98,11 +107,7 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
     },
     {
       command: "peer down row 5",
-      target: "stage3_hub",
-      setSafeRow: "row5_safe",
-      failIfAlreadySafeRow: "row5_safe",
-      elseTarget: "stage3_death_choice",
-      elseDeathType: "unknown_death",
+      target: "stage3_row5_warning",
     },
     {
       command: "go down row 1",
@@ -120,10 +125,8 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
     },
     {
       command: "go down row 3",
-      target: "stage3_row3_encounter",
-      requireSafeRow: "row3_safe",
-      elseTarget: "stage3_death_choice",
-      elseDeathType: "monster_attack",
+      target: "stage3_death_choice",
+      deathType: "monster_attack",
     },
     {
       command: "go down row 4",
@@ -141,7 +144,7 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
   stage3_death_choice: [
     {
       command: "try again",
-      target: "stage3_hub_unexplored",
+      target: "stage3_hub",
     },
     {
       command: "give up",
@@ -150,20 +153,9 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
   ],
   stage3_row1_encounter: [
     {
-      command: "look through the glass door",
-      target: "stage3_row1_glass_view",
+      command: "look around",
+      target: "stage3_row1_encounter",
     },
-    {
-      command: "enter the reading room",
-      target: "stage3_death_choice",
-      deathType: "monster_attack",
-    },
-    {
-      command: "go back",
-      target: "stage3_hub",
-    },
-  ],
-  stage3_row1_glass_view: [
     {
       command: "enter the reading room",
       target: "stage3_death_choice",
@@ -181,43 +173,42 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
       addItems: ROW2_CORPSE_ITEMS,
     },
     {
-      command: "move deeper",
+      command: "go deeper",
       target: "stage3_row2_flashlight_check",
     },
     {
-      command: "return to hub",
+      command: "go back",
       target: "stage3_hub",
     },
   ],
   stage3_row2_looted: [
     {
-      command: "move deeper",
+      command: "go deeper",
       target: "stage3_row2_flashlight_check",
     },
     {
-      command: "return to hub",
+      command: "go back",
       target: "stage3_hub",
     },
   ],
   stage3_row2_flashlight_check: [
     {
-      command: NO_FLASHLIGHT_CHOICE,
-      target: "stage3_death_choice",
-      deathType: "monster_attack",
-    },
-    {
       command: WITH_FLASHLIGHT_CHOICE,
       target: "stage4_entry",
     },
-  ],
-  stage3_row3_encounter: [
     {
-      command: "walk down row",
+      command: NO_FLASHLIGHT_CHOICE,
+      target: "stage3_row2_dark_warning",
+    },
+  ],
+  stage3_row2_dark_warning: [
+    {
+      command: "go deeper",
       target: "stage3_death_choice",
       deathType: "monster_attack",
     },
     {
-      command: "return to hub",
+      command: "go back",
       target: "stage3_hub",
     },
   ],
@@ -233,18 +224,33 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
       deathType: "monster_attack",
     },
     {
-      command: "return to hub",
+      command: "go back",
       target: "stage3_hub",
     },
   ],
   stage3_row4_looted: [
+    {
+      command: "look around",
+      target: "stage3_row4_looted",
+    },
     {
       command: "go deeper",
       target: "stage3_death_choice",
       deathType: "monster_attack",
     },
     {
-      command: "return to hub",
+      command: "go back",
+      target: "stage3_hub",
+    },
+  ],
+  stage3_row5_warning: [
+    {
+      command: "peer",
+      target: "stage3_death_choice",
+      deathType: "unknown_death",
+    },
+    {
+      command: "go back",
       target: "stage3_hub",
     },
   ],
@@ -329,38 +335,15 @@ function resolveFlashlightCheck(
   content?: ContentCatalog,
 ): GameState {
   const hasFlashlight = inventory.includes("flashlight");
-  if (hasFlashlight) {
-    const nextNode: NodeId = "stage4_entry";
-    return {
-      ...state,
-      currentNode: nextNode,
-      inventory: [...inventory],
-      isGameOver: false,
-      isWin: false,
-      lastDeathType: null,
-      output: [...prefixLines, ...getNodeLines(nextNode, content)],
-    };
-  }
-
-  const nextNode: NodeId = "stage3_death_choice";
-  recordDeath({
-    stage: "stage3",
-    death_type: "monster_attack",
-    node_id: "stage3_row2_flashlight_check",
-  });
-  const deathLines = getDeathScreenLines(
-    "stage3_row2_flashlight_check",
-    NO_FLASHLIGHT_CHOICE,
-    content,
-  );
+  const nextNode: NodeId = hasFlashlight ? "stage4_entry" : "stage3_row2_dark_warning";
   return {
     ...state,
     currentNode: nextNode,
     inventory: [...inventory],
     isGameOver: false,
     isWin: false,
-    lastDeathType: "monster_attack",
-    output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],
+    lastDeathType: null,
+    output: [...prefixLines, ...getNodeLines(nextNode, content)],
   };
 }
 
@@ -404,45 +387,6 @@ export function transitionStage3(
   }
 
   const nextInventory = addUniqueItems(state.inventory, matchedChoice.addItems);
-
-  if (
-    matchedChoice.failIfAlreadySafeRow &&
-    Boolean(state[matchedChoice.failIfAlreadySafeRow]) &&
-    matchedChoice.elseTarget &&
-    matchedChoice.elseDeathType
-  ) {
-    const nextNode = matchedChoice.elseTarget;
-    recordDeath({
-      stage: "stage3",
-      death_type: matchedChoice.elseDeathType,
-      node_id: state.currentNode,
-    });
-    if (nextNode === "game_over") {
-      recordRunCompleted({
-        outcome: "loss",
-        final_stage: "stage3",
-      });
-    } else if (nextNode === "game_win") {
-      recordRunCompleted({
-        outcome: "win",
-        final_stage: "stage3",
-      });
-    }
-    const deathLines = getConditionalDeathScreenLines(
-      state.currentNode,
-      matchedChoice.command,
-      content,
-    );
-    return {
-      ...state,
-      currentNode: nextNode,
-      inventory: nextInventory,
-      isGameOver: nextNode === "game_over",
-      isWin: nextNode === "game_win",
-      lastDeathType: matchedChoice.elseDeathType,
-      output: [...deathLines, ...getNodeLines(nextNode, content)],
-    };
-  }
 
   if (
     matchedChoice.requireSafeRow &&
@@ -494,8 +438,11 @@ export function transitionStage3(
   let resolvedInventory = nextInventory;
 
   if (state.currentNode === "stage3_death_choice" && matchedChoice.command === "try again") {
-    resolvedInventory =
-      state.stage3InventorySnapshot != null ? [...state.stage3InventorySnapshot] : nextInventory;
+    nextState.row1_safe = false;
+    nextState.row2_safe = false;
+    nextState.row3_safe = false;
+    nextState.row4_safe = false;
+    nextState.row5_safe = false;
   } else if (
     state.currentNode === "stage3_early_death_choice" &&
     matchedChoice.command === "try again"

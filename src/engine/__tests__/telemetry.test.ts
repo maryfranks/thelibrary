@@ -368,20 +368,29 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage3_hub_unexplored",
       });
 
-      // 3. stage3_hub 'peer down row 5' second time -> unknown_death
-      const peeredOnce = transition(
+      // 3. stage3_foyer_blocked 'go deeper' -> monster_attack
+      transition(makeState("stage3_foyer_blocked", ["fireplace poker"]), "go deeper");
+      expect(deathSpy).toHaveBeenLastCalledWith(1, {
+        stage: "stage3",
+        death_type: "monster_attack",
+        node_id: "stage3_foyer_blocked",
+      });
+
+      // 4. stage3_hub 'peer down row 5' -> stage3_row5_warning (no death), then 'peer' -> unknown_death
+      const row5Warning = transition(
         makeState("stage3_hub", ["fireplace poker"]),
         "peer down row 5",
       );
-      expect(deathSpy).toHaveBeenCalledTimes(2);
-      transition(peeredOnce, "peer down row 5");
+      expect(row5Warning.currentNode).toBe("stage3_row5_warning");
+      expect(deathSpy).toHaveBeenCalledTimes(3);
+      transition(row5Warning, "peer");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage3",
         death_type: "unknown_death",
-        node_id: "stage3_hub",
+        node_id: "stage3_row5_warning",
       });
 
-      // 4. stage3_hub 'go down row 1..4' when unsafe -> monster_attack
+      // 5. stage3_hub 'go down row 1..4' (Rows 1, 2, 4 unsafe; Row 3 unconditionally fatal) -> monster_attack
       for (const row of [1, 2, 3, 4]) {
         transition(makeState("stage3_hub", ["fireplace poker"]), `go down row ${row}`);
         expect(deathSpy).toHaveBeenLastCalledWith(1, {
@@ -391,7 +400,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         });
       }
 
-      // 5. stage3_hub 'go down row 5' -> unknown_death
+      // 6. stage3_hub 'go down row 5' -> unknown_death
       transition(makeState("stage3_hub", ["fireplace poker"]), "go down row 5");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage3",
@@ -399,7 +408,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage3_hub",
       });
 
-      // 6. stage3_row1_encounter & stage3_row1_glass_view 'enter the reading room' -> monster_attack
+      // 7. stage3_row1_encounter 'enter the reading room' -> monster_attack
       transition(makeState("stage3_row1_encounter", ["fireplace poker"]), "enter the reading room");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage3",
@@ -407,30 +416,18 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage3_row1_encounter",
       });
 
-      transition(
-        makeState("stage3_row1_glass_view", ["fireplace poker"]),
-        "enter the reading room",
+      // 8. stage3_row2_flashlight_check [No Flashlight] -> stage3_row2_dark_warning (no death), then 'go deeper' -> monster_attack
+      const darkWarning = transition(
+        makeState("stage3_row2_encounter", ["fireplace poker"]),
+        "go deeper",
       );
+      expect(darkWarning.currentNode).toBe("stage3_row2_dark_warning");
+      expect(deathSpy).toHaveBeenCalledTimes(10);
+      transition(darkWarning, "go deeper");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage3",
         death_type: "monster_attack",
-        node_id: "stage3_row1_glass_view",
-      });
-
-      // 7. stage3_row2_flashlight_check [No Flashlight] -> monster_attack
-      transition(makeState("stage3_row2_encounter", ["fireplace poker"]), "move deeper");
-      expect(deathSpy).toHaveBeenLastCalledWith(1, {
-        stage: "stage3",
-        death_type: "monster_attack",
-        node_id: "stage3_row2_flashlight_check",
-      });
-
-      // 8. stage3_row3_encounter 'walk down row' -> monster_attack
-      transition(makeState("stage3_row3_encounter", ["fireplace poker"]), "walk down row");
-      expect(deathSpy).toHaveBeenLastCalledWith(1, {
-        stage: "stage3",
-        death_type: "monster_attack",
-        node_id: "stage3_row3_encounter",
+        node_id: "stage3_row2_dark_warning",
       });
 
       // 9. stage3_row4_encounter & stage3_row4_looted 'go deeper' -> monster_attack
@@ -448,7 +445,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage3_row4_looted",
       });
 
-      expect(deathSpy).toHaveBeenCalledTimes(14);
+      expect(deathSpy).toHaveBeenCalledTimes(13);
       expect(runCompletedSpy).not.toHaveBeenCalled();
     });
   });

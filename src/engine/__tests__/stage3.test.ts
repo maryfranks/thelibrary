@@ -44,15 +44,28 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(next.isGameOver).toBe(false);
     });
 
-    it("respawns at stage2_foyer on 'try again' and ends game on 'give up' from stage3_early_death_choice", () => {
-      const state = makeState("stage3_early_death_choice", ["mop", "stacks key"]);
+    it("respawns at stage2_foyer when dying at arrival and at stage3_hub_unexplored when dying after arrival on 'try again', and ends game on 'give up' from stage3_early_death_choice", () => {
+      const arrivalDeathState = makeState("stage3_early_death_choice", ["mop", "stacks key"]);
 
-      const retried = transition(state, "try again");
-      expect(retried.currentNode).toBe("stage2_foyer");
-      expect(retried.lastDeathType).toBeNull();
-      expect(retried.isGameOver).toBe(false);
+      const retriedArrival = transition(arrivalDeathState, "try again");
+      expect(retriedArrival.currentNode).toBe("stage2_foyer");
+      expect(retriedArrival.lastDeathType).toBeNull();
+      expect(retriedArrival.isGameOver).toBe(false);
 
-      const gaveUp = transition(state, "give up");
+      const postArrivalDeathState = makeState(
+        "stage3_early_death_choice",
+        ["stacks key", "fireplace poker"],
+        {
+          stage3InventorySnapshot: ["stacks key", "fireplace poker"],
+        },
+      );
+      const retriedPostArrival = transition(postArrivalDeathState, "try again");
+      expect(retriedPostArrival.currentNode).toBe("stage3_hub_unexplored");
+      expect(retriedPostArrival.inventory).toEqual(["stacks key", "fireplace poker"]);
+      expect(retriedPostArrival.lastDeathType).toBeNull();
+      expect(retriedPostArrival.isGameOver).toBe(false);
+
+      const gaveUp = transition(arrivalDeathState, "give up");
       expect(gaveUp.currentNode).toBe("game_over");
       expect(gaveUp.lastDeathType).toBeNull();
       expect(gaveUp.isGameOver).toBe(true);
@@ -99,8 +112,8 @@ describe("Stage 3 Engine (The Stacks)", () => {
     });
   });
 
-  describe("stage3_hub_unexplored", () => {
-    it("triggers monster_attack and transitions to stage3_early_death_choice on 'go deeper'", () => {
+  describe("stage3_hub_unexplored & stage3_foyer_blocked", () => {
+    it("triggers monster_attack and transitions to stage3_early_death_choice on 'go deeper' at stage3_hub_unexplored", () => {
       const state = makeState("stage3_hub_unexplored", ["fireplace poker"]);
       const next = transition(state, "go deeper");
 
@@ -109,20 +122,40 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(next.isGameOver).toBe(false);
     });
 
-    it("stays at stage3_hub_unexplored on 'go back toward foyer'", () => {
+    it("transitions to stage3_foyer_blocked on 'go back' at stage3_hub_unexplored", () => {
       const state = makeState("stage3_hub_unexplored", ["fireplace poker"]);
-      const next = transition(state, "go back toward foyer");
+      const next = transition(state, "go back");
 
-      expect(next.currentNode).toBe("stage3_hub_unexplored");
+      expect(next.currentNode).toBe("stage3_foyer_blocked");
       expect(next.lastDeathType).toBeNull();
+      expect(next.isGameOver).toBe(false);
     });
 
-    it("transitions to stage3_hub on 'look around'", () => {
+    it("transitions to stage3_hub on 'look around' at stage3_hub_unexplored", () => {
       const state = makeState("stage3_hub_unexplored", ["fireplace poker"]);
       const next = transition(state, "look around");
 
       expect(next.currentNode).toBe("stage3_hub");
       expect(next.lastDeathType).toBeNull();
+    });
+
+    it("handles stage3_foyer_blocked: fatal 'go deeper' to stage3_early_death_choice and safe 'look around' to stage3_hub", () => {
+      const blocked = makeState("stage3_foyer_blocked", ["fireplace poker"], {
+        stage3InventorySnapshot: ["fireplace poker"],
+      });
+
+      const fatalDeeper = transition(blocked, "go deeper");
+      expect(fatalDeeper.currentNode).toBe("stage3_early_death_choice");
+      expect(fatalDeeper.lastDeathType).toBe("monster_attack");
+      expect(fatalDeeper.isGameOver).toBe(false);
+
+      const retried = transition(fatalDeeper, "try again");
+      expect(retried.currentNode).toBe("stage3_hub_unexplored");
+      expect(retried.inventory).toEqual(["fireplace poker"]);
+
+      const lookedAround = transition(blocked, "look around");
+      expect(lookedAround.currentNode).toBe("stage3_hub");
+      expect(lookedAround.lastDeathType).toBeNull();
     });
   });
 
@@ -147,7 +180,7 @@ describe("Stage 3 Engine (The Stacks)", () => {
       }
     });
 
-    it("sets row1_safe..row4_safe when peering and allows safe movement into row encounters", () => {
+    it("sets row1_safe, row2_safe, and row4_safe when peering and allows safe movement, while Row 3 stays unsafe and is unconditionally fatal", () => {
       let state = makeState("stage3_hub", ["fireplace poker"]);
 
       state = transition(state, "peer down row 1");
@@ -165,10 +198,12 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(row2.lastDeathType).toBeNull();
 
       state = transition(state, "peer down row 3");
-      expect(state.row3_safe).toBe(true);
+      expect(state.currentNode).toBe("stage3_hub");
+      expect(state.row3_safe).toBe(false);
+      expect(state.lastDeathType).toBeNull();
       const row3 = transition(state, "go down row 3");
-      expect(row3.currentNode).toBe("stage3_row3_encounter");
-      expect(row3.lastDeathType).toBeNull();
+      expect(row3.currentNode).toBe("stage3_death_choice");
+      expect(row3.lastDeathType).toBe("monster_attack");
 
       state = transition(state, "peer down row 4");
       expect(state.row4_safe).toBe(true);
@@ -177,20 +212,33 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(row4.lastDeathType).toBeNull();
     });
 
-    it("respawns at stage3_hub_unexplored and restores Stage 3 snapshot on 'try again' and ends game on 'give up' from stage3_death_choice", () => {
+    it("respawns at stage3_hub, preserves acquired Stage 3 items, and resets all row peering flags on 'try again', and ends game on 'give up' from stage3_death_choice", () => {
       const deathState = makeState(
         "stage3_death_choice",
         ["fireplace poker", "stacks key", "pocketknife", "umbrella"],
         {
           stage3InventorySnapshot: ["fireplace poker", "stacks key"],
           row1_safe: true,
+          row2_safe: true,
+          row3_safe: true,
+          row4_safe: true,
+          row5_safe: true,
         },
       );
 
       const retried = transition(deathState, "try again");
-      expect(retried.currentNode).toBe("stage3_hub_unexplored");
-      expect(retried.inventory).toEqual(["fireplace poker", "stacks key"]);
-      expect(retried.row1_safe).toBe(true);
+      expect(retried.currentNode).toBe("stage3_hub");
+      expect(retried.inventory).toEqual([
+        "fireplace poker",
+        "stacks key",
+        "pocketknife",
+        "umbrella",
+      ]);
+      expect(retried.row1_safe).toBe(false);
+      expect(retried.row2_safe).toBe(false);
+      expect(retried.row3_safe).toBe(false);
+      expect(retried.row4_safe).toBe(false);
+      expect(retried.row5_safe).toBe(false);
       expect(retried.lastDeathType).toBeNull();
       expect(retried.isGameOver).toBe(false);
 
@@ -200,43 +248,45 @@ describe("Stage 3 Engine (The Stacks)", () => {
     });
   });
 
-  describe("Row 5 peek counter and fatal conditions", () => {
-    it("sets row5_safe = true on first 'peer down row 5' and stays at stage3_hub", () => {
+  describe("Row 5 warning and fatal conditions", () => {
+    it("transitions to stage3_row5_warning on 'peer down row 5' at stage3_hub", () => {
       const hub = makeState("stage3_hub", ["fireplace poker"]);
-      const firstPeek = transition(hub, "peer down row 5");
+      const warning = transition(hub, "peer down row 5");
 
-      expect(firstPeek.currentNode).toBe("stage3_hub");
-      expect(firstPeek.row5_safe).toBe(true);
-      expect(firstPeek.lastDeathType).toBeNull();
-      expect(firstPeek.isGameOver).toBe(false);
+      expect(warning.currentNode).toBe("stage3_row5_warning");
+      expect(warning.row5_safe).toBe(false);
+      expect(warning.lastDeathType).toBeNull();
+      expect(warning.isGameOver).toBe(false);
     });
 
-    it("triggers unknown_death and transitions to stage3_death_choice on second 'peer down row 5'", () => {
-      const hub = makeState("stage3_hub", ["fireplace poker"]);
-      const firstPeek = transition(hub, "peer down row 5");
-      const secondPeek = transition(firstPeek, "peer down row 5");
+    it("triggers unknown_death on 'peer' and returns to stage3_hub on 'go back' at stage3_row5_warning", () => {
+      const warning = makeState("stage3_row5_warning", ["fireplace poker"]);
 
-      expect(secondPeek.currentNode).toBe("stage3_death_choice");
-      expect(secondPeek.lastDeathType).toBe("unknown_death");
-      expect(secondPeek.isGameOver).toBe(false);
+      const fatalPeer = transition(warning, "peer");
+      expect(fatalPeer.currentNode).toBe("stage3_death_choice");
+      expect(fatalPeer.lastDeathType).toBe("unknown_death");
+      expect(fatalPeer.isGameOver).toBe(false);
+
+      const backToHub = transition(warning, "go back");
+      expect(backToHub.currentNode).toBe("stage3_hub");
+      expect(backToHub.lastDeathType).toBeNull();
     });
 
-    it("triggers unknown_death and transitions to stage3_death_choice on 'go down row 5' whether or not row5_safe is set", () => {
-      const unpeered = makeState("stage3_hub", ["fireplace poker"], { row5_safe: false });
-      const unpeeredResult = transition(unpeered, "go down row 5");
-      expect(unpeeredResult.currentNode).toBe("stage3_death_choice");
-      expect(unpeeredResult.lastDeathType).toBe("unknown_death");
-
-      const peered = makeState("stage3_hub", ["fireplace poker"], { row5_safe: true });
-      const peeredResult = transition(peered, "go down row 5");
-      expect(peeredResult.currentNode).toBe("stage3_death_choice");
-      expect(peeredResult.lastDeathType).toBe("unknown_death");
+    it("triggers unknown_death and transitions to stage3_death_choice on 'go down row 5' at stage3_hub", () => {
+      const hub = makeState("stage3_hub", ["fireplace poker"]);
+      const result = transition(hub, "go down row 5");
+      expect(result.currentNode).toBe("stage3_death_choice");
+      expect(result.lastDeathType).toBe("unknown_death");
     });
   });
 
-  describe("Row 1 & Row 3 encounters", () => {
-    it("handles Row 1 glass view, fatal reading room entry, and returning to hub", () => {
+  describe("Row 1 encounter", () => {
+    it("handles Row 1 'look around', fatal reading room entry, and returning to hub", () => {
       const row1 = makeState("stage3_row1_encounter", ["fireplace poker"]);
+
+      const lookedAround = transition(row1, "look around");
+      expect(lookedAround.currentNode).toBe("stage3_row1_encounter");
+      expect(lookedAround.lastDeathType).toBeNull();
 
       const fatalDirect = transition(row1, "enter the reading room");
       expect(fatalDirect.currentNode).toBe("stage3_death_choice");
@@ -244,54 +294,38 @@ describe("Stage 3 Engine (The Stacks)", () => {
 
       const backFromEncounter = transition(row1, "go back");
       expect(backFromEncounter.currentNode).toBe("stage3_hub");
-
-      const glassView = transition(row1, "look through the glass door");
-      expect(glassView.currentNode).toBe("stage3_row1_glass_view");
-      expect(glassView.lastDeathType).toBeNull();
-
-      const fatalFromGlass = transition(glassView, "enter the reading room");
-      expect(fatalFromGlass.currentNode).toBe("stage3_death_choice");
-      expect(fatalFromGlass.lastDeathType).toBe("monster_attack");
-
-      const backFromGlass = transition(glassView, "go back");
-      expect(backFromGlass.currentNode).toBe("stage3_hub");
-    });
-
-    it("handles Row 3 fatal 'walk down row' trap and 'return to hub'", () => {
-      const row3 = makeState("stage3_row3_encounter", ["fireplace poker"]);
-
-      const fatalWalk = transition(row3, "walk down row");
-      expect(fatalWalk.currentNode).toBe("stage3_death_choice");
-      expect(fatalWalk.lastDeathType).toBe("monster_attack");
-
-      const returned = transition(row3, "return to hub");
-      expect(returned.currentNode).toBe("stage3_hub");
-      expect(returned.lastDeathType).toBeNull();
+      expect(backFromEncounter.lastDeathType).toBeNull();
     });
   });
 
   describe("Row 2 & Row 4 looting", () => {
-    it("loots Row 2 corpse to acquire pocketknife and umbrella and return to hub", () => {
+    it("loots Row 2 corpse to acquire pocketknife and umbrella and returns to hub via 'go back'", () => {
       const row2 = makeState("stage3_row2_encounter", ["fireplace poker"]);
-      const looted = transition(row2, "search corpse");
 
+      const directBack = transition(row2, "go back");
+      expect(directBack.currentNode).toBe("stage3_hub");
+
+      const looted = transition(row2, "search corpse");
       expect(looted.currentNode).toBe("stage3_row2_looted");
       expect(looted.lastDeathType).toBeNull();
       expect(looted.inventory).toEqual(["fireplace poker", ...ROW2_CORPSE_ITEMS]);
       expect(looted.inventory).toContain("pocketknife");
       expect(looted.inventory).toContain("umbrella");
 
-      const backToHub = transition(looted, "return to hub");
+      const backToHub = transition(looted, "go back");
       expect(backToHub.currentNode).toBe("stage3_hub");
       expect(backToHub.inventory).toEqual(["fireplace poker", ...ROW2_CORPSE_ITEMS]);
     });
 
-    it("loots Row 4 backpack to acquire all 6 items, blocks 'go deeper', and returns to hub", () => {
+    it("loots Row 4 backpack to acquire all 6 items, supports 'look around', blocks 'go deeper', and returns to hub via 'go back'", () => {
       const row4 = makeState("stage3_row4_encounter", ["fireplace poker"]);
 
       const fatalBeforeLoot = transition(row4, "go deeper");
       expect(fatalBeforeLoot.currentNode).toBe("stage3_death_choice");
       expect(fatalBeforeLoot.lastDeathType).toBe("monster_attack");
+
+      const directBack = transition(row4, "go back");
+      expect(directBack.currentNode).toBe("stage3_hub");
 
       const looted = transition(row4, "search backpack");
       expect(looted.currentNode).toBe("stage3_row4_looted");
@@ -304,41 +338,64 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(looted.inventory).toContain("dictionary");
       expect(looted.inventory).toContain("pencil");
 
+      const lookedAround = transition(looted, "look around");
+      expect(lookedAround.currentNode).toBe("stage3_row4_looted");
+      expect(lookedAround.lastDeathType).toBeNull();
+
       const fatalAfterLoot = transition(looted, "go deeper");
       expect(fatalAfterLoot.currentNode).toBe("stage3_death_choice");
       expect(fatalAfterLoot.lastDeathType).toBe("monster_attack");
 
-      const backToHub = transition(looted, "return to hub");
+      const backToHub = transition(looted, "go back");
       expect(backToHub.currentNode).toBe("stage3_hub");
       expect(backToHub.inventory).toEqual(["fireplace poker", ...ROW4_BACKPACK_ITEMS]);
     });
   });
 
-  describe("Row 2 flashlight check (stage3_row2_flashlight_check -> Stage 4)", () => {
-    it("blocks progression with monster_attack and transitions to stage3_death_choice when moving deeper in Row 2 without flashlight", () => {
+  describe("Row 2 flashlight check & stage3_row2_dark_warning (stage3_row2_flashlight_check -> Stage 4)", () => {
+    it("routes to non-fatal stage3_row2_dark_warning when going deeper in Row 2 without flashlight", () => {
       const row2Unlooted = makeState("stage3_row2_encounter", ["fireplace poker"]);
-      const failedFromEncounter = transition(row2Unlooted, "move deeper");
-      expect(failedFromEncounter.currentNode).toBe("stage3_death_choice");
-      expect(failedFromEncounter.lastDeathType).toBe("monster_attack");
+      const warningFromEncounter = transition(row2Unlooted, "go deeper");
+      expect(warningFromEncounter.currentNode).toBe("stage3_row2_dark_warning");
+      expect(warningFromEncounter.lastDeathType).toBeNull();
+      expect(warningFromEncounter.isGameOver).toBe(false);
 
       const row2LootedNoFlashlight = makeState("stage3_row2_looted", [
         "fireplace poker",
         "pocketknife",
         "umbrella",
       ]);
-      const failedFromLooted = transition(row2LootedNoFlashlight, "move deeper");
-      expect(failedFromLooted.currentNode).toBe("stage3_death_choice");
-      expect(failedFromLooted.lastDeathType).toBe("monster_attack");
+      const warningFromLooted = transition(row2LootedNoFlashlight, "go deeper");
+      expect(warningFromLooted.currentNode).toBe("stage3_row2_dark_warning");
+      expect(warningFromLooted.lastDeathType).toBeNull();
+      expect(warningFromLooted.isGameOver).toBe(false);
     });
 
-    it("advances to stage4_entry when moving deeper in Row 2 with flashlight in inventory", () => {
+    it("handles stage3_row2_dark_warning: fatal 'go deeper' to stage3_death_choice and safe 'go back' to stage3_hub", () => {
+      const darkWarning = makeState("stage3_row2_dark_warning", [
+        "fireplace poker",
+        "pocketknife",
+        "umbrella",
+      ]);
+
+      const fatalDeeper = transition(darkWarning, "go deeper");
+      expect(fatalDeeper.currentNode).toBe("stage3_death_choice");
+      expect(fatalDeeper.lastDeathType).toBe("monster_attack");
+      expect(fatalDeeper.isGameOver).toBe(false);
+
+      const backToHub = transition(darkWarning, "go back");
+      expect(backToHub.currentNode).toBe("stage3_hub");
+      expect(backToHub.lastDeathType).toBeNull();
+    });
+
+    it("advances to stage4_entry when going deeper in Row 2 with flashlight in inventory", () => {
       const row2WithFlashlight = makeState("stage3_row2_looted", [
         "fireplace poker",
         "pocketknife",
         "umbrella",
         "flashlight",
       ]);
-      const next = transition(row2WithFlashlight, "move deeper");
+      const next = transition(row2WithFlashlight, "go deeper");
 
       expect(next.currentNode).toBe("stage4_entry");
       expect(next.lastDeathType).toBeNull();
@@ -348,9 +405,9 @@ describe("Stage 3 Engine (The Stacks)", () => {
 
     it("evaluates direct transitions from stage3_row2_flashlight_check based on flashlight presence", () => {
       const checkNoFlashlight = makeState("stage3_row2_flashlight_check", ["fireplace poker"]);
-      const blocked = transition(checkNoFlashlight, "1");
-      expect(blocked.currentNode).toBe("stage3_death_choice");
-      expect(blocked.lastDeathType).toBe("monster_attack");
+      const warning = transition(checkNoFlashlight, "1");
+      expect(warning.currentNode).toBe("stage3_row2_dark_warning");
+      expect(warning.lastDeathType).toBeNull();
 
       const checkWithFlashlight = makeState("stage3_row2_flashlight_check", [
         "fireplace poker",
@@ -366,9 +423,33 @@ describe("Stage 3 Engine (The Stacks)", () => {
     it("returns Stage 3 choices via getAvailableChoices", () => {
       expect(getAvailableChoices("stage3_hub_unexplored")).toEqual([
         "go deeper",
-        "go back toward foyer",
+        "go back",
         "look around",
       ]);
+      expect(getAvailableChoices("stage3_foyer_blocked")).toEqual(["go deeper", "look around"]);
+      expect(getAvailableChoices("stage3_row1_encounter")).toEqual([
+        "look around",
+        "enter the reading room",
+        "go back",
+      ]);
+      expect(getAvailableChoices("stage3_row2_encounter")).toEqual([
+        "search corpse",
+        "go deeper",
+        "go back",
+      ]);
+      expect(getAvailableChoices("stage3_row2_looted")).toEqual(["go deeper", "go back"]);
+      expect(getAvailableChoices("stage3_row2_dark_warning")).toEqual(["go deeper", "go back"]);
+      expect(getAvailableChoices("stage3_row4_encounter")).toEqual([
+        "search backpack",
+        "go deeper",
+        "go back",
+      ]);
+      expect(getAvailableChoices("stage3_row4_looted")).toEqual([
+        "look around",
+        "go deeper",
+        "go back",
+      ]);
+      expect(getAvailableChoices("stage3_row5_warning")).toEqual(["peer", "go back"]);
       expect(getAvailableChoices("stage3_death_choice")).toEqual(["try again", "give up"]);
     });
 
@@ -386,31 +467,50 @@ describe("Stage 3 Engine (The Stacks)", () => {
       const customCatalog: ContentCatalog = {
         intro: ["intro"],
         nodes: {
+          stage3_early_death_choice: ["early-death-node"],
+          stage3_foyer_blocked: ["foyer-blocked-node"],
           stage3_hub: ["hub-node"],
           stage3_death_choice: ["stage3-death-node"],
           stage3_row2_flashlight_check: ["flashlight-check-node"],
+          stage3_row2_dark_warning: ["dark-warning-node"],
+          stage3_row5_warning: ["row5-warning-node"],
           stage4_entry: ["stage4-entry-node"],
         },
         death_screens: {
+          stage3_foyer_blocked__go_deeper: ["foyer-blocked-death"],
           stage3_hub__go_down_row_1__else: ["row1-blind-death"],
-          stage3_row2_flashlight_check__no_flashlight_check: ["no-flashlight-death"],
+          stage3_hub__go_down_row_3: ["row3-death"],
+          stage3_row2_dark_warning__go_deeper: ["dark-warning-death"],
+          stage3_row5_warning__peer: ["row5-peer-death"],
         },
         parser_fallbacks: ["fallback"],
       };
 
+      const foyerBlockedDeath = transition(
+        makeState("stage3_foyer_blocked"),
+        "go deeper",
+        customCatalog,
+      );
+      expect(foyerBlockedDeath.output).toEqual(["foyer-blocked-death", "early-death-node"]);
+
       const blindRow1 = transition(makeState("stage3_hub"), "go down row 1", customCatalog);
       expect(blindRow1.output).toEqual(["row1-blind-death", "stage3-death-node"]);
 
-      const noFlashlight = transition(
-        makeState("stage3_row2_looted"),
-        "move deeper",
+      const row3Death = transition(makeState("stage3_hub"), "go down row 3", customCatalog);
+      expect(row3Death.output).toEqual(["row3-death", "stage3-death-node"]);
+
+      const noFlashlight = transition(makeState("stage3_row2_looted"), "go deeper", customCatalog);
+      expect(noFlashlight.output).toEqual(["flashlight-check-node", "dark-warning-node"]);
+
+      const darkWarningDeath = transition(
+        makeState("stage3_row2_dark_warning"),
+        "go deeper",
         customCatalog,
       );
-      expect(noFlashlight.output).toEqual([
-        "flashlight-check-node",
-        "no-flashlight-death",
-        "stage3-death-node",
-      ]);
+      expect(darkWarningDeath.output).toEqual(["dark-warning-death", "stage3-death-node"]);
+
+      const row5PeerDeath = transition(makeState("stage3_row5_warning"), "peer", customCatalog);
+      expect(row5PeerDeath.output).toEqual(["row5-peer-death", "stage3-death-node"]);
     });
   });
 });
