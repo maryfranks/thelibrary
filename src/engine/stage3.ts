@@ -307,11 +307,7 @@ function resolveArrivalCheck(
       isGameOver: false,
       isWin: false,
       lastDeathType: null,
-      output: [
-        ...prefixLines,
-        ...arrivalLines,
-        ...getNodeLines(nextNode, content),
-      ],
+      output: [...prefixLines, ...arrivalLines, ...getNodeLines(nextNode, content)],
     };
   }
 
@@ -504,6 +500,8 @@ export function transitionStage3(
     });
   }
 
+  const actionKey = `${state.currentNode}__${matchedChoice.command.replace(/ /g, "_")}`;
+  const actionLines = getNodeLines(actionKey as NodeId, content);
   const deathLines = matchedChoice.deathType
     ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
     : [];
@@ -516,6 +514,6 @@ export function transitionStage3(
     isGameOver: resolvedNode === "game_over",
     isWin: resolvedNode === "game_win",
     lastDeathType: matchedChoice.deathType ?? null,
-    output: [...deathLines, ...nodeLines],
+    output: [...actionLines, ...deathLines, ...nodeLines],
   };
 }
