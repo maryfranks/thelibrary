@@ -112,64 +112,69 @@
   - [With Poker] -> [stage3_hub_unexplored]
 
 - [stage3_early_death_choice] Death Prompt (Early Stage 3)
-  - Choice 1: "try again" -> restores Stage 2 snapshot -> [stage2_foyer] (allows acquiring fireplace poker)
+  - Choice 1: "try again" -> restores Stage 2 snapshot -> [stage2_foyer]
   - Choice 2: "give up" -> [game_over]
 
 - [stage3_hub_unexplored] Stacks (Main Hub - Unexplored)
   - Choice 1: "go deeper" -> [DEAD: monster_attack] -> [stage3_early_death_choice]
-  - Choice 2: "go back toward foyer" -> [stage3_hub_unexplored] (Blocked / stays at hub)
+  - Choice 2: "go back" -> [stage3_foyer_blocked]
   - Choice 3: "look around" -> [stage3_hub]
+
+- [stage3_foyer_blocked] Stacks (Foyer Blocked)
+  - Choice 1: "go deeper" -> [DEAD: monster_attack] -> [stage3_early_death_choice]
+  - Choice 2: "look around" -> [stage3_hub]
 
 - [stage3_hub] Stacks (Main Hub - Explored)
   - Choice 1: "peer down row 1" -> [Set row1_safe = true] -> [stage3_hub]
   - Choice 2: "peer down row 2" -> [Set row2_safe = true] -> [stage3_hub]
-  - Choice 3: "peer down row 3" -> [Set row3_safe = true] -> [stage3_hub]
+  - Choice 3: "peer down row 3" -> [stage3_hub]
   - Choice 4: "peer down row 4" -> [Set row4_safe = true] -> [stage3_hub]
-  - Choice 5: "peer down row 5" -> [If row5_safe == false: Set row5_safe = true | Else: [DEAD: unknown_death] -> [stage3_death_choice]] -> [stage3_hub]
+  - Choice 5: "peer down row 5" -> [stage3_row5_warning]
   - Choice 6: "go down row 1" -> [If row1_safe == true -> [stage3_row1_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
   - Choice 7: "go down row 2" -> [If row2_safe == true -> [stage3_row2_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
-  - Choice 8: "go down row 3" -> [If row3_safe == true -> [stage3_row3_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
+  - Choice 8: "go down row 3" -> [DEAD: monster_attack] -> [stage3_death_choice]
   - Choice 9: "go down row 4" -> [If row4_safe == true -> [stage3_row4_encounter] | Else -> [DEAD: monster_attack] -> [stage3_death_choice]]
   - Choice 10: "go down row 5" -> [DEAD: unknown_death] -> [stage3_death_choice]
 
-- [stage3_death_choice] Death Prompt (Stage 3)
-  - Choice 1: "try again" -> restores Stage 3 snapshot -> [stage3_hub_unexplored]
+- [stage3_death_choice] Death Prompt (Stage 3). Retrying preserves Stage 3 items and resets row peering flags.
+  - Choice 1: "try again" -> [stage3_hub]
   - Choice 2: "give up" -> [game_over]
 
 - [stage3_row1_encounter] Row 1 (Reading Room Entrance)
-  - Choice 1: "look through the glass door" -> [stage3_row1_glass_view]
+  - Choice 1: "look around" -> [stage3_row1_encounter]
   - Choice 2: "enter the reading room" -> [DEAD: monster_attack] -> [stage3_death_choice]
   - Choice 3: "go back" -> [stage3_hub]
 
-- [stage3_row1_glass_view] Row 1 (Reading Room Viewed)
-  - Choice 1: "enter the reading room" -> [DEAD: monster_attack] -> [stage3_death_choice]
-  - Choice 2: "go back" -> [stage3_hub]
-
 - [stage3_row2_encounter] Row 2 (Corpse Corridor)
   - Choice 1: "search corpse" -> [stage3_row2_looted] (Acquire: pocketknife, umbrella)
-  - Choice 2: "move deeper" -> [stage3_row2_flashlight_check]
-  - Choice 3: "return to hub" -> [stage3_hub]
+  - Choice 2: "go deeper" -> [stage3_row2_flashlight_check]
+  - Choice 3: "go back" -> [stage3_hub]
 
 - [stage3_row2_looted] Row 2 (Corpse Corridor - Looted)
-  - Choice 1: "move deeper" -> [stage3_row2_flashlight_check]
-  - Choice 2: "return to hub" -> [stage3_hub]
+  - Choice 1: "go deeper" -> [stage3_row2_flashlight_check]
+  - Choice 2: "go back" -> [stage3_hub]
 
-- [stage3_row2_flashlight_check] Row 2 (Deeper Flashlight Check; auto-resolves on entry, no menu)
-  - [No Flashlight] -> [DEAD: monster_attack] -> [stage3_death_choice]
+- [stage3_row2_flashlight_check] Row 2 (Flashlight Gate; auto-resolves on entry, no menu)
   - [With Flashlight] -> [stage4_entry]
+  - [No Flashlight] -> [stage3_row2_dark_warning]
 
-- [stage3_row3_encounter] Row 3 (Misleading Safe Row)
-  - Choice 1: "walk down row" -> [DEAD: monster_attack] -> [stage3_death_choice]
-  - Choice 2: "return to hub" -> [stage3_hub]
+- [stage3_row2_dark_warning] Row 2 (Dark Corridor Warning)
+  - Choice 1: "go deeper" -> [DEAD: monster_attack] -> [stage3_death_choice]
+  - Choice 2: "go back" -> [stage3_hub]
 
 - [stage3_row4_encounter] Row 4 (Narrow Aisle)
   - Choice 1: "search backpack" -> [stage3_row4_looted] (Acquire: water, flashlight, second snack, notebook, dictionary, pencil)
   - Choice 2: "go deeper" -> [DEAD: monster_attack] -> [stage3_death_choice]
-  - Choice 3: "return to hub" -> [stage3_hub]
+  - Choice 3: "go back" -> [stage3_hub]
 
 - [stage3_row4_looted] Row 4 (Narrow Aisle - Looted)
-  - Choice 1: "go deeper" -> [DEAD: monster_attack] -> [stage3_death_choice]
-  - Choice 2: "return to hub" -> [stage3_hub]
+  - Choice 1: "look around" -> [stage3_row4_looted]
+  - Choice 2: "go deeper" -> [DEAD: monster_attack] -> [stage3_death_choice]
+  - Choice 3: "go back" -> [stage3_hub]
+
+- [stage3_row5_warning] Row 5 (Unnatural Darkness Warning)
+  - Choice 1: "peer" -> [DEAD: unknown_death] -> [stage3_death_choice]
+  - Choice 2: "go back" -> [stage3_hub]
 
 - [stage4_entry] Deep Stacks (Initial Maze Entry)
   - Choice 1: "go deeper" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
