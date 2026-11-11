@@ -163,7 +163,10 @@
       "You peer down row 4. It looks narrow, cramped, and choked with leaning bookshelves. A discarded backpack rests against a shelf near the entrance."
     ],
     "stage3_row1_encounter": [
-      "You reach the heavy glass door leading into the reading room. Looking through the glass reveals unmistakable evidence of a creature lurking inside."
+      "You reach the heavy glass door leading into the reading room."
+    ],
+    "stage3_row1_looked": [
+      "Looking through the glass reveals unmistakable evidence of a creature lurking inside."
     ],
     "stage3_row2_encounter": [
       "You are in a dim corridor. A fallen figure lies on the floor ahead."
