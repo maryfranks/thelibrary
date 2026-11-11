@@ -1,21 +1,22 @@
 {
   "intro": [
-    "Walking home you encounter a strange storm. Intense lightning makes you seek cover.",
-    "Up ahead you see an old library. It doesn't look open but you might be able",
-    "to take cover on the porch. You try the door and are surprised to find it unlocked.",
-    "You open the door and slip inside."
+    "Walking home you encounter a strange storm. Intense lightning makes you",
+    "seek cover. Up ahead you see an old library. It doesn't look open but you",
+    "might be able to take cover on the porch. You try the door and are",
+    "surprised to find it unlocked. You open the door and slip inside."
   ],
   "nodes": {
     "stage1_vestibule": [
-      "You hear the door slam shut behind you and the lock slide into place. You try",
-      "the handle but the door is locked. You find yourself in a large entryway.",
-      "The library is strangely deserted but there are books and papers strewn about.",
-      "You have a bad feeling about this..."
+      "You hear the door slam shut behind you and the lock slide into place.",
+      "You try the handle but the door is locked. You find yourself in a",
+      "large entryway. The library is strangely deserted but there are books",
+      "and papers strewn about. You have a bad feeling about this..."
     ],
     "stage1_vestibule_respawn": [
-      "Oh no! Died so soon? Where is the fun in that. Let's try this again. Shrieking",
-      "into the dark didn't work out so well, did it?",
-      "You're stuck in the Vestibule. Maybe look around before you get us eaten again."
+      "Oh no! Died so soon? Where is the fun in that. Let's try this again.",
+      "Shrieking into the dark didn't work out so well, did it?",
+      "You're stuck in the Vestibule. Maybe look around before you get us", 
+      "eaten again."
     ],
     "stage1_vestibule_searched": [
       "The vestibule is mostly empty except for some books and newspapers.",
@@ -64,45 +65,48 @@
     ],
     "stage2_desk_looted": [
       "The circulation desk is mostly empty, surprising for a library. There's no",
-      "computers of any kind. How are they checking out the books? There almost",
+      "computers of any kind. How are they checking out the books? There's almost",
       "nothing on the desk and the drawers are empty. Hanging on a hook is a key",
       "labeled 'stacks'. Not the front door key, but maybe the stacks will lead",
       "to another way out."
     ],
     "stage2_both_looted": [
       "There's nothing else here except all these newspapers on the ground. They're",
-      "all yellowed with age. You pick one up, 1802. Maybe this was an archive of some",
-      "kind. You don't see a way out from here, but maybe there's something on the other",
-      "side of the room."
+      "all yellowed with age. You pick one up, 1802. Maybe this was an archive of",
+      "some kind. You don't see a way out from here, but maybe there's something on",
+      "the other side of the room."
     ],
     "stage2_periodicals_check": [
-      "You walk into the periodicals section, moving slowly, extremely aware of the sounds",
-      "of your footsteps crinkling the newspaper under your feet. You try not to step on",
-      "them, but you can't help it. They're all from 1802. What kind of library is this?",
-      "You stop because you hear something moving in the rows between the shelves. You can't",
-      "see it, You don't know if you want to, but there is defnitely something big crawling",
-      "down the next aisle."
+      "You walk into the periodicals section, moving slowly, extremely aware of the",
+      "sounds of your footsteps crinkling the newspaper under your feet. You try not",
+      "to step on them, but you can't help it. They're all from 1802. What kind of",
+      "library is this? You stop because you hear something moving in the rows between",
+      "the shelves. You can't see it, You don't know if you want to, but there is defnitely",
+      "something big crawling down the next aisle."
     ],
     "stage2_reading_room_door": [
-      "To the left you see a large double doorway with a bronze plaque that says 'READING ROOM."
+      "To the left you see a large double doorway with a bronze plaque that says",
+      "'READING ROOM."
     ],
     "stage2_reading_room_locked": [
-      "You try the handle, careful not to make too much noise. It doesn't move, it must be locked."
+      "You try the handle, careful not to make too much noise. It doesn't move, it must be",
+      "locked."
     ],
     "stage2_fireplace_revealed": [
       "A little ahead of you, you see an antique fireplace."
     ],
     "stage2_poker_acquired": [
-      "In a small black stand next to the hearth, you see a fireplace poker. I looks like a much",
-      "more formidable weapon than your mop, so you gently rest the mop against the bricks and",
-      "pick up the fireplace poker."
+      "In a small black stand next to the hearth, you see a fireplace poker. I looks like",
+      "a much more formidable weapon than your mop, so you gently rest the mop against",
+      "the bricks and pick up the fireplace poker."
     ],
     "stage2_stacks_door_check": [
       "Up ahead you see a red door marked 'STACKS'."
     ],
     "stage2_stacks_door_locked_no_key": [
-      "You approach the door and try the handle but the door is locked. You don't have a key.",
-      "Your about to turn around when you hear something large come up behind you."
+      "You approach the door and try the handle but the door is locked. You don't have",
+      "a key. You're about to turn around when you hear something large come up behind",
+      "you."
     ],
     "stage2_respawn_no_mop": [
       "You wake up back on the wrong side of the turnstiles, bruised and deeply",
@@ -134,35 +138,35 @@
     "stage3_hub_unexplored": [
       "You are at the unexplored main hub of the stacks."
     ],
+    "stage3_foyer_blocked": [
+      "You try to retreat toward the foyer, but you find the monster from earlier waiting for you near the door, forcing you back into the stacks."
+    ],
     "stage3_hub": [
-      "You are at the explored main hub of the stacks."
+      "You are at the main hub of the stacks. Dimly lit aisles stretch ahead."
     ],
     "stage3_death_choice": [
       "You have died in the stacks."
     ],
     "stage3_row1_encounter": [
-      "You are at Row 1 (Reading Room Entrance)."
-    ],
-    "stage3_row1_glass_view": [
-      "You look through the glass door of Row 1."
+      "You reach the heavy glass door leading into the reading room. Looking through the glass reveals unmistakable evidence of a creature lurking inside."
     ],
     "stage3_row2_encounter": [
-      "You are at Row 2 (Corpse Corridor)."
+      "You are in a dim corridor. A fallen figure lies on the floor ahead."
     ],
     "stage3_row2_looted": [
-      "You have looted the corpse in Row 2."
+      "You have searched the corpse and gathered what you could. The corridor stretches into darkness ahead."
     ],
-    "stage3_row2_flashlight_check": [
-      "You check for a flashlight to proceed deeper."
-    ],
-    "stage3_row3_encounter": [
-      "You are at Row 3 (Misleading Safe Row)."
+    "stage3_row2_dark_warning": [
+      "It looks dark ahead. I wonder if there's a lightswitch somewhere back there."
     ],
     "stage3_row4_encounter": [
-      "You are at Row 4 (Narrow Aisle)."
+      "You move into a cramped, narrow aisle choked with shelving. A discarded backpack rests against a shelf."
     ],
     "stage3_row4_looted": [
-      "You have looted the backpack in Row 4."
+      "You have looted the pack. Looking around, the aisle feels tight, suffocating, and claustrophobic."
+    ],
+    "stage3_row5_warning": [
+      "Your hair stands on end. There is something profoundly unnatural about the darkness down this row."
     ],
     "stage4_entry": [
       "You enter the deep stacks maze."
@@ -307,10 +311,13 @@
       "Nice or not, it's hungry and it eats you. You die."
     ],
     "stage3_arrival__with_mop_check": [
-      "The mop fails you against the hazard."
+      "You tripped over the unwieldy mop while trying to swing at the creature, resulting in a fatal fall."
+    ],
+    "stage3_foyer_blocked__go_deeper": [
+      "Panicking at the monster blocking the foyer, you rushed blindly deeper into the stacks without looking around, and something waiting in the shadows struck instantly."
     ],
     "stage3_hub_unexplored__go_deeper": [
-      "Going deeper blindly leads to attack."
+      "You rushed blindly into the stacks without looking around, and something waiting in the shadows struck instantly."
     ],
     "stage3_hub__go_down_row_1__else": [
       "You attempt to go down row 1 without peering first and are attacked."
@@ -318,32 +325,29 @@
     "stage3_hub__go_down_row_2__else": [
       "You attempt to go down row 2 without peering first and are attacked."
     ],
-    "stage3_hub__go_down_row_3__else": [
-      "You attempt to go down row 3 without peering first and are attacked."
+    "stage3_hub__go_down_row_3": [
+      "Something lurking just out of sight in the middle path killed you."
     ],
     "stage3_hub__go_down_row_4__else": [
       "You attempt to go down row 4 without peering first and are attacked."
     ],
     "stage3_hub__go_down_row_5": [
-      "Going down row 5 proves fatal."
+      "You ventured into the unnatural blackness of row 5. You never even saw what killed you."
     ],
     "stage3_row1_encounter__enter_the_reading_room": [
-      "A monster attacks you inside."
+      "Something giant and frightening inside the reading room killed you."
     ],
-    "stage3_row1_glass_view__enter_the_reading_room": [
-      "Entering proves fatal."
-    ],
-    "stage3_row2_flashlight_check__no_flashlight_check": [
-      "It is too dark; you are attacked."
-    ],
-    "stage3_row3_encounter__walk_down_row": [
-      "It was a trap."
+    "stage3_row2_dark_warning__go_deeper": [
+      "Refusing to heed the warning, you tried to navigate the dark corridor without your flashlight, and something in the shadows got you in the pitch black."
     ],
     "stage3_row4_encounter__go_deeper": [
-      "You are attacked going deeper."
+      "The thing lurking in row 3 ambushed you when you reached the end of row 4."
     ],
     "stage3_row4_looted__go_deeper": [
-      "Going deeper here is fatal."
+      "The thing lurking in row 3 ambushed you when you reached the end of row 4."
+    ],
+    "stage3_row5_warning__peer": [
+      "You peer into row 5 a second time. Everything goes completely black before you can react, and you don't know what killed you."
     ],
     "stage4_entry__go_deeper": [
       "An environmental hazard claims you."
