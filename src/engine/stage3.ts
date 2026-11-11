@@ -154,8 +154,19 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
   stage3_row1_encounter: [
     {
       command: "look around",
-      target: "stage3_row1_encounter",
+      target: "stage3_row1_looked",
     },
+    {
+      command: "enter the reading room",
+      target: "stage3_death_choice",
+      deathType: "monster_attack",
+    },
+    {
+      command: "go back",
+      target: "stage3_hub",
+    },
+  ],
+  stage3_row1_looked: [
     {
       command: "enter the reading room",
       target: "stage3_death_choice",
@@ -298,6 +309,7 @@ function resolveArrivalCheck(
   const hasPoker = inventory.includes("fireplace poker");
   if (hasPoker) {
     const nextNode: NodeId = "stage3_hub_unexplored";
+    const arrivalLines = getNodeLines("stage3_arrival", content);
     return {
       ...state,
       currentNode: nextNode,
@@ -306,7 +318,7 @@ function resolveArrivalCheck(
       isGameOver: false,
       isWin: false,
       lastDeathType: null,
-      output: [...prefixLines, ...getNodeLines(nextNode, content)],
+      output: [...prefixLines, ...arrivalLines, ...getNodeLines(nextNode, content)],
     };
   }
 
@@ -499,10 +511,15 @@ export function transitionStage3(
     });
   }
 
+  const actionKey = `${state.currentNode}__${matchedChoice.command.replace(/ /g, "_")}`;
+  const actionLines = getNodeLines(actionKey as NodeId, content);
   const deathLines = matchedChoice.deathType
     ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
     : [];
-  const nodeLines = getNodeLines(resolvedNode, content);
+  const nodeLines =
+    actionLines.length > 0 && resolvedNode === "stage3_hub"
+      ? []
+      : getNodeLines(resolvedNode, content);
 
   return {
     ...nextState,
@@ -511,6 +528,6 @@ export function transitionStage3(
     isGameOver: resolvedNode === "game_over",
     isWin: resolvedNode === "game_win",
     lastDeathType: matchedChoice.deathType ?? null,
-    output: [...deathLines, ...nodeLines],
+    output: [...actionLines, ...deathLines, ...nodeLines],
   };
 }

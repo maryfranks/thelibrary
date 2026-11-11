@@ -142,9 +142,13 @@
   - Choice 2: "give up" -> [game_over]
 
 - [stage3_row1_encounter] Row 1 (Reading Room Entrance)
-  - Choice 1: "look around" -> [stage3_row1_encounter]
+  - Choice 1: "look around" -> [sstage3_row1_looked]
   - Choice 2: "enter the reading room" -> [DEAD: monster_attack] -> [stage3_death_choice]
   - Choice 3: "go back" -> [stage3_hub]
+
+- [stage3_row1_looked] Row 1 (Evidence of the monster)
+  - Choice 1: "enter the reading room" -> [DEAD: monster_attack] -> [stage3_death_choice]
+  - Choice 2: "go back" -> [stage3_hub].
 
 - [stage3_row2_encounter] Row 2 (Corpse Corridor)
   - Choice 1: "search corpse" -> [stage3_row2_looted] (Acquire: pocketknife, umbrella)
