@@ -150,6 +150,18 @@
     "stage3_death_choice": [
       "You have died in the stacks."
     ],
+    "stage3_hub__peer_down_row_1": [
+      "You peer down row 1. Through the dim light, you see a heavy glass double door leading into what looks like the reading room."
+    ],
+    "stage3_hub__peer_down_row_2": [
+      "You peer down row 2. It opens into a dim, quiet corridor. In the distance, you can barely make out a fallen figure lying on the floor."
+    ],
+    "stage3_hub__peer_down_row_3": [
+      "You peer down row 3. The aisle appears clean, orderly, and completely unremarkable—almost suspiciously so."
+    ],
+    "stage3_hub__peer_down_row_4": [
+      "You peer down row 4. It looks narrow, cramped, and choked with leaning bookshelves. A discarded backpack rests against a shelf near the entrance."
+    ],
     "stage3_row1_encounter": [
       "You reach the heavy glass door leading into the reading room. Looking through the glass reveals unmistakable evidence of a creature lurking inside."
     ],
