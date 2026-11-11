@@ -112,8 +112,9 @@
   - [With Poker] -> [stage3_hub_unexplored]
 
 - [stage3_early_death_choice] Death Prompt (Early Stage 3)
-  - Choice 1: "try again" -> restores Stage 2 snapshot -> [stage2_foyer]
+  - Choice 1: "try again" -> [If died at arrival -> restores Stage 2 snapshot -> [stage2_foyer] | Else -> restores Stage 3 snapshot -> [stage3_hub_unexplored]]
   - Choice 2: "give up" -> [game_over]
+
 
 - [stage3_hub_unexplored] Stacks (Main Hub - Unexplored)
   - Choice 1: "go deeper" -> [DEAD: monster_attack] -> [stage3_early_death_choice]
