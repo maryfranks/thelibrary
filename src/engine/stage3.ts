@@ -154,8 +154,19 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
   stage3_row1_encounter: [
     {
       command: "look around",
-      target: "stage3_row1_encounter",
+      target: "stage3_row1_looked",
     },
+    {
+      command: "enter the reading room",
+      target: "stage3_death_choice",
+      deathType: "monster_attack",
+    },
+    {
+      command: "go back",
+      target: "stage3_hub",
+    },
+  ],
+  stage3_row1_looked: [
     {
       command: "enter the reading room",
       target: "stage3_death_choice",

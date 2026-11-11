@@ -290,8 +290,16 @@ describe("Stage 3 Engine (The Stacks)", () => {
       const row1 = makeState("stage3_row1_encounter", ["fireplace poker"]);
 
       const lookedAround = transition(row1, "look around");
-      expect(lookedAround.currentNode).toBe("stage3_row1_encounter");
+      expect(lookedAround.currentNode).toBe("stage3_row1_looked");
       expect(lookedAround.lastDeathType).toBeNull();
+
+      const fatalAfterLook = transition(lookedAround, "enter the reading room");
+      expect(fatalAfterLook.currentNode).toBe("stage3_death_choice");
+      expect(fatalAfterLook.lastDeathType).toBe("monster_attack");
+
+      const backAfterLook = transition(lookedAround, "go back");
+      expect(backAfterLook.currentNode).toBe("stage3_hub");
+      expect(backAfterLook.lastDeathType).toBeNull();
 
       const fatalDirect = transition(row1, "enter the reading room");
       expect(fatalDirect.currentNode).toBe("stage3_death_choice");
@@ -434,6 +442,10 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(getAvailableChoices("stage3_foyer_blocked")).toEqual(["go deeper", "look around"]);
       expect(getAvailableChoices("stage3_row1_encounter")).toEqual([
         "look around",
+        "enter the reading room",
+        "go back",
+      ]);
+      expect(getAvailableChoices("stage3_row1_looked")).toEqual([
         "enter the reading room",
         "go back",
       ]);

@@ -35,6 +35,7 @@ export type Stage3NodeId =
   | "stage3_hub"
   | "stage3_death_choice"
   | "stage3_row1_encounter"
+  | "stage3_row1_looked"
   | "stage3_row2_encounter"
   | "stage3_row2_looted"
   | "stage3_row2_flashlight_check"
