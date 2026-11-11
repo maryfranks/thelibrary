@@ -188,20 +188,14 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(state.currentNode).toBe("stage3_hub");
       expect(state.row1_safe).toBe(true);
       expect(state.lastDeathType).toBeNull();
-      expect(state.output).toEqual([
-        ...catalog.nodes["stage3_hub__peer_down_row_1"],
-        ...catalog.nodes["stage3_hub"],
-      ]);
+      expect(state.output).toEqual([...catalog.nodes["stage3_hub__peer_down_row_1"]]);
       const row1 = transition(state, "go down row 1");
       expect(row1.currentNode).toBe("stage3_row1_encounter");
       expect(row1.lastDeathType).toBeNull();
 
       state = transition(state, "peer down row 2");
       expect(state.row2_safe).toBe(true);
-      expect(state.output).toEqual([
-        ...catalog.nodes["stage3_hub__peer_down_row_2"],
-        ...catalog.nodes["stage3_hub"],
-      ]);
+      expect(state.output).toEqual([...catalog.nodes["stage3_hub__peer_down_row_2"]]);
       const row2 = transition(state, "go down row 2");
       expect(row2.currentNode).toBe("stage3_row2_encounter");
       expect(row2.lastDeathType).toBeNull();
@@ -210,20 +204,14 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(state.currentNode).toBe("stage3_hub");
       expect(state.row3_safe).toBe(false);
       expect(state.lastDeathType).toBeNull();
-      expect(state.output).toEqual([
-        ...catalog.nodes["stage3_hub__peer_down_row_3"],
-        ...catalog.nodes["stage3_hub"],
-      ]);
+      expect(state.output).toEqual([...catalog.nodes["stage3_hub__peer_down_row_3"]]);
       const row3 = transition(state, "go down row 3");
       expect(row3.currentNode).toBe("stage3_death_choice");
       expect(row3.lastDeathType).toBe("monster_attack");
 
       state = transition(state, "peer down row 4");
       expect(state.row4_safe).toBe(true);
-      expect(state.output).toEqual([
-        ...catalog.nodes["stage3_hub__peer_down_row_4"],
-        ...catalog.nodes["stage3_hub"],
-      ]);
+      expect(state.output).toEqual([...catalog.nodes["stage3_hub__peer_down_row_4"]]);
       const row4 = transition(state, "go down row 4");
       expect(row4.currentNode).toBe("stage3_row4_encounter");
       expect(row4.lastDeathType).toBeNull();
@@ -512,7 +500,14 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(foyerBlockedDeath.output).toEqual(["foyer-blocked-death", "early-death-node"]);
 
       const peerRow1 = transition(makeState("stage3_hub"), "peer down row 1", customCatalog);
-      expect(peerRow1.output).toEqual(["peer-row-1-action", "hub-node"]);
+      expect(peerRow1.output).toEqual(["peer-row-1-action"]);
+
+      const lookAroundToHub = transition(
+        makeState("stage3_foyer_blocked"),
+        "look around",
+        customCatalog,
+      );
+      expect(lookAroundToHub.output).toEqual(["hub-node"]);
 
       const blindRow1 = transition(makeState("stage3_hub"), "go down row 1", customCatalog);
       expect(blindRow1.output).toEqual(["row1-blind-death", "stage3-death-node"]);

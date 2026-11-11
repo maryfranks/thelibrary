@@ -505,7 +505,10 @@ export function transitionStage3(
   const deathLines = matchedChoice.deathType
     ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
     : [];
-  const nodeLines = getNodeLines(resolvedNode, content);
+  const nodeLines =
+    actionLines.length > 0 && resolvedNode === "stage3_hub"
+      ? []
+      : getNodeLines(resolvedNode, content);
 
   return {
     ...nextState,
