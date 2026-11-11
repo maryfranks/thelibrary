@@ -313,6 +313,9 @@
     "stage3_arrival__with_mop_check": [
       "You tripped over the unwieldy mop while trying to swing at the creature, resulting in a fatal fall."
     ],
+    "stage3_foyer_blocked__go_deeper": [
+      "Panicking at the monster blocking the foyer, you rushed blindly deeper into the stacks without looking around, and something waiting in the shadows struck instantly."
+    ],
     "stage3_hub_unexplored__go_deeper": [
       "You rushed blindly into the stacks without looking around, and something waiting in the shadows struck instantly."
     ],
