@@ -472,7 +472,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(state.currentNode).toBe("stage3_row4_looted");
       expect(state.inventory).toContain("flashlight");
 
-      state = transition(state, "return to hub");
+      state = transition(state, "go back");
       expect(state.currentNode).toBe("stage3_hub");
 
       state = transition(state, "peer down row 2");
@@ -486,7 +486,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(state.inventory).toContain("pocketknife");
       expect(state.inventory).toContain("umbrella");
 
-      state = transition(state, "move deeper");
+      state = transition(state, "go deeper");
       expect(state.currentNode).toBe("stage4_entry");
 
       // Stage 4: Deep Stacks Maze -> navigate Junctions A through H -> Structural Hub -> Basement

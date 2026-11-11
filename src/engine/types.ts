@@ -31,16 +31,17 @@ export type Stage3NodeId =
   | "stage3_arrival"
   | "stage3_early_death_choice"
   | "stage3_hub_unexplored"
+  | "stage3_foyer_blocked"
   | "stage3_hub"
   | "stage3_death_choice"
   | "stage3_row1_encounter"
-  | "stage3_row1_glass_view"
   | "stage3_row2_encounter"
   | "stage3_row2_looted"
   | "stage3_row2_flashlight_check"
-  | "stage3_row3_encounter"
+  | "stage3_row2_dark_warning"
   | "stage3_row4_encounter"
-  | "stage3_row4_looted";
+  | "stage3_row4_looted"
+  | "stage3_row5_warning";
 
 export type Stage4NodeId =
   | "stage4_entry"
