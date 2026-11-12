@@ -20,6 +20,7 @@ The application is structured as a client-side Single Page Application (SPA) dep
   - The periodicals gate (`stage2_periodicals_check`) requires the mop only (`inventory.includes("mop")`); the fireplace poker alone does not pass.
   - `stage2_respawn_check` evaluates weapon possession against the restored Stage 2 snapshot (`mop` routes to `stage2_foyer`; empty routes to `stage1_vestibule_searched` with hint text).
   - Unmatched input in stage 2 yields a parser fallback, not a death; deaths occur only on explicit choices (e.g., `go deeper` at `stage2_foyer`).
+  - `stage3_row2_flashlight_check` transitions `[With Flashlight]` to the terminal `temporary_game_over` node (`isGameOver: true`, excluded from `isActiveSession()`, no further gameplay commands) and records a `mysterious_disappearance` death metric.
 - **Inventory Snapshots & Stage Respawn / Retry (`src/engine/`):**
   - **Stage 2 Snapshot:** Captured upon entering `stage2_foyer` from Stage 1 (preserving `["mop"]` or `[]`).
   - **Stage 3 Snapshot:** Captured upon surviving arrival at `stage3_arrival` (requiring the fireplace poker) and transitioning to `stage3_hub_unexplored`.
