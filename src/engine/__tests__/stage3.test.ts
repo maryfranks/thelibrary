@@ -1,10 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   ROW2_CORPSE_ITEMS,
   ROW4_BACKPACK_ITEMS,
   createInitialState,
+  deathsCounter,
   getAvailableChoices,
   loadContent,
+  meterProvider,
+  metricExporter,
   transition,
 } from "../index";
 import type { ContentCatalog, GameState, ItemId, NodeId } from "../types";
@@ -365,7 +368,18 @@ describe("Stage 3 Engine (The Stacks)", () => {
     });
   });
 
-  describe("Row 2 flashlight check & stage3_row2_dark_warning (stage3_row2_flashlight_check -> Stage 4)", () => {
+  describe("Row 2 flashlight check & stage3_row2_dark_warning (stage3_row2_flashlight_check -> temporary_game_over)", () => {
+    beforeEach(() => {
+      vi.spyOn(metricExporter, "export").mockImplementation((_metrics, resultCallback) => {
+        resultCallback({ code: 0 });
+      });
+      vi.spyOn(metricExporter, "forceFlush").mockResolvedValue(undefined);
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     it("routes to non-fatal stage3_row2_dark_warning when going deeper in Row 2 without flashlight", () => {
       const row2Unlooted = makeState("stage3_row2_encounter", ["fireplace poker"]);
       const warningFromEncounter = transition(row2Unlooted, "go deeper");
@@ -401,7 +415,10 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(backToHub.lastDeathType).toBeNull();
     });
 
-    it("advances to stage4_entry when going deeper in Row 2 with flashlight in inventory", () => {
+    it("terminates at temporary_game_over, renders content.nodes['temporary_game_over'], and records a single mysterious_disappearance death when going deeper in Row 2 with flashlight", () => {
+      const deathSpy = vi.spyOn(deathsCounter, "add");
+      const flushSpy = vi.spyOn(meterProvider, "forceFlush");
+
       const row2WithFlashlight = makeState("stage3_row2_looted", [
         "fireplace poker",
         "pocketknife",
@@ -410,25 +427,44 @@ describe("Stage 3 Engine (The Stacks)", () => {
       ]);
       const next = transition(row2WithFlashlight, "go deeper");
 
-      expect(next.currentNode).toBe("stage4_entry");
-      expect(next.lastDeathType).toBeNull();
-      expect(next.isGameOver).toBe(false);
+      expect(next.currentNode).toBe("temporary_game_over");
+      expect(next.lastDeathType).toBe("mysterious_disappearance");
+      expect(next.isGameOver).toBe(true);
+      expect(next.isWin).toBe(false);
       expect(next.inventory).toContain("flashlight");
+      expect(getAvailableChoices("temporary_game_over")).toEqual([]);
+      expect(deathSpy).toHaveBeenCalledTimes(1);
+      expect(deathSpy).toHaveBeenCalledWith(1, {
+        stage: "stage3",
+        death_type: "mysterious_disappearance",
+        node_id: "stage3_row2_flashlight_check",
+      });
+      expect(flushSpy).toHaveBeenCalledTimes(1);
+
+      // Terminal state accepts no further gameplay commands and emits no duplicate metrics
+      const afterCommand = transition(next, "go deeper");
+      expect(afterCommand).toBe(next);
+      expect(deathSpy).toHaveBeenCalledTimes(1);
     });
 
     it("evaluates direct transitions from stage3_row2_flashlight_check based on flashlight presence", () => {
+      const deathSpy = vi.spyOn(deathsCounter, "add");
+
       const checkNoFlashlight = makeState("stage3_row2_flashlight_check", ["fireplace poker"]);
       const warning = transition(checkNoFlashlight, "1");
       expect(warning.currentNode).toBe("stage3_row2_dark_warning");
       expect(warning.lastDeathType).toBeNull();
+      expect(deathSpy).not.toHaveBeenCalled();
 
       const checkWithFlashlight = makeState("stage3_row2_flashlight_check", [
         "fireplace poker",
         "flashlight",
       ]);
-      const advanced = transition(checkWithFlashlight, "2");
-      expect(advanced.currentNode).toBe("stage4_entry");
-      expect(advanced.lastDeathType).toBeNull();
+      const terminated = transition(checkWithFlashlight, "2");
+      expect(terminated.currentNode).toBe("temporary_game_over");
+      expect(terminated.lastDeathType).toBe("mysterious_disappearance");
+      expect(terminated.isGameOver).toBe(true);
+      expect(deathSpy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -492,7 +528,7 @@ describe("Stage 3 Engine (The Stacks)", () => {
           stage3_row2_flashlight_check: ["flashlight-check-node"],
           stage3_row2_dark_warning: ["dark-warning-node"],
           stage3_row5_warning: ["row5-warning-node"],
-          stage4_entry: ["stage4-entry-node"],
+          temporary_game_over: ["temporary-game-over-node"],
         },
         death_screens: {
           stage3_foyer_blocked__go_deeper: ["foyer-blocked-death"],
@@ -529,6 +565,14 @@ describe("Stage 3 Engine (The Stacks)", () => {
 
       const noFlashlight = transition(makeState("stage3_row2_looted"), "go deeper", customCatalog);
       expect(noFlashlight.output).toEqual(["flashlight-check-node", "dark-warning-node"]);
+
+      const withFlashlight = transition(
+        makeState("stage3_row2_looted", ["flashlight"]),
+        "go deeper",
+        customCatalog,
+      );
+      expect(withFlashlight.currentNode).toBe("temporary_game_over");
+      expect(withFlashlight.output).toEqual(["flashlight-check-node", "temporary-game-over-node"]);
 
       const darkWarningDeath = transition(
         makeState("stage3_row2_dark_warning"),

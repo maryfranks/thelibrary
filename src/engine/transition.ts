@@ -58,7 +58,7 @@ function dispatchTransition(state: GameState, input: string, content?: ContentCa
     const devState = tryDevWarp(state, input, content);
     if (devState) return devState;
   }
-  
+
   if (state.isGameOver || state.isWin) {
     return state;
   }

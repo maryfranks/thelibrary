@@ -43,25 +43,24 @@
       "mopping, but it's better than nothing."
     ],
     "stage2_foyer": [
-      "You hop over the turnstiles and find yourself in the foyer near the",
-      "circulation desk."
+      "You hop over the turnstiles and find yourself in a large, open foyer",
+      "near the circulation desk."
     ],
     "stage2_foyer_searched": [
-      "The room is large and although there are large stained glass windows,",
-      "the papers and books scattered on the floor are shrouded in gloom.",
+      "The ceiling is high with large stained glass windows, but the shadows on",
+      "the papers and books scattered on the floor shroud them in gloom.",
       "In front of you is a large semicurcular circulation desk. Just out of",
-      "site appears to be a dead body, the leg of a woman wearing jeans is",
-      "to the left of the circulation desk. Beyond the circulation desk is",
+      "site appears to be whats left of the librarian, the leg of a woman is",
+      "visible to the left of the circulation desk. Beyond the circulation desk is",
       "the periodicals section. There are several rows of chest height shelves",
       "with stands to hold newspapers. The newspapers are scattered all over",
       "floor. Whatever happened here made quite the mess."
     ],
     "stage2_corpse_looted": [
-      "You've never been a fan of dead bodies (who is), but if the woman was",
-      "the librarian she might have a key to the front door. You approach the",
-      "body slowly. She's wearing a dress with no pockets, why don't they put",
-      "pockets in more womens clothes? Next to her arm you see her purse. Inside",
-      "you find [INVENTORY]. No key, but this stuff might come in handy."
+      "If the woman was the librarian she might have a key to the front door.",
+      "You approach slowly. She's wearing a dress with no pockets, but next to",
+      "her arm you see her purse. Inside you find [INVENTORY]. No key, but",
+      "this stuff might come in handy."
     ],
     "stage2_desk_looted": [
       "The circulation desk is mostly empty, surprising for a library. There's no",
@@ -81,8 +80,8 @@
       "sounds of your footsteps crinkling the newspaper under your feet. You try not",
       "to step on them, but you can't help it. They're all from 1802. What kind of",
       "library is this? You stop because you hear something moving in the rows between",
-      "the shelves. You can't see it, You don't know if you want to, but there is defnitely",
-      "something big crawling down the next aisle."
+      "the shelves. You can't see it, You don't know if you want to, but there is",
+      "defnitely something big crawling down the next aisle."
     ],
     "stage2_reading_room_door": [
       "To the left you see a large double doorway with a bronze plaque that says",
@@ -93,7 +92,8 @@
       "locked."
     ],
     "stage2_fireplace_revealed": [
-      "A little ahead of you, you see an antique fireplace."
+      "The Reading Room is a dead end, but there has to be another way out. You look ahead",
+      "and see an antique fireplace nestled into the wall."
     ],
     "stage2_poker_acquired": [
       "In a small black stand next to the hearth, you see a fireplace poker. I looks like",
@@ -101,12 +101,17 @@
       "the bricks and pick up the fireplace poker."
     ],
     "stage2_stacks_door_check": [
-      "Up ahead you see a red door marked 'STACKS'."
+      "Here the bookshelves are taller. You apprear to be in a reference section of some",
+      "king. Heavy multi volume works line the shelves in some places and in other places",
+      "are strewn about the floor. You walk slowly, holding the fireplace poker like a",
+      "baseball bat. Up ahead you see a red door, as you approach it you see it's marked",
+      "'STACKS'."
     ],
     "stage2_stacks_door_locked_no_key": [
-      "You approach the door and try the handle but the door is locked. You don't have",
-      "a key. You're about to turn around when you hear something large come up behind",
-      "you."
+      "Optimisic for the first time since you go locked in here, you try the handle",
+      "but the door is locked. You don't have a key. Who locks the stacks anyway? What",
+      "kind of library is this? You're about to turn around and go back the way you",
+      "came when you hear something large come up behind you."
     ],
     "stage2_respawn_no_mop": [
       "You wake up back on the wrong side of the turnstiles, bruised and deeply",
@@ -117,7 +122,7 @@
     "stage2_respawn_no_key": [
       "You sit up behind the circulation desk, rubbing the back of your neck.",
       "Throwing yourself against a locked iron door with a creature on your heels",
-      "is a great way to end up on the evening news. You need that Stacks key.",
+      "is a great way to end up as dinner. You need that Stacks key.",
       "Check the desk."
     ],
     "stage2_reading_room_door_respawn": [
@@ -284,6 +289,9 @@
     ],
     "stage5_cave_approach_final": [
       "You approach the final cave exit."
+    ],
+    "temporary_game_over": [
+      "That's all the game for now, but if you want to escape the library, come back soon."
     ],
     "game_over": [
       "Game Over."

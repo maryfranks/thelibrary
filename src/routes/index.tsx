@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { createInitialState, getSceneEntries, processCommand, type GameState } from "@/engine";
+import {
+  createInitialState,
+  getSceneEntries,
+  getStageFromNodeId,
+  isActiveSession,
+  processCommand,
+  recordDeath,
+  type GameState,
+} from "@/engine";
 
 const DESC =
   "Caught in an unnatural storm, you take refuge in a library. When you get inside, the library is trashed and there's no one in sight. You can't leave—the door locks behind you. Navigate monsters, a maze, and a flooded basement to escape, and find out what happened in that library.";
@@ -71,55 +79,82 @@ function Terminal() {
     setTurn((t) => t + 1);
   };
 
+  const handleStartOver = () => {
+    if (isActiveSession(gameState)) {
+      recordDeath({
+        stage: getStageFromNodeId(gameState.currentNode),
+        death_type: "mysterious_disappearance",
+        node_id: gameState.currentNode,
+      });
+    }
+    const freshState = createInitialState();
+    setGameState(freshState);
+    setLines(buildInitialLines(freshState));
+    setInput("");
+    setTurn(1);
+    setHist([]);
+    setHIdx(-1);
+    inputRef.current?.focus();
+  };
+
   return (
-    <div
-      className="w-full max-w-3xl rounded-md border border-brass-border bg-muted"
-      style={{ boxShadow: "var(--shadow-terminal)" }}
-      onClick={() => inputRef.current?.focus()}
-    >
-      <div className="flex items-center justify-between border-b border-border px-4 py-2 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-        <span>[ terminal ]</span>
-        <span className="tabular-nums">turn {String(turn).padStart(3, "0")}</span>
-      </div>
+    <div className="flex w-full max-w-3xl flex-col items-center gap-4">
       <div
-        ref={scrollRef}
-        className="h-[28rem] overflow-y-auto px-4 py-4 font-mono text-sm leading-6 tabular-nums"
+        className="w-full rounded-md border border-brass-border bg-muted"
+        style={{ boxShadow: "var(--shadow-terminal)" }}
+        onClick={() => inputRef.current?.focus()}
       >
-        {lines.map((l, i) => (
-          <p key={i} className={`whitespace-pre-wrap ${color[l.kind]}`}>
-            {l.text}
-          </p>
-        ))}
-        <div className="relative flex text-foreground">
-          <span className="text-primary">{">"}&nbsp;</span>
-          <span className="whitespace-pre-wrap break-all">{input}</span>
-          <span className="cursor-blink text-primary">▌</span>
-          <input
-            ref={inputRef}
-            autoFocus
-            aria-label="Command input"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") submit();
-              else if (e.key === "ArrowUp" && hist.length) {
-                e.preventDefault();
-                const n = Math.min(hIdx + 1, hist.length - 1);
-                setHIdx(n);
-                setInput(hist[n] ?? "");
-              } else if (e.key === "ArrowDown") {
-                e.preventDefault();
-                const n = hIdx - 1;
-                setHIdx(Math.max(n, -1));
-                setInput(n < 0 ? "" : (hist[n] ?? ""));
-              }
-            }}
-            className="absolute inset-0 opacity-0"
-            spellCheck={false}
-            autoComplete="off"
-          />
+        <div className="flex items-center justify-between border-b border-border px-4 py-2 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+          <span>[ terminal ]</span>
+          <span className="tabular-nums">turn {String(turn).padStart(3, "0")}</span>
+        </div>
+        <div
+          ref={scrollRef}
+          className="h-[28rem] overflow-y-auto px-4 py-4 font-mono text-sm leading-6 tabular-nums"
+        >
+          {lines.map((l, i) => (
+            <p key={i} className={`whitespace-pre-wrap ${color[l.kind]}`}>
+              {l.text}
+            </p>
+          ))}
+          <div className="relative flex text-foreground">
+            <span className="text-primary">{">"}&nbsp;</span>
+            <span className="whitespace-pre-wrap break-all">{input}</span>
+            <span className="cursor-blink text-primary">▌</span>
+            <input
+              ref={inputRef}
+              autoFocus
+              aria-label="Command input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") submit();
+                else if (e.key === "ArrowUp" && hist.length) {
+                  e.preventDefault();
+                  const n = Math.min(hIdx + 1, hist.length - 1);
+                  setHIdx(n);
+                  setInput(hist[n] ?? "");
+                } else if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  const n = hIdx - 1;
+                  setHIdx(Math.max(n, -1));
+                  setInput(n < 0 ? "" : (hist[n] ?? ""));
+                }
+              }}
+              className="absolute inset-0 opacity-0"
+              spellCheck={false}
+              autoComplete="off"
+            />
+          </div>
         </div>
       </div>
+      <button
+        type="button"
+        onClick={handleStartOver}
+        className="cursor-pointer rounded-md border border-brass-border bg-card px-4 py-2 font-mono text-xs tracking-wider text-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      >
+        Start Over
+      </button>
     </div>
   );
 }
@@ -140,15 +175,18 @@ function Index() {
       </main>
       <footer className="flex gap-8 py-10 font-mono text-xs uppercase tracking-widest">
         <a
-          href="https://github.com/"
+          href="https://github.com/maryfranks"
           target="_blank"
           rel="noreferrer"
           className="text-muted-foreground transition-colors hover:text-primary"
         >
           [ GitHub Repository ]
         </a>
-        <a href="/" className="text-muted-foreground transition-colors hover:text-primary">
-          [ The Chartroom ]
+        <a
+          href="https://portfolio.littlefuzzydinos.com"
+          className="text-muted-foreground transition-colors hover:text-primary"
+        >
+          [ Portfolio ]
         </a>
       </footer>
     </div>

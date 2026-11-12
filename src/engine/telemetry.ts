@@ -7,12 +7,8 @@ import {
   type MetricOptions,
 } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import {
-  MeterProvider,
-  PeriodicExportingMetricReader,
-  type PushMetricExporter,
-} from "@opentelemetry/sdk-metrics";
-import type { DeathType, NodeId, StageId } from "./types";
+import { MeterProvider, MetricReader, type PushMetricExporter } from "@opentelemetry/sdk-metrics";
+import type { DeathType, GameState, NodeId, StageId } from "./types";
 
 export type { StageId };
 
@@ -33,16 +29,56 @@ export const METER_NAME = "the-library-engine";
 export const RUNS_COMPLETED_COUNTER_NAME = "game.runs.completed";
 export const DEATHS_COUNTER_NAME = "game.deaths";
 export const COLLECTOR_URL = "https://collector.littlefuzzydinos.com/v1/metrics";
-export const EXPORT_INTERVAL_MILLIS = 5000;
+
+/**
+ * MetricReader that exports collected metrics only on explicit flush/shutdown
+ * instead of scheduling a background polling interval.
+ */
+export class ImmediateMetricReader extends MetricReader {
+  private readonly _exporter: PushMetricExporter;
+
+  constructor(exporter: PushMetricExporter) {
+    super({
+      aggregationSelector: exporter.selectAggregation?.bind(exporter),
+      aggregationTemporalitySelector: exporter.selectAggregationTemporality?.bind(exporter),
+    });
+    this._exporter = exporter;
+  }
+
+  protected async onForceFlush(): Promise<void> {
+    const { resourceMetrics } = await this.collect();
+    if (resourceMetrics.resource.asyncAttributesPending) {
+      await resourceMetrics.resource.waitForAsyncAttributes?.();
+    }
+    if (resourceMetrics.scopeMetrics.length > 0) {
+      await new Promise<void>((resolve, reject) => {
+        this._exporter.export(resourceMetrics, (result) => {
+          if (result.code === 0) {
+            resolve();
+          } else {
+            reject(
+              result.error ?? new Error(`ImmediateMetricReader: export failed (${result.code})`),
+            );
+          }
+        });
+      });
+    }
+    await this._exporter.forceFlush();
+  }
+
+  protected async onShutdown(): Promise<void> {
+    await this.onForceFlush();
+    await this._exporter.shutdown();
+  }
+}
 
 export const metricExporter = new OTLPMetricExporter({
   url: COLLECTOR_URL,
 });
 
-export const metricReader = new PeriodicExportingMetricReader({
-  exporter: metricExporter as unknown as PushMetricExporter,
-  exportIntervalMillis: EXPORT_INTERVAL_MILLIS,
-});
+export const metricReader = new ImmediateMetricReader(
+  metricExporter as unknown as PushMetricExporter,
+);
 
 export const meterProvider = new MeterProvider({
   readers: [metricReader],
@@ -118,6 +154,21 @@ export function getStageFromNodeId(nodeId: NodeId | string): StageId {
     return "stage4";
   }
   return "stage5";
+}
+
+export function isDeathScreenNode(nodeId: NodeId | string): boolean {
+  return nodeId.endsWith("_death_choice");
+}
+
+export function isActiveSession(state: GameState): boolean {
+  return (
+    !state.isGameOver &&
+    !state.isWin &&
+    state.currentNode !== "game_over" &&
+    state.currentNode !== "temporary_game_over" &&
+    state.currentNode !== "game_win" &&
+    !isDeathScreenNode(state.currentNode)
+  );
 }
 
 export async function flushTelemetry(): Promise<void> {
