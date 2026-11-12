@@ -9,6 +9,7 @@ The application is structured as a client-side Single Page Application (SPA) dep
 - **Frontend UI Shell:**
   - Retro terminal emulator
   - Self-contained local state loop in the single-page application handling command inputs, text history output, and game state locally in the browser.
+  - Provides a centered `Start Over` button outside and below the terminal console to reset game state to a fresh Stage 1 beginning while recording a `mysterious_disappearance` metric and flushing immediately if invoked during an active session.
 - **Game Engine:**
   - Pure execution logic.
   - Handles state management, command parsing, inventory checks, condition evaluation, and dynamic DOM rendering without embedding narrative strings.
@@ -36,7 +37,7 @@ The application is structured as a client-side Single Page Application (SPA) dep
   - Fully populated and finalized data payload
 - **Telemetry (`src/engine/telemetry.ts`):**
   - OpenTelemetry metrics instrumentation (`the-library-engine` meter) integrated into the game engine with graceful fallback when collectors are absent or unreachable.
-  - Emits monotonic counters for completed runs (`game.runs.completed` with `outcome` and `final_stage` attributes) and fatal transitions (`game.deaths` with `stage`, `death_type`, and `node_id` attributes).
+  - Emits monotonic counters for completed runs (`game.runs.completed` with `outcome` and `final_stage` attributes) and fatal transitions (`game.deaths` with `stage`, `death_type` [`monster_attack`, `environmental_hazard`, `unknown_death`, `mysterious_disappearance`], and `node_id` attributes).
   - Exports metrics over OpenTelemetry Protocol (OTLP) Hypertext Transfer Protocol (HTTP) (`OTLPMetricExporter` targeting `https://collector.littlefuzzydinos.com/v1/metrics`) via a `PeriodicExportingMetricReader` (`5000ms` interval), and invokes `flushTelemetry()` (`meterProvider.forceFlush()`) on both `recordRunCompleted()` and `recordDeath()` so terminal outcomes and deaths flush immediately.
 
 ---

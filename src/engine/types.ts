@@ -112,7 +112,8 @@ export type RowSafetyKey = "row1_safe" | "row2_safe" | "row3_safe" | "row4_safe"
 
 export type StageId = "stage1" | "stage2" | "stage3" | "stage4" | "stage5";
 
-export type DeathType = "monster_attack" | "environmental_hazard" | "unknown_death";
+export type DeathType =
+  "monster_attack" | "environmental_hazard" | "unknown_death" | "mysterious_disappearance";
 
 export interface GameState {
   currentNode: NodeId;

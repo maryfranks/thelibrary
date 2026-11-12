@@ -12,7 +12,7 @@ import {
   PeriodicExportingMetricReader,
   type PushMetricExporter,
 } from "@opentelemetry/sdk-metrics";
-import type { DeathType, NodeId, StageId } from "./types";
+import type { DeathType, GameState, NodeId, StageId } from "./types";
 
 export type { StageId };
 
@@ -118,6 +118,20 @@ export function getStageFromNodeId(nodeId: NodeId | string): StageId {
     return "stage4";
   }
   return "stage5";
+}
+
+export function isDeathScreenNode(nodeId: NodeId | string): boolean {
+  return nodeId.endsWith("_death_choice");
+}
+
+export function isActiveSession(state: GameState): boolean {
+  return (
+    !state.isGameOver &&
+    !state.isWin &&
+    state.currentNode !== "game_over" &&
+    state.currentNode !== "game_win" &&
+    !isDeathScreenNode(state.currentNode)
+  );
 }
 
 export async function flushTelemetry(): Promise<void> {

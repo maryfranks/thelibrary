@@ -21,6 +21,8 @@ import {
   deathsCounter,
   flushTelemetry,
   getStageFromNodeId,
+  isActiveSession,
+  isDeathScreenNode,
   meter,
   meterProvider,
   metricExporter,
@@ -91,6 +93,52 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       expect(getStageFromNodeId("stage3_hub")).toBe("stage3");
       expect(getStageFromNodeId("stage4_entry")).toBe("stage4");
       expect(getStageFromNodeId("stage5_occult_archive_hub")).toBe("stage5");
+    });
+
+    it("records mysterious_disappearance death metric and flushes immediately", () => {
+      recordDeath({
+        stage: "stage2",
+        death_type: "mysterious_disappearance",
+        node_id: "stage2_foyer",
+      });
+
+      expect(deathSpy).toHaveBeenCalledTimes(1);
+      expect(deathSpy).toHaveBeenCalledWith(1, {
+        stage: "stage2",
+        death_type: "mysterious_disappearance",
+        node_id: "stage2_foyer",
+      });
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("evaluates active session state accurately across rooms, death screens, and terminal states", () => {
+      // Active gameplay nodes
+      expect(isActiveSession(makeState("stage1_vestibule"))).toBe(true);
+      expect(isActiveSession(makeState("stage1_vestibule_respawn"))).toBe(true);
+      expect(isActiveSession(makeState("stage2_foyer"))).toBe(true);
+      expect(isActiveSession(makeState("stage3_hub"))).toBe(true);
+      expect(isActiveSession(makeState("stage4_junction_a"))).toBe(true);
+      expect(isActiveSession(makeState("stage5_occult_archive_hub"))).toBe(true);
+
+      // Death choice screens
+      expect(isDeathScreenNode("stage2_death_choice")).toBe(true);
+      expect(isDeathScreenNode("stage3_early_death_choice")).toBe(true);
+      expect(isDeathScreenNode("stage3_death_choice")).toBe(true);
+      expect(isDeathScreenNode("stage4_death_choice")).toBe(true);
+      expect(isDeathScreenNode("stage5_mezzanine_death_choice")).toBe(true);
+      expect(isDeathScreenNode("stage5_basement_death_choice")).toBe(true);
+      expect(isDeathScreenNode("stage1_vestibule")).toBe(false);
+
+      expect(isActiveSession(makeState("stage2_death_choice"))).toBe(false);
+      expect(isActiveSession(makeState("stage3_early_death_choice"))).toBe(false);
+      expect(isActiveSession(makeState("stage3_death_choice"))).toBe(false);
+      expect(isActiveSession(makeState("stage4_death_choice"))).toBe(false);
+      expect(isActiveSession(makeState("stage5_mezzanine_death_choice"))).toBe(false);
+      expect(isActiveSession(makeState("stage5_basement_death_choice"))).toBe(false);
+
+      // Terminal game over / game win states
+      expect(isActiveSession(makeState("game_over", [], { isGameOver: true }))).toBe(false);
+      expect(isActiveSession(makeState("game_win", [], { isWin: true }))).toBe(false);
     });
 
     it("configures OTLPMetricExporter directly to production collector URL and PeriodicExportingMetricReader with 5000ms interval", () => {
