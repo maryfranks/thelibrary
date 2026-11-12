@@ -6,15 +6,12 @@ import {
   type MeterProvider,
 } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import {
-  MeterProvider as SdkMeterProvider,
-  PeriodicExportingMetricReader,
-} from "@opentelemetry/sdk-metrics";
+import { MeterProvider as SdkMeterProvider, MetricReader } from "@opentelemetry/sdk-metrics";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   COLLECTOR_URL,
   DEATHS_COUNTER_NAME,
-  EXPORT_INTERVAL_MILLIS,
+  ImmediateMetricReader,
   METER_NAME,
   RUNS_COMPLETED_COUNTER_NAME,
   createInitialState,
@@ -141,19 +138,28 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       expect(isActiveSession(makeState("game_win", [], { isWin: true }))).toBe(false);
     });
 
-    it("configures OTLPMetricExporter directly to production collector URL and PeriodicExportingMetricReader with 5000ms interval", () => {
+    it("configures OTLPMetricExporter directly to production collector URL with ImmediateMetricReader (no periodic interval)", async () => {
       expect(COLLECTOR_URL).toBe("https://collector.littlefuzzydinos.com/v1/metrics");
-      expect(EXPORT_INTERVAL_MILLIS).toBe(5000);
       expect(metricExporter).toBeInstanceOf(OTLPMetricExporter);
-      expect(metricReader).toBeInstanceOf(PeriodicExportingMetricReader);
+      expect(metricReader).toBeInstanceOf(ImmediateMetricReader);
+      expect(metricReader).toBeInstanceOf(MetricReader);
       expect(meterProvider).toBeInstanceOf(SdkMeterProvider);
 
       const readerInternal = metricReader as unknown as {
-        _exportInterval: number;
         _exporter: unknown;
+        _interval?: unknown;
       };
-      expect(readerInternal._exportInterval).toBe(5000);
       expect(readerInternal._exporter).toBe(metricExporter);
+      expect(readerInternal._interval).toBeUndefined();
+
+      recordDeath({
+        stage: "stage1",
+        death_type: "monster_attack",
+        node_id: "stage1_vestibule",
+      });
+      await vi.waitFor(() => {
+        expect(exportSpy).toHaveBeenCalledTimes(1);
+      });
     });
 
     it("flushes buffered metrics immediately via flushTelemetry() and when recordRunCompleted() is called", async () => {
@@ -720,6 +726,46 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       transition(makeState("stage2_death_choice", []), "try again");
       transition(makeState("stage3_early_death_choice", ["mop"]), "try again");
       expect(deathSpy).not.toHaveBeenCalled();
+    });
+
+    it("records and flushes death immediately before 'try again' resets state without duplicate metrics", async () => {
+      const deadState = transition(makeState("stage2_foyer", ["mop"]), "go deeper");
+      expect(deadState.currentNode).toBe("stage2_death_choice");
+      expect(deathSpy).toHaveBeenCalledTimes(1);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(1);
+      await vi.waitFor(() => {
+        expect(exportSpy).toHaveBeenCalledTimes(1);
+      });
+
+      const respawnedState = transition(deadState, "try again");
+      expect(respawnedState.currentNode).toBe("stage2_foyer");
+      expect(deathSpy).toHaveBeenCalledTimes(1);
+      expect(runCompletedSpy).not.toHaveBeenCalled();
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("records and flushes mysterious_disappearance before Start Over resets active sessions, and emits no duplicates on inactive screens", async () => {
+      const activeState = makeState("stage3_hub", ["mop", "flashlight"]);
+      expect(isActiveSession(activeState)).toBe(true);
+
+      recordDeath({
+        stage: getStageFromNodeId(activeState.currentNode),
+        death_type: "mysterious_disappearance",
+        node_id: activeState.currentNode,
+      });
+      const resetState = createInitialState();
+
+      expect(resetState.currentNode).toBe("stage1_vestibule");
+      expect(deathSpy).toHaveBeenCalledTimes(1);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(1);
+      await vi.waitFor(() => {
+        expect(exportSpy).toHaveBeenCalledTimes(1);
+      });
+
+      // Inactive screens (death choice, game_over, game_win) must not emit extra Start Over deaths
+      expect(isActiveSession(makeState("stage2_death_choice"))).toBe(false);
+      expect(isActiveSession(makeState("game_over", [], { isGameOver: true }))).toBe(false);
+      expect(isActiveSession(makeState("game_win", [], { isWin: true }))).toBe(false);
     });
   });
 

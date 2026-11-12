@@ -38,7 +38,7 @@ The application is structured as a client-side Single Page Application (SPA) dep
 - **Telemetry (`src/engine/telemetry.ts`):**
   - OpenTelemetry metrics instrumentation (`the-library-engine` meter) integrated into the game engine with graceful fallback when collectors are absent or unreachable.
   - Emits monotonic counters for completed runs (`game.runs.completed` with `outcome` and `final_stage` attributes) and fatal transitions (`game.deaths` with `stage`, `death_type` [`monster_attack`, `environmental_hazard`, `unknown_death`, `mysterious_disappearance`], and `node_id` attributes).
-  - Exports metrics over OpenTelemetry Protocol (OTLP) Hypertext Transfer Protocol (HTTP) (`OTLPMetricExporter` targeting `https://collector.littlefuzzydinos.com/v1/metrics`) via a `PeriodicExportingMetricReader` (`5000ms` interval), and invokes `flushTelemetry()` (`meterProvider.forceFlush()`) on both `recordRunCompleted()` and `recordDeath()` so terminal outcomes and deaths flush immediately.
+  - Exports metrics over OpenTelemetry Protocol (OTLP) Hypertext Transfer Protocol (HTTP) (`OTLPMetricExporter` targeting `https://collector.littlefuzzydinos.com/v1/metrics`) via an `ImmediateMetricReader` (no periodic polling interval), and invokes `flushTelemetry()` (`meterProvider.forceFlush()`) on both `recordRunCompleted()` and `recordDeath()` so metrics export immediately when recorded.
 
 ---
 
