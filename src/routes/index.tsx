@@ -159,7 +159,7 @@ function Terminal() {
   );
 }
 
-export function Index() {
+function Index() {
   return (
     <div className="flex min-h-screen flex-col items-center bg-background px-4">
       <header className="mx-auto max-w-2xl pt-16 pb-10 text-center">
