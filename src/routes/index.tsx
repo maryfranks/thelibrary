@@ -140,15 +140,15 @@ function Index() {
       </main>
       <footer className="flex gap-8 py-10 font-mono text-xs uppercase tracking-widest">
         <a
-          href="https://github.com/"
+          href="https://github.com/maryfranks"
           target="_blank"
           rel="noreferrer"
           className="text-muted-foreground transition-colors hover:text-primary"
         >
           [ GitHub Repository ]
         </a>
-        <a href="/" className="text-muted-foreground transition-colors hover:text-primary">
-          [ The Chartroom ]
+        <a href="https://portfolio.littlefuzzydinos.com" className="text-muted-foreground transition-colors hover:text-primary">
+          [ Portfolio ]
         </a>
       </footer>
     </div>
