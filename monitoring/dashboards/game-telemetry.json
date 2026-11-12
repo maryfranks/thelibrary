@@ -3,10 +3,7 @@
     "id": null,
     "uid": "littlefuzzydinos-game",
     "title": "LittleFuzzyDinos - Game Engine Telemetry",
-    "tags": [
-      "game",
-      "thelibrary"
-    ],
+    "tags": ["game", "thelibrary"],
     "style": "dark",
     "timezone": "browser",
     "editable": true,
@@ -49,9 +46,7 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": [
-              "lastNotNull"
-            ]
+            "calcs": ["lastNotNull"]
           },
           "textMode": "auto",
           "colorMode": "background"
@@ -89,9 +84,7 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": [
-              "lastNotNull"
-            ]
+            "calcs": ["lastNotNull"]
           },
           "textMode": "auto",
           "colorMode": "value"
@@ -129,9 +122,7 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": [
-              "lastNotNull"
-            ]
+            "calcs": ["lastNotNull"]
           },
           "textMode": "auto",
           "colorMode": "background"
@@ -143,7 +134,7 @@
         "type": "stat",
         "gridPos": {
           "h": 4,
-          "w": 4,
+          "w": 3,
           "x": 12,
           "y": 0
         },
@@ -169,9 +160,7 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": [
-              "lastNotNull"
-            ]
+            "calcs": ["lastNotNull"]
           },
           "textMode": "auto",
           "colorMode": "value"
@@ -183,8 +172,8 @@
         "type": "stat",
         "gridPos": {
           "h": 4,
-          "w": 4,
-          "x": 16,
+          "w": 3,
+          "x": 15,
           "y": 0
         },
         "targets": [
@@ -209,9 +198,7 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": [
-              "lastNotNull"
-            ]
+            "calcs": ["lastNotNull"]
           },
           "textMode": "auto",
           "colorMode": "value"
@@ -223,8 +210,8 @@
         "type": "stat",
         "gridPos": {
           "h": 4,
-          "w": 4,
-          "x": 20,
+          "w": 3,
+          "x": 18,
           "y": 0
         },
         "targets": [
@@ -249,9 +236,45 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": [
-              "lastNotNull"
-            ]
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "auto",
+          "colorMode": "value"
+        }
+      },
+      {
+        "id": 12,
+        "title": "Disappearance Deaths",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 21,
+          "y": 0
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "victoriametrics"
+            },
+            "expr": "sum(increase(game_deaths_total{death_type=\"mysterious_disappearance\"}[$__range])) or vector(0)",
+            "legendFormat": "Disappearance"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "fixed",
+              "fixedColor": "blue"
+            },
+            "unit": "none"
+          }
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
           },
           "textMode": "auto",
           "colorMode": "value"
@@ -285,9 +308,7 @@
         "options": {
           "reduceOptions": {
             "values": false,
-            "calcs": [
-              "lastNotNull"
-            ]
+            "calcs": ["lastNotNull"]
           },
           "pieType": "donut",
           "tooltip": {
@@ -297,10 +318,7 @@
             "showLegend": true,
             "displayMode": "table",
             "placement": "right",
-            "values": [
-              "value",
-              "percent"
-            ]
+            "values": ["value", "percent"]
           }
         }
       },
@@ -453,7 +471,7 @@
       }
     ],
     "schemaVersion": 39,
-    "version": 4
+    "version": 5
   },
   "overwrite": true
 }
