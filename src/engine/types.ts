@@ -88,6 +88,7 @@ export type NodeId =
   | Stage4NodeId
   | Stage5NodeId
   | "game_over"
+  | "temporary_game_over"
   | "game_win";
 
 export type ItemId =

@@ -165,6 +165,7 @@ export function isActiveSession(state: GameState): boolean {
     !state.isGameOver &&
     !state.isWin &&
     state.currentNode !== "game_over" &&
+    state.currentNode !== "temporary_game_over" &&
     state.currentNode !== "game_win" &&
     !isDeathScreenNode(state.currentNode)
   );

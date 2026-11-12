@@ -135,6 +135,10 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
 
       // Terminal game over / game win states
       expect(isActiveSession(makeState("game_over", [], { isGameOver: true }))).toBe(false);
+      expect(isActiveSession(makeState("temporary_game_over", [], { isGameOver: true }))).toBe(
+        false,
+      );
+      expect(isActiveSession(makeState("temporary_game_over"))).toBe(false);
       expect(isActiveSession(makeState("game_win", [], { isWin: true }))).toBe(false);
     });
 

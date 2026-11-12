@@ -205,7 +205,7 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
   stage3_row2_flashlight_check: [
     {
       command: WITH_FLASHLIGHT_CHOICE,
-      target: "stage4_entry",
+      target: "temporary_game_over",
     },
     {
       command: NO_FLASHLIGHT_CHOICE,
@@ -347,7 +347,25 @@ function resolveFlashlightCheck(
   content?: ContentCatalog,
 ): GameState {
   const hasFlashlight = inventory.includes("flashlight");
-  const nextNode: NodeId = hasFlashlight ? "stage4_entry" : "stage3_row2_dark_warning";
+  if (hasFlashlight) {
+    const nextNode: NodeId = "temporary_game_over";
+    recordDeath({
+      stage: "stage3",
+      death_type: "mysterious_disappearance",
+      node_id: "stage3_row2_flashlight_check",
+    });
+    return {
+      ...state,
+      currentNode: nextNode,
+      inventory: [...inventory],
+      isGameOver: true,
+      isWin: false,
+      lastDeathType: "mysterious_disappearance",
+      output: [...prefixLines, ...getNodeLines(nextNode, content)],
+    };
+  }
+
+  const nextNode: NodeId = "stage3_row2_dark_warning";
   return {
     ...state,
     currentNode: nextNode,
