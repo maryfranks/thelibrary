@@ -290,6 +290,9 @@
     "stage5_cave_approach_final": [
       "You approach the final cave exit."
     ],
+    "temporary_game_over": [
+      "That's all the game for now, but if you want to escape the library, come back soon."
+    ],
     "game_over": [
       "Game Over."
     ],

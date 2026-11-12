@@ -160,7 +160,7 @@
   - Choice 2: "go back" -> [stage3_hub]
 
 - [stage3_row2_flashlight_check] Row 2 (Flashlight Gate; auto-resolves on entry, no menu)
-  - [With Flashlight] -> [stage4_entry]
+  - [With Flashlight] -> [temporary_game_over]
   - [No Flashlight] -> [stage3_row2_dark_warning]
 
 - [stage3_row2_dark_warning] Row 2 (Dark Corridor Warning)
@@ -310,3 +310,6 @@
 
 - [stage5_cave_approach_final] Underground Cave Entrance (Final Exit)
   - Choice 1: "climb out to safety" -> [game_win]
+
+- [temporary_game_over] Temporary End of Content (Auto-resolves on entry)
+  - -> [DEAD: mysterious_disappearance] -> [game_over]
