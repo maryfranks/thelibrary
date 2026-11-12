@@ -28,6 +28,8 @@ bun install
 bun run dev
 ```
 
+When running locally, the Dev Warp feature fast forwards the game to the beginning of the next stage. Use `stage3`, `stage4`, `stage5 mezzanine` and `stage5 basement` to warp to the beginning of the stage with all necessary inventory.
+
 Open the URL it prints in your browser.
 
 ## Scripts

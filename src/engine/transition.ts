@@ -1,3 +1,4 @@
+import { tryDevWarp } from "./devwarp";
 import { getAvailableChoices } from "./choices";
 import { getIntroLines, getNodeLines, getParserFallback } from "./content";
 import { isStage1Node, transitionStage1 } from "./stage1";
@@ -53,6 +54,11 @@ export function transition(state: GameState, input: string, content?: ContentCat
 }
 
 function dispatchTransition(state: GameState, input: string, content?: ContentCatalog): GameState {
+  if (import.meta.env.DEV) {
+    const devState = tryDevWarp(state, input, content);
+    if (devState) return devState;
+  }
+  
   if (state.isGameOver || state.isWin) {
     return state;
   }
