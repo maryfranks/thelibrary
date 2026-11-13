@@ -40,8 +40,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: preview --name "pr-${{ github.event.pull_request.number }}" --message "${{ github.event.pull_request.head.sha }}"
-
+          command: versions upload --preview-alias "pr-${{ github.event.pull_request.number }}" --message "${{ github.event.pull_request.head.sha }}"
       - name: Comment Preview URL on PR
         env:
           GH_TOKEN: ${{ github.token }}
