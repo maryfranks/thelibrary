@@ -1,0 +1,20 @@
+name: Cleanup PR Preview
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Cloudflare Workers Preview
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: preview delete --worker-name maryfranks-thelibrary --name "pr-${{ github.event.pull_request.number }}" --skip-confirmation

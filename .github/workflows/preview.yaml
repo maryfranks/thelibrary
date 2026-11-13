@@ -1,0 +1,60 @@
+name: Preview PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bunx tsc --noEmit
+
+      - name: Test
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
+      - name: Deploy Preview to Cloudflare Workers
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: preview --name "pr-${{ github.event.pull_request.number }}" --message "${{ github.event.pull_request.head.sha }}"
+
+      - name: Comment Preview URL on PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview-url }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.preview-deployment-url }}
+        run: |
+          # Note: --edit-last updates the most recent comment authored by github-actions[bot].
+          # This works cleanly as long as this is the only workflow posting PR comments;
+          # if another bot workflow starts commenting on PRs, switch to matching a unique comment header.
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --edit-last \
+            --create-if-none \
+            --body "$(printf '### Cloudflare Workers Preview\n- **Branch Preview:** %s\n- **Commit Build (`%s`):** %s' \
+              "${PREVIEW_URL:-_pending_}" \
+              "${{ github.event.pull_request.head.sha }}" \
+              "${DEPLOY_URL:-_pending_}")"
