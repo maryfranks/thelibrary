@@ -12,4 +12,13 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  nitro: {
+    cloudflare: {
+      // @ts-expect-error -- Lovable's wrapper types lag behind Nitro's cloudflare.wrangler option
+      wrangler: {
+        workers_dev: false,
+        preview_urls: true,
+      },
+    },
+  },
 });
