@@ -144,52 +144,105 @@
       "Your journey ended before you could find your footing in the stacks."
     ],
     "stage3_hub_unexplored": [
-      "Five rows of bookshelves are in front of you. it's hard to see down them. ."
+      "You stand catching your breath in the near-total darkness. There are no",
+      "windows in here, and as your eyes slowly adjust to the gloom, you can",
+      "barely make out towering bookshelves stretching ahead into the shadows."
     ],
-    "stage3_foyer_blocked": [
-      "You try to retreat toward the foyer, but you find the monster from earlier waiting for you near the door, forcing you back into the stacks."
+     "stage3_foyer_blocked": [
+      "You turn back and quietly crack open the red door to look into the foyer.",
+      "You catch a glimpse of something massive shifting in the shadows just on",
+      "the other side. You ease the door shut before it notices you, trapped in",
+      "the stacks."
     ],
     "stage3_hub": [
-      "Five rows of bookshelves are arranged in front of you. You can't see much from here, but hopefully one of them leads to a way out"
+      "As your eyes adjust, you make out five long rows of towering bookshelves",
+      "stretching ahead into the gloom. Somewhere deep between the shelves, you",
+      "hear the faint scrape of claws on wood and slow, heavy breathing—you are",
+      "definitely not alone in here. You'd be a fool to walk down any of these",
+      "aisles without looking carefully first to see what's waiting. Something",
+      "about the fifth row feels completely wrong, an unnatural blackness hanging",
+      "over it that makes your skin crawl."
     ],
     "stage3_death_choice": [
       "You have died in the stacks."
     ],
     "stage3_hub__peer_down_row_1": [
-      "You peer down row 1. Through the dim light, you see a heavy glass double door leading into what looks like the reading room."
+      "You peer down row 1. At the far end of the aisle, you see a set of heavy",
+      "glass double doors with faint, pale light filtering through from a room",
+      "beyond. It looks like there are windows in there, which might mean a way",
+      "out."
     ],
     "stage3_hub__peer_down_row_2": [
-      "You peer down row 2. It opens into a dim, quiet corridor. In the distance, you can barely make out a fallen figure lying on the floor."
+      "You look carefully down row 2. The aisle opens into a dim, quiet",
+      "corridor with no sign of movement in the shadows. Further down, you can",
+      "barely make out a fallen figure lying motionless on the floor."
     ],
     "stage3_hub__peer_down_row_3": [
-      "You peer down row 3. The aisle appears clean, orderly, and completely unremarkable—almost suspiciously so."
+      "You look carefully down row 3. At first glance the aisle looks empty,",
+      "with no bodies or supplies in sight, until you notice deep claw gouges",
+      "torn into the wooden shelves and dark drag marks leading into the",
+      "shadows just out of sight."
     ],
     "stage3_hub__peer_down_row_4": [
-      "You peer down row 4. It looks narrow, cramped, and choked with leaning bookshelves. A discarded backpack rests against a shelf near the entrance."
+      "You look carefully down row 4. The aisle is narrow and choked with",
+      "leaning bookshelves—far too tight for anything large to lurk near the",
+      "entrance. Resting against a shelf just a few steps in is a discarded",
+      "backpack. Who knows what kind of supplies might be inside."
     ],
     "stage3_row1_encounter": [
-      "You reach the heavy glass door leading into the reading room."
+      "You walk down the first row and reach the heavy glass double doors.",
+      "Faint, pale light filters through the frosted glass from a vast room",
+      "beyond, where tall arched windows let in the dim glow of the storm",
+      "outside. The glass is dusty and smeared—you'd have to press closer to",
+      "get a clear look at what's inside."
     ],
     "stage3_row1_looked": [
-      "Looking through the glass reveals unmistakable evidence of a creature lurking inside."
+      "You press closer and look through a clear patch in the glass. Beyond",
+      "the doors lies a grand, two-story reading room lined with ornate",
+      "balconies, dark wood paneling, and long oak tables beneath tall arched",
+      "windows. Then your breath catches—sprawled in the shadows between the",
+      "tables on the lower floor is an enormous, hulking creature, its massive",
+      "silhouette rising and falling with slow, heavy breaths. It hasn't",
+      "noticed you yet."
     ],
     "stage3_row2_encounter": [
-      "You are in a dim corridor. A fallen figure lies on the floor ahead."
+      "You walk quietly down row 2, the air cool and still between the tall",
+      "shelves. Ahead, the motionless figure of a man lies slumped near the",
+      "base of a bookcase, a large black umbrella resting on the floor beside",
+      "his hand. Just beyond where he lies, the corridor fades into deep shadow."
     ],
     "stage3_row2_looted": [
-      "You have searched the corpse and gathered what you could. The corridor stretches into darkness ahead."
+      "You kneel beside the body and check his coat pockets before picking up",
+      "the heavy black umbrella lying next to him. Just a few paces further",
+      "down the aisle, the dim ambient light cuts off completely, swallowed",
+      "by a wall of pitch darkness."
     ],
     "stage3_row2_dark_warning": [
-      "It looks dark ahead. I wonder if there's a lightswitch somewhere back there."
+      "You stop at the edge of the shadows. Beyond this point, the corridor",
+      "is completely pitch-black—you can't see a foot ahead of you, and",
+      "there's no telling what might be lurking in the dark. You're too",
+      "uneasy to push forward without more light; maybe there's a way to",
+      "turn on the lights somewhere back in the stacks."
     ],
     "stage3_row4_encounter": [
-      "You move into a cramped, narrow aisle choked with shelving. A discarded backpack rests against a shelf."
+      "You slip a few steps into row 4, squeezing between the tall, leaning",
+      "bookshelves. The narrow gap feels cramped, though the heavy timber",
+      "shelves press close enough around you to offer a small pocket of",
+      "shelter. The discarded backpack lies right at your feet, its zippers",
+      "half-open."
     ],
     "stage3_row4_looted": [
-      "You have looted the pack. Looking around, the aisle feels tight, suffocating, and claustrophobic."
+      "You rummage through the pack and pull out a heavy-duty flashlight along",
+      "with a few spare supplies. As you straighten up, your eyes catch faint,",
+      "familiar scrape marks along the floorboards just beyond the pack,",
+      "vanishing further down the narrow aisle."
     ],
     "stage3_row5_warning": [
-      "Your hair stands on end. There is something profoundly unnatural about the darkness down this row."
+      "You lean toward the entrance of the fifth row and peer into the gloom.",
+      "Your hair stands on end. The blackness hanging between these shelves",
+      "feels thick and suffocating, swallowing every sound from the rest of",
+      "the library. Every instinct screams at you to step back before you look",
+      "any closer."
     ],
     "stage4_entry": [
       "You enter the deep stacks maze."
@@ -342,40 +395,85 @@
       "swing the unwieldy mop, but trip over the handle and die."
     ],
     "stage3_foyer_blocked__go_deeper": [
-      "Panicking at the monster blocking the foyer, you rushed blindly deeper into the stacks without looking around, and something waiting in the shadows struck instantly."
+      "Rattled by what's waiting on the other side of the door, you hurry forward",
+      "into the dark without looking where you're going. You hear a rustle",
+      "in the gloom before heavy claws slam into your chest, knocking the fireplace",
+      "poker from your hands. You hit the floor hard, and the shadows close in",
+      "around you."
     ],
     "stage3_hub_unexplored__go_deeper": [
-      "You rushed blindly into the stacks without looking around, and something waiting in the shadows struck instantly."
+      "Before your eyes can adjust to the dark, you step blindly forward between",
+      "the towering shelves. You hear a rustle in the gloom before heavy",
+      "claws slam into your chest, knocking the fireplace poker from your hands.",
+      "You hit the floor hard, and the shadows close in around you."
     ],
     "stage3_hub__go_down_row_1__else": [
-      "You attempt to go down row 1 without peering first and are attacked."
+      "You stride straight down row 1 toward the faint glow at the far end",
+      "without checking the shadows between the shelves. Halfway down the",
+      "aisle, something drops from the upper racks right behind you, slamming",
+      "you onto the floorboards before you can turn around."
     ],
     "stage3_hub__go_down_row_2__else": [
-      "You attempt to go down row 2 without peering first and are attacked."
+      "You hurry down row 2 without peering into the dim corridor first. In",
+      "the gloom, you trip over the slumped body of a man you didn't see",
+      "lying near the shelves—crashing flat onto your face just as something",
+      "drops from the top of the bookcases and lands heavily on your back."
     ],
     "stage3_hub__go_down_row_3": [
-      "Something lurking just out of sight in the middle path killed you."
+      "You slip down row 3 and kneel beside the dark drag marks, setting the",
+      "fireplace poker against a shelf so you can examine the gouges in the",
+      "wood more closely. A low, wet rasp echoes from the shadows just ahead—",
+      "and as you lunge back for the poker, your fingers brush empty air a",
+      "split second before the creature pounces."
     ],
     "stage3_hub__go_down_row_4__else": [
-      "You attempt to go down row 4 without peering first and are attacked."
+      "You push straight into row 4 without looking first, squeezing carelessly",
+      "between the leaning bookshelves. You catch your foot on a discarded",
+      "backpack half-hidden in the gloom, wedging yourself tightly between the",
+      "tilted timber racks—completely trapped as jagged jaws snap down from the",
+      "narrow gap above."
     ],
     "stage3_hub__go_down_row_5": [
-      "You ventured into the unnatural blackness of row 5. You never even saw what killed you."
+      "Even as something inside you warns you to stay back, the deep shadow",
+      "filling the fifth row seems to beckon you closer. Before you realize",
+      "what you are doing, you step across the threshold into its reach.",
+      "Mesmerized, you let the dark close around you like a warm embrace,",
+      "slipping silently into nothingness."
     ],
     "stage3_row1_encounter__enter_the_reading_room": [
-      "Something giant and frightening inside the reading room killed you."
+      "You ease open the heavy glass doors and slip into the dim light of the",
+      "reading room. Ahead, a massive shape begins to rise from between the",
+      "oak tables—and keeps rising, towering toward the second-floor balconies.",
+      "Before you can even turn back toward the doors, it simply bends down",
+      "and swallows you whole right where you stand."
     ],
     "stage3_row2_dark_warning__go_deeper": [
-      "Refusing to heed the warning, you tried to navigate the dark corridor without your flashlight, and something in the shadows got you in the pitch black."
+      "You push forward into the pitch blackness, running one hand along the",
+      "spines of the books to keep your bearings. The faint light behind you",
+      "vanishes completely as the darkness swallows you whole—if only you had a",
+      "flashlight. Then you hear a low, heavy scraping just ahead in the dark,",
+      "and before you can turn back, something massive grabs you with its teeth."
     ],
     "stage3_row4_encounter__go_deeper": [
-      "The thing lurking in row 3 ambushed you when you reached the end of row 4."
+      "You squeeze past the discarded backpack and push deeper into the narrow",
+      "gap between the leaning shelves. The cramped aisle grows darker with",
+      "every step until you can barely see a foot in front of you—and before",
+      "you realize you've reached the end of the row, long, hooked limbs drop",
+      "from the top of the bookcase and clamp around your shoulders."
     ],
     "stage3_row4_looted__go_deeper": [
-      "The thing lurking in row 3 ambushed you when you reached the end of row 4."
+      "You click on the flashlight and press deeper between the leaning",
+      "bookshelves, sweeping the beam along the floor to follow the scrape",
+      "marks. As the aisle narrows to a dead end, the trail abruptly turns",
+      "upward—gouging deep furrows straight up the side of the wooden",
+      "bookcase just as long, hooked limbs drop down on you from above."
     ],
     "stage3_row5_warning__peer": [
-      "You peer into row 5 a second time. Everything goes completely black before you can react, and you don't know what killed you."
+      "Ignoring every instinct screaming at you to step back, you lean closer",
+      "and squint into the unnatural blackness of the fifth row. The darkness",
+      "surges outward across the threshold and swallows you whole before you can",
+      "draw a breath. Whatever claims you in that void gives you no time to cry",
+      "out."
     ],
     "stage4_entry__go_deeper": [
       "An environmental hazard claims you."
