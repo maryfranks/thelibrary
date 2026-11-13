@@ -1,15 +1,15 @@
 {
   "dashboard": {
     "id": null,
-    "uid": "littlefuzzydinos-game",
-    "title": "LittleFuzzyDinos - Game Engine Telemetry",
+    "uid": "thelibrary",
+    "title": "death-toll",
     "tags": ["game", "thelibrary"],
     "style": "dark",
     "timezone": "browser",
     "editable": true,
     "graphTooltip": 1,
     "time": {
-      "from": "now-6h",
+      "from": "now-5y",
       "to": "now"
     },
     "refresh": "10s",
