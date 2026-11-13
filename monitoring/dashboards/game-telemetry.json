@@ -30,7 +30,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum(increase(game_runs_completed_total{outcome=\"win\"}[$__range])) or vector(0)",
+            "expr": "sum(increase(game_runs_completed_total{outcome=\"win\",telemetry_sdk_language=\"webjs\"}[$__range])) or vector(0)",
+            "instant": true,
             "legendFormat": "Wins"
           }
         ],
@@ -68,7 +69,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum(increase(game_runs_completed_total{outcome=\"loss\"}[$__range])) or vector(0)",
+            "expr": "sum(increase(game_runs_completed_total{outcome=\"loss\",telemetry_sdk_language=\"webjs\"}[$__range])) or vector(0)",
+            "instant": true,
             "legendFormat": "Losses"
           }
         ],
@@ -106,7 +108,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum(increase(game_deaths_total[$__range])) or vector(0)",
+            "expr": "sum(increase(game_deaths_total{telemetry_sdk_language=\"webjs\"}[$__range])) or vector(0)",
+            "instant": true,
             "legendFormat": "Deaths"
           }
         ],
@@ -144,7 +147,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum(increase(game_deaths_total{death_type=\"monster_attack\"}[$__range])) or vector(0)",
+            "expr": "sum(increase(game_deaths_total{death_type=\"monster_attack\",telemetry_sdk_language=\"webjs\"}[$__range])) or vector(0)",
+            "instant": true,
             "legendFormat": "Monster"
           }
         ],
@@ -182,7 +186,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum(increase(game_deaths_total{death_type=\"environmental_hazard\"}[$__range])) or vector(0)",
+            "expr": "sum(increase(game_deaths_total{death_type=\"environmental_hazard\",telemetry_sdk_language=\"webjs\"}[$__range])) or vector(0)",
+            "instant": true,
             "legendFormat": "Hazard"
           }
         ],
@@ -220,7 +225,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum(increase(game_deaths_total{death_type=\"unknown_death\"}[$__range])) or vector(0)",
+            "expr": "sum(increase(game_deaths_total{death_type=\"unknown_death\",telemetry_sdk_language=\"webjs\"}[$__range])) or vector(0)",
+            "instant": true,
             "legendFormat": "Unknown"
           }
         ],
@@ -258,7 +264,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum(increase(game_deaths_total{death_type=\"mysterious_disappearance\"}[$__range])) or vector(0)",
+            "expr": "sum(increase(game_deaths_total{death_type=\"mysterious_disappearance\",telemetry_sdk_language=\"webjs\"}[$__range])) or vector(0)",
+            "instant": true,
             "legendFormat": "Disappearance"
           }
         ],
@@ -296,7 +303,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum by (death_type) (increase(game_deaths_total[$__range]))",
+            "expr": "sum by (death_type) (increase(game_deaths_total{telemetry_sdk_language=\"webjs\"}[$__range]))",
+            "instant": true,
             "legendFormat": "{{death_type}}"
           }
         ],
@@ -338,7 +346,8 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum by (stage) (increase(game_deaths_total[$__range]))",
+            "expr": "sum by (stage) (increase(game_deaths_total{telemetry_sdk_language=\"webjs\"}[$__range]))",
+            "instant": true,
             "legendFormat": "{{stage}}"
           }
         ],
@@ -372,7 +381,7 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum by (outcome) (rate(game_runs_completed_total[$__rate_interval])) * 60",
+            "expr": "sum by (outcome) (rate(game_runs_completed_total{telemetry_sdk_language=\"webjs\"}[$__rate_interval])) * 60",
             "legendFormat": "{{outcome}} / min"
           }
         ],
@@ -403,7 +412,7 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "sum by (death_type) (rate(game_deaths_total[$__rate_interval])) * 60",
+            "expr": "sum by (death_type) (rate(game_deaths_total{telemetry_sdk_language=\"webjs\"}[$__rate_interval])) * 60",
             "legendFormat": "{{death_type}}"
           }
         ],
@@ -434,7 +443,7 @@
               "type": "prometheus",
               "uid": "victoriametrics"
             },
-            "expr": "topk(10, sum by (node_id, stage) (increase(game_deaths_total[$__range])))",
+            "expr": "topk(10, sum by (node_id, stage) (increase(game_deaths_total{telemetry_sdk_language=\"webjs\"}[$__range])))",
             "format": "table",
             "instant": true
           }
