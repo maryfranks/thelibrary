@@ -9,7 +9,7 @@ The application is structured as a client-side Single Page Application (SPA) dep
 - **Frontend UI Shell:**
   - Retro terminal emulator
   - Self-contained local state loop in the single-page application handling command inputs, text history output, and game state locally in the browser.
-  - Provides a centered `Start Over` button outside and below the terminal console to reset game state to a fresh Stage 1 beginning while recording a `mysterious_disappearance` metric and flushing immediately if invoked during an active session.
+  - Provides a centered footer row outside and below the terminal console with a `Start Over` button (resetting game state to a fresh Stage 1 beginning while recording a `mysterious_disappearance` metric and flushing immediately if invoked during an active session) and an external `Count the lost ↗` link (`target="_blank"`, `rel="noopener noreferrer"`) opening the Grafana death-toll telemetry dashboard without interrupting active game state.
 - **Game Engine:**
   - Pure execution logic.
   - Handles state management, command parsing, inventory checks, condition evaluation, and dynamic DOM rendering without embedding narrative strings.
