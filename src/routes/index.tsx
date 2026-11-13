@@ -148,13 +148,23 @@ function Terminal() {
           </div>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={handleStartOver}
-        className="cursor-pointer rounded-md border border-brass-border bg-card px-4 py-2 font-mono text-xs tracking-wider text-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      >
-        Start Over
-      </button>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={handleStartOver}
+          className="inline-flex cursor-pointer items-center whitespace-nowrap rounded-md border border-brass-border bg-card px-4 py-2 font-mono text-xs tracking-wider text-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          Start Over
+        </button>
+        <a
+          href="https://stats.littlefuzzydinos.com/d/thelibrary/death-toll?orgId=1&refresh=10s"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center whitespace-nowrap rounded-md border border-brass-border bg-card px-4 py-2 font-mono text-xs tracking-wider text-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          Count the lost ↗
+        </a>
+      </div>
     </div>
   );
 }
