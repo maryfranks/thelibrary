@@ -15,7 +15,7 @@ Terminal adventure game.
 
 ## Role Routing
 - Feature Implementation & Refactoring: `~/.agents/roles/ts_engineer.md`
-- Documentation & Narrative Specs: `.agents/roles/librarian.md`
+- Documentation & Narrative Specs: `~/.agents/roles/librarian.md`
 - Pull Request Review: `~/.agents/roles/reviewer.md`
 
 # Documentation Index & Agent Access Control
