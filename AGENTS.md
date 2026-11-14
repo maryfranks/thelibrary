@@ -1,15 +1,7 @@
-Rules:
-
-- Use `gh` for GitHub.
-- Prefer single, unchained CLI commands over compound `&&` chains so commands cleanly match CLI permission allowlist rules.
-- Never use heredocs (`<< 'EOF'`), multiline strings, or inline scripts (`python3 -c`) in CLI commands; pass multiline text via `--body-file <file>`.
-- Always commit `bun.lock` alongside any `package.json` change; never leave it uncommitted or out of sync with `package.json`.
-
 # Project Overview
 Terminal adventure game.
 
 ## Stack & Commands
-
 - Stack: TanStack Start (React 19) + Vite + TypeScript + Tailwind CSS v4
 - Package Manager: Bun (always use `bun run <script>` or `bunx <binary>`; never invoke `npx` or `npm`)
 - `bun install` - Install dependencies
@@ -21,8 +13,10 @@ Terminal adventure game.
 - `bun run lint` - Lint codebase via ESLint
 - `bun run format` - Format code via Prettier
 
-## Engineering Role
-When implementing features, refactoring components, or modifying state, adhere to the standards defined in: `.agents/roles/software_engineer.md`
+## Role Routing
+- Feature Implementation & Refactoring: `~/.agents/roles/ts_engineer.md`
+- Documentation & Narrative Specs: `.agents/roles/librarian.md`
+- Pull Request Review: `~/.agents/roles/reviewer.md`
 
 # Documentation Index & Agent Access Control
 
@@ -38,5 +32,3 @@ Agents must strictly consult the documents in the Active Specifications list acc
 ### Ignored / Human Only (Agents Do Not Read)
 - `_docs/archive/`: Entire archive directory. Contains historical notes, deprecated specs, and archived planning docs (including `plan.md`). Agents must never read or reference files in this directory.
 - `_docs/gameplay.md`: Author-facing reference and playthrough walkthrough. Agents must NOT read or parse this document (rely exclusively on `.agents/docs/game_map.md`).
-
-
