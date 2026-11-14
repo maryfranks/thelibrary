@@ -23,9 +23,10 @@ Terminal adventure game.
 Agents must strictly consult the documents in the Active Specifications list according to their assigned roles. Documents marked Ignored / Human Only or located in archive directories must never be read, parsed, or cited during automated task execution.
 
 ### Active Specifications (Agent Permitted)
-- `_docs/architecture.md`: System boundary rules (UI vs. Engine vs. Content) and implementation flow.
+- `_docs/architecture.md`: System boundary rules (UI vs. Engine vs. Content) and infrastructure overview.
 - `_docs/design_system.md`: Styling tokens, font hierarchies, color semantics, and layout constraints.
-- `.agents/docs/game_map.md`: Ground truth for state transitions, node IDs, item checks, and puzzle navigation.
+- `.agents/docs/engine_mechanics.md`: Agent-facing runtime state machine, auto-resolve check loops, inventory snapshots, respawn routing, and prompt helpers.
+- `.agents/docs/game_map.md`: Read-only ground truth for state transitions, node IDs, item checks, and puzzle navigation.
 - `_docs/process.md`: Operational standards, git hygiene, commit conventions, and repository workflow.
 - `content.json`: Read-only string catalog. Always load dynamically to map node IDs, death screens, and parser fallbacks to display strings; never hardcode its values in code and never modify.
 
