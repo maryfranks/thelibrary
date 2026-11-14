@@ -1,47 +1,35 @@
-# Architecture Document: Single-Page Text Adventure & Multi-Destination Telemetry Pipeline
+# Architecture Document: Single-Page Text Adventure & Telemetry Pipeline
 
 ## System Overview
 
-The application is structured as a client-side Single Page Application (SPA) deployed to Cloudflare Pages. It integrates game execution logic and branching code directly within the application, while leveraging a decoupled `content.json` payload strictly for narrative text and strings. Client-side telemetry is dispatched directly to an independent, multi-purpose OpenTelemetry (OTEL) collector hosted on a free-tier GCP e2-micro instance, which fans out metrics to primary storage and secondary analysis endpoints.
+The application is structured as a client-side Single Page Application (SPA) deployed to Cloudflare Pages. It integrates game execution logic and branching code directly within the application, while leveraging a decoupled `content.json` payload strictly for narrative text and strings. Client-side telemetry is dispatched directly to an OpenTelemetry (OTEL) collector hosted on a free-tier GCP e2-micro instance, which exports metrics to VictoriaMetrics backed by a persistent disk on the VM for visualization in Grafana.
 
-### 2. Component Architecture
+## Strict 3-Tier Decoupling & Component Boundaries
 
-- **Frontend UI Shell:**
-  - Retro terminal emulator
-  - Self-contained local state loop in the single-page application handling command inputs, text history output, and game state locally in the browser.
-  - Provides a centered footer row outside and below the terminal console with a `Start Over` button (resetting game state to a fresh Stage 1 beginning while recording a `mysterious_disappearance` metric and flushing immediately if invoked during an active session) and an external `Count the lost ↗` link (`target="_blank"`, `rel="noopener noreferrer"`) opening the Grafana death-toll telemetry dashboard without interrupting active game state.
-- **Game Engine:**
-  - Pure execution logic.
-  - Handles state management, command parsing, inventory checks, condition evaluation, and dynamic DOM rendering without embedding narrative strings.
-  - May define fixed UI-chrome labels (e.g., `CHOICE_PROMPT_HEADER` in `src/engine/prompt.ts`) as exported constants. These are not narrative content. All story, death, and parser text must still come from `content.json`.
-  - No circular dependencies of any kind (imports, module references, or logic).
-- **Check-Node Resolution (`src/engine/transition.ts`):**
-  - `transition()` dispatches the input to the stage handler, then loops (max 10 steps) while the resulting node is in `AUTO_RESOLVE_NODES`, re-dispatching with empty input and concatenating output. Check nodes (respawn, periodicals, stacks door, flashlight, pocketknife, umbrella, etc.) therefore never rest as menus, and chained checks resolve in one call.
-  - The periodicals gate (`stage2_periodicals_check`) requires the mop only (`inventory.includes("mop")`); the fireplace poker alone does not pass.
-  - `stage2_respawn_check` evaluates weapon possession against the restored Stage 2 snapshot (`mop` routes to `stage2_foyer`; empty routes to `stage1_vestibule_searched` with hint text).
-  - Unmatched input in stage 2 yields a parser fallback, not a death; deaths occur only on explicit choices (e.g., `go deeper` at `stage2_foyer`).
-  - `stage3_row2_flashlight_check` transitions `[With Flashlight]` to the terminal `temporary_game_over` node (`isGameOver: true`, excluded from `isActiveSession()`, no further gameplay commands) and records a `mysterious_disappearance` death metric.
-- **Inventory Snapshots & Stage Respawn / Retry (`src/engine/`):**
-  - **Stage 2 Snapshot:** Captured upon entering `stage2_foyer` from Stage 1 (preserving `["mop"]` or `[]`).
-  - **Stage 3 Snapshot:** Captured upon surviving arrival at `stage3_arrival` (requiring the fireplace poker) and transitioning to `stage3_hub_unexplored`.
-  - **Stage 2 Death Retry:** Retrying from `stage2_death_choice` restores `stage2InventorySnapshot` and routes into `stage2_respawn_check`. If the snapshot contains the mop, the player respawns at `stage2_foyer`. If no mop was brought, the player lands at `stage1_vestibule_searched` with the hint text and restored empty snapshot. Any items gathered during Stage 2 (fireplace poker, stacks key, corpse loot, desk items) are discarded on respawn.
-  - **Stage 3 Arrival Death Retry:** Dying to the arrival ambush (entering with the mop instead of the poker) transitions to `stage3_early_death_choice`. Retrying before a Stage 3 snapshot is captured restores `stage2InventorySnapshot` and routes through `stage2_respawn_check` to `stage2_foyer` (or `stage1_vestibule_searched` if mopless), preventing soft-locks and allowing the player to retrieve the poker.
-  - **Stage 3 Early Post-Arrival Death Retry (`stage3_early_death_choice`):** Dying after surviving arrival before exploring the hub (selecting `go deeper` at `stage3_hub_unexplored` or `stage3_foyer_blocked`) restores `stage3InventorySnapshot` and respawns the player at `stage3_hub_unexplored`.
-  - **Stage 3 Hub & Row Death Retry (`stage3_death_choice`):** Dying during hub or row explorations (or at `stage4_junction_c_check` without the pocketknife) preserves acquired Stage 3 items, resets all row peering flags (`row1_safe`–`row5_safe` to `false`), and respawns the player at `stage3_hub`.
-- **Inventory Display (`src/engine/commands.ts`):**
-  - `processCommand` emits a `sys` line `Inventory: ...` when inventory changes (pick up, search, fireplace) and on `look in the pack` at `stage1_pack_checked` and stage 2 search nodes.
-- **Choice Prompt (`src/engine/prompt.ts`):**
-  - Pure helpers that render the numbered `Do you want to:` list from `getAvailableChoices(nodeId)`; empty for terminal nodes.
-  - `formatChoicePrompt(nodeId)` is appended to the initial output on load; `getTransitionPrompt(prev, next)` appends it after a transition only when `currentNode` changed.
-  - The UI shell (`src/routes/index.tsx`) calls these helpers and does not build prompt text itself.
-- **Content Payload (`content.json`):**
-  - Fully populated and finalized data payload
-- **Telemetry (`src/engine/telemetry.ts`):**
-  - OpenTelemetry metrics instrumentation (`the-library-engine` meter) integrated into the game engine with graceful fallback when collectors are absent or unreachable.
-  - Emits monotonic counters for completed runs (`game.runs.completed` with `outcome` and `final_stage` attributes) and fatal transitions (`game.deaths` with `stage`, `death_type` [`monster_attack`, `environmental_hazard`, `unknown_death`, `mysterious_disappearance`], and `node_id` attributes).
-  - Exports metrics over OpenTelemetry Protocol (OTLP) Hypertext Transfer Protocol (HTTP) (`OTLPMetricExporter` targeting `https://collector.littlefuzzydinos.com/v1/metrics`) via an `ImmediateMetricReader` (no periodic polling interval), and invokes `flushTelemetry()` (`meterProvider.forceFlush()`) on both `recordRunCompleted()` and `recordDeath()` so metrics export immediately when recorded.
+### 1. Frontend UI Shell (`src/routes/`, `src/components/`)
+- Presentational React interface simulating a retro terminal console with a self-contained local browser state loop handling command inputs, text history output, and active session state.
+- Completely decoupled from game rules; never imports, parses, or inspects `content.json` directly and contains no embedded narrative logic.
+- Connects interactive user input directly to the headless game engine (no leftover mock handlers).
+- Renders a centered footer row outside and below the terminal console containing:
+  - A `Start Over` button that resets game state to a fresh Stage 1 beginning (recording and immediately flushing a `mysterious_disappearance` metric if invoked during an active session).
+  - An external `Count the lost ↗` link (`target="_blank"`, `rel="noopener noreferrer"`) opening the Grafana death-toll telemetry dashboard without interrupting active game state.
 
----
+### 2. Headless Game Engine (`src/engine/`)
+- Pure TypeScript execution logic handling state management, command parsing, inventory evaluation, stage transitions, and telemetry emission.
+- Must remain 100% headless with zero React imports, zero DOM manipulation, and zero browser globals.
+- Must contain zero hardcoded narrative strings, parser fallbacks, or literal death-screen keys. All story, death, and parser text must load dynamically from `content.json` (fixed UI-chrome labels such as choice prompt headers may be defined as exported constants).
+- Zero circular dependencies across imports, module references, or state logic.
+
+### 3. Narrative Content Catalog (`content.json`)
+- Static string dictionary loaded dynamically by the engine via typed schemas.
+
+## Telemetry Pipeline (`src/engine/telemetry.ts`)
+
+- OpenTelemetry metrics instrumentation (`the-library-engine` meter) integrated into the game engine with graceful fallback when collectors are absent or unreachable.
+- Emits monotonic counters for:
+  - Completed runs (`game.runs.completed` with `outcome` and `final_stage` attributes).
+  - Fatal transitions (`game.deaths` with `stage`, `death_type` [`monster_attack`, `environmental_hazard`, `unknown_death`, `mysterious_disappearance`], and `node_id` attributes).
+- Exports metrics over OpenTelemetry Protocol (OTLP) HTTP (`OTLPMetricExporter` targeting `https://collector.littlefuzzydinos.com/v1/metrics`) via an `ImmediateMetricReader` (no periodic polling interval), invoking `flushTelemetry()` (`meterProvider.forceFlush()`) on both `recordRunCompleted()` and `recordDeath()` so metrics export immediately.
 
 ## Architecture Diagram
 
@@ -53,21 +41,14 @@ graph TD
 
     subgraph GCP e2-micro VM
         OTEL["OpenTelemetry Collector <br/>(Routing Hub)"]
+        VM["VictoriaMetrics <br/>(Persistent Disk Storage)"]
     end
 
-    subgraph Primary Pipeline
-        DB["Supabase Database <br/>(Free Tier Storage)"]
+    subgraph Visualization
         Grafana["Grafana Dashboard <br/>(Metrics Visualizer)"]
     end
 
-    subgraph Secondary Fan-Out
-        S1["[Future Secondary Service 1]"]
-        S2["[Future Secondary Service 2]"]
-    end
-
     SPA -->|OTLP / HTTP Direct Metrics Push| OTEL
-    OTEL -->|Primary Export| DB
-    DB --> Grafana
-    OTEL -->|Secondary Fan-Out| S1
-    OTEL -->|Secondary Fan-Out| S2
+    OTEL -->|Primary Export| VM
+    VM --> Grafana
 ```

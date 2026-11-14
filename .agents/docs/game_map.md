@@ -1,4 +1,11 @@
-# Gameplay 
+<!--
+  READ-ONLY narrative state graph and content resolution contract.
+  Ground truth for node IDs, choices, item gates, and death-screen lookups.
+  Agents must never modify this file; document runtime implementation details in .agents/docs/engine_mechanics.md instead.
+-->
+
+
+# Gameplay
 
 > **Content Resolution & Decoupling Rules:**
 > - Never hardcode narrative strings, parser fallbacks, or death screen keys in `src/engine/`. Always load `content.json` dynamically.
@@ -54,28 +61,28 @@
   - Choice 2: "search corpse" -> [stage2_corpse_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)
   - Choice 3: "explore periodicals" -> [stage2_periodicals_check]
 
-- [stage2_foyer_searched] Foyer (Explored)  
-  - Choice 1: "search corpse" -> [stage2_corpse_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)  
-  - Choice 2: "search desk" -> [stage2_desk_looted] (Acquire: small notebook, stacks key)  
+- [stage2_foyer_searched] Foyer (Explored)
+  - Choice 1: "search corpse" -> [stage2_corpse_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)
+  - Choice 2: "search desk" -> [stage2_desk_looted] (Acquire: small notebook, stacks key)
   - Choice 3: "explore periodicals" -> [stage2_periodicals_check]
 
-- [stage2_corpse_looted] Foyer (Corpse Looted)  
-  - Choice 1: "search desk" -> [stage2_both_looted] (Acquire: small notebook, stacks key)  
+- [stage2_corpse_looted] Foyer (Corpse Looted)
+  - Choice 1: "search desk" -> [stage2_both_looted] (Acquire: small notebook, stacks key)
   - Choice 2: "explore periodicals" -> [stage2_periodicals_check]
 
-- [stage2_desk_looted] Foyer (Desk Looted)  
-  - Choice 1: "search corpse" -> [stage2_both_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)  
+- [stage2_desk_looted] Foyer (Desk Looted)
+  - Choice 1: "search corpse" -> [stage2_both_looted] (Acquire: lemon candy, pack of gum, mace, hair ties)
   - Choice 2: "explore periodicals" -> [stage2_periodicals_check]
 
-- [stage2_both_looted] Foyer (Fully Looted)  
+- [stage2_both_looted] Foyer (Fully Looted)
   - Choice 1: "explore periodicals" -> [stage2_periodicals_check]
 
-- [stage2_periodicals_check] Periodicals Check (Mop Item Check; auto-resolves, no menu; searching corpse/desk first is optional)  
+- [stage2_periodicals_check] Periodicals Check (Mop Item Check; auto-resolves, no menu; searching corpse/desk first is optional)
   - [No Mop] -> [DEAD: monster_attack] -> [stage2_death_choice]
   - [With Mop] -> [stage2_reading_room_door]
 
 - [stage2_reading_room_door] Reading Room Door
-  - Choice 1: "rattle reading room door" -> [DEAD: monster_attack] -> [stage2_rattle_death_choice]  
+  - Choice 1: "rattle reading room door" -> [DEAD: monster_attack] -> [stage2_rattle_death_choice]
   - Choice 2: "try the lock quietly" -> [stage2_reading_room_locked]
 
 - [stage2_rattle_death_choice] Death Prompt (Reading Room Rattle)
@@ -85,11 +92,11 @@
 - [stage2_reading_room_door_respawn] Reading Room Door (Respawn with Hint)
   - Choice 1: "try the lock quietly" -> [stage2_reading_room_locked]
 
-- [stage2_reading_room_locked] Reading Room Locked  
+- [stage2_reading_room_locked] Reading Room Locked
   - Choice 1: "look around" -> [stage2_fireplace_revealed]
 
-- [stage2_fireplace_revealed] Foyer (Fireplace Revealed)  
-  - Choice 1: "search fireplace" -> [stage2_poker_acquired] (Acquire: fireplace poker, drop: mop)  
+- [stage2_fireplace_revealed] Foyer (Fireplace Revealed)
+  - Choice 1: "search fireplace" -> [stage2_poker_acquired] (Acquire: fireplace poker, drop: mop)
   - Choice 2: "go deeper" -> [stage2_stacks_door_check]
 
 - [stage2_poker_acquired] Foyer (Poker Acquired)
@@ -99,7 +106,7 @@
   - [No Stacks Key] -> [stage2_stacks_door_locked_no_key]
   - [With Stacks Key] -> [stage3_arrival]
 
-- [stage2_stacks_door_locked_no_key] Stacks Door Locked (No Key)  
+- [stage2_stacks_door_locked_no_key] Stacks Door Locked (No Key)
   - Choice 1: "defend yourself" -> [DEAD: monster_attack] -> [stage2_no_key_death_choice]
   - Choice 2: "slowly walk backwards" -> [DEAD: monster_attack] -> [stage2_no_key_death_choice]
 
@@ -222,7 +229,7 @@
   - Choice 2: "duck under" -> [stage4_junction_h]
 
 - [stage4_junction_h] Junction H (Loopback 2)
-  - Choice 1: "take left corridor" -> [stage4_junction_e] 
+  - Choice 1: "take left corridor" -> [stage4_junction_e]
   - Choice 2: "take right corridor" -> [stage4_structural_hub]
 
 - [stage4_structural_hub] Structural Hub (End of Maze)
