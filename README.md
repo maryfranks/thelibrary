@@ -4,9 +4,13 @@ Caught in an unnatural storm, you take refuge in a library. When you get inside,
 
 ![The Library](./thelibrary.png "The Library")
 
-Check out the [dashboard](https://stats.littlefuzzydinos.com/d/littlefuzzydinos-game/littlefuzzydinos-game-engine-telemetry?orgId=1&refresh=10s&from=now-24h&to=now). 
+## 🚀 Deployment 🦖
 
-All dev metrics are sent to otel by default. Watch the dahsboard update in real time.
+Deployed to Cloudflare via github actions at thelibrary.littlefuzzydinos.com.
+
+Check out the [dashboard](https://stats.littlefuzzydinos.com/d/thelibrary/death-toll?orgId=1&refresh=10s).
+
+All dev metrics are sent to otel by default. Watch the dashboard update in real time.
 
 ## Built with
 
@@ -85,18 +89,13 @@ I organized the codebase around a strict three-tier separation of concerns: pres
 - **Documentation Partitioning (`_docs/` vs. `.agents/`):**
   I intentionally separated documentation into two distinct tiers. Files in `_docs/` provide human-oriented architectural context, design tokens, and git workflow rules with full formatting. Conversely, `.agents/` contains stripped-down, token-dense specifications (such as `.agents/docs/game_map.md`) designed to preserve context windows when working with CLI agents.
 
-## 🚀 Deployment 🦖
-
-COMING SOON: 
-
 ### Telemetry & Observability Pipeline
 
-Client-side gameplay metrics (such as run completions and fatal transitions) are dispatched over OpenTelemetry Protocol (OTLP) to an OpenTelemetry (OTel) collector hosted on Google Cloud Platform (GCP) Virtual Machine (VM). The collector fans metrics out to Victoriametrics for persistence and a Grafana instance (`stats.littlefuzzydinos.com`) for visualization. The configuration for that infrastructure is stored in another, private repo. 
+Client-side gameplay metrics (such as run completions and fatal transitions) are dispatched over OpenTelemetry Protocol (OTLP) to an OpenTelemetry (OTel) collector hosted on Google Cloud Platform (GCP) Virtual Machine (VM). The collector exports metrics to Victoriametrics for persistence and a Grafana instance (`stats.littlefuzzydinos.com`) for visualization. The configuration for that infrastructure is stored in another, private repo.
 
 Continuous Integration (CI) automatically updates the Grafana dashboard (`monitoring/dashboards/game-telemetry.json`) on pushes to `main` via GitHub Actions (`.github/workflows/deploy-dashboard.yaml`).
 
 ## Roadmap
 
-Testing of core game logic is still underway. The text remains largely a placeholder after the first two stages. There are tickets in the github issue backlog to address testing and expanding placeholder text. The real game text needs to be typed up and entered into the game once final logic is verified.
+Testing of core game logic is still underway. The text remains largely a placeholder after the first two stages. There are tickets in the github issue backlog to address testing and expanding placeholder text. Real game text needs to be typed up and entered into the game once final logic is verified for stages 4 and 5. A temporary game over is placed at the end of stage 3 becuase the logic disintegrates in stage 4.
 
-The app will be deployed to a static cloudflare page at `thelibrary.littlefuzzydinos.com` whenever changes are made to the repo via a github action. 

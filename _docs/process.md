@@ -1,20 +1,17 @@
-# How we work
+# How We Work
 
-## Git
+## Pull Requests & Verification
 
-- **Branching:** Always create a dedicated branches from `main` using the format `<issue-number>-<short-description>`, `fix-<short-description>`, or `docs-<short-description>`.
-- **Commit Frequently:** Commits should be small and all tests should pass
-- **CLI Tooling:** Always execute scripts and package binaries via Bun (`bun run <script>` or `bunx <binary>`). Never invoke `npx` or `npm`.
-- **PRs:** Always comment on PRs with a summary of commits. Before opening a PR run:
+- **Pre-PR Checks:** Run all checks before opening a PR:
   - `bun run lint`
-  - `bun run format` (or `bunx prettier` on modified source files; never commit formatting changes to read-only files such as `content.json` or restricted docs)
+  - `bun run format` (or `bunx prettier` on modified source files; never format read-only files such as `content.json` or `.agents/docs/game_map.md`)
   - `bun run test`
   - `bun run build`
-- **Docs:** documents should be updated in the same PR as the codechange.
+- **Documentation Sync:** Update relevant documentation in the same PR as code changes.
 
 ## Testing
 
-- **Mandatory Test Coverage:** Any change or addition to the game engine (`src/engine/`), state transitions, command parsing, or inventory logic must include unit tests.
-- **Test File Location:** Engine unit tests must be placed strictly in `src/engine/__tests__/` using the naming format `<module>.test.ts`. React UI and routing tests belong in `src/test/` (`<feature>.test.tsx`). Do not co-locate test files in source directories.
+- **Mandatory Coverage:** Changes to `src/engine/`, state transitions, command parsing, or inventory logic must include unit tests.
+- **Test File Location:** Place engine unit tests in `src/engine/__tests__/<module>.test.ts` and React UI/routing tests in `src/test/<feature>.test.tsx`. Do not co-locate test files in source directories.
 - **Bug Fix Verification:** Bug fixes must include a regression test reproducing the issue before the fix.
-- **Test Runner:** All tests are run via `bun run test` (Vitest). Never open a PR with failing or skipped tests.
+- **Test Runner:** Run tests via `bun run test` (Vitest). Never open a PR with failing or skipped tests.
