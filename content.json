@@ -15,7 +15,7 @@
     "stage1_vestibule_respawn": [
       "Oh no! Died so soon? Where is the fun in that. Let's try this again.",
       "Shrieking into the dark didn't work out so well, did it?",
-      "You're stuck in the Vestibule. Maybe look around before you get us", 
+      "You're stuck in the Vestibule. Maybe look around before you get us",
       "eaten again."
     ],
     "stage1_vestibule_searched": [
@@ -136,7 +136,7 @@
     ],
     "stage3_arrival": [
       "You step into the stacks. Before you can get your bearings, a",
-      "horrendous flying creature shrieks and dives at you out of the", 
+      "horrendous flying creature shrieks and dives at you out of the",
       "gloom! You swing the fireplace poker with both hands, striking",
       "it with a dull crack and driving it back into the shadows."
     ],
@@ -254,28 +254,22 @@
       "You are at Junction A."
     ],
     "stage4_junction_b": [
-      "You are at Junction B."
+      "You are at Junction B (The Torn Tapestry)."
     ],
-    "stage4_junction_c": [
-      "You are at Junction C (The Torn Tapestry)."
-    ],
-    "stage4_junction_c_check": [
+    "stage4_junction_b_check": [
       "You check for a pocketknife at the tapestry."
     ],
+    "stage4_junction_c": [
+      "You are at Junction C (The Electrical Hazard)."
+    ],
     "stage4_junction_d": [
-      "You are at Junction D (Loopback 1)."
+      "You are at Junction D (Loopback)."
     ],
     "stage4_junction_e": [
-      "You are at Junction E (The Electrical Hazard)."
+      "You are at Junction E (The Monster's Nest)."
     ],
     "stage4_junction_f": [
-      "You are at Junction F (The Monster's Nest)."
-    ],
-    "stage4_junction_g": [
-      "You are at Junction G."
-    ],
-    "stage4_junction_h": [
-      "You are at Junction H (Loopback 2)."
+      "You are at Junction F."
     ],
     "stage4_structural_hub": [
       "You have reached the Structural Hub (End of Maze)."
@@ -478,25 +472,22 @@
     "stage4_entry__go_deeper": [
       "An environmental hazard claims you."
     ],
-    "stage4_junction_a__go_left": [
+    "stage4_junction_a__go_straight": [
       "Dead end hazard."
     ],
-    "stage4_junction_b__go_straight": [
+    "stage4_junction_b__go_around": [
       "Dead end hazard."
     ],
-    "stage4_junction_c__go_around": [
-      "Dead end hazard."
-    ],
-    "stage4_junction_c_check__no_pocketknife_check": [
+    "stage4_junction_b_check__no_pocketknife_check": [
       "You cannot pass without a pocketknife."
     ],
-    "stage4_junction_e__step_down": [
+    "stage4_junction_c__step_down": [
       "Electrocution."
     ],
-    "stage4_junction_f__explore_alcove": [
+    "stage4_junction_e__explore_alcove": [
       "Monster attack."
     ],
-    "stage4_junction_g__climb_aisle": [
+    "stage4_junction_f__climb_aisle": [
       "Hazard."
     ],
     "stage5_mezzanine_arrival__go_forward": [

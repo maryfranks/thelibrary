@@ -1,13 +1,13 @@
-# Library Escape: Game Narrative Overview 
+# Library Escape: Game Narrative Overview
 
 ## Global Mechanics & Parser Rules
 * **Explicit Command Prompts:** The game must explicitly tell the player what options or commands they can type at any decision point.
-* **Invalid Input Handling:** If the player types something outside of the offered options, a small collection of quippy responses denotes that it isn't an option, followed by a reminder of what the valid options are. 
+* **Invalid Input Handling:** If the player types something outside of the offered options, a small collection of quippy responses denotes that it isn't an option, followed by a reminder of what the valid options are.
 
 ## Stage 1: Vestibule (Tutorial Area)
 
 ### Narrative Atmosphere
-You enter the vestibule escaping an unnatural storm. The heavy front doors slam shut behind you with a definitive, mechanical click. Looking into the library, it immediately becomes clear that something horrific has happened here. 
+You enter the vestibule escaping an unnatural storm. The heavy front doors slam shut behind you with a definitive, mechanical click. Looking into the library, it immediately becomes clear that something horrific has happened here.
 
 ### Core Room Rules & Opening Choice
 * **Mandatory Initial Encounter:** Upon entering, you are presented with two immediate choices:
@@ -18,7 +18,7 @@ You enter the vestibule escaping an unnatural storm. The heavy front doors slam 
     * **Outcome:** You assess your surroundings. The game reveals what you see, including a mop lying next to a full mop bucket and the modern anti-theft turnstiles blocking further progress.
 
 ### Interactive Walkthrough & Inventory
-* **Checking Your Pack:** 
+* **Checking Your Pack:**
   * **Valid Command:** `look in the pack`
   * **Result:** Displays your starting inventory formatted as:
     * `a snack`
@@ -64,12 +64,12 @@ When facing the turnstiles after exploring the room, you are presented with two 
     - `try the lock quietly` (Quietly Try the Lock): You find the door locked. The game prompts you: *"Where should we go next?"*, encouraging you to `look around`.
 - **Post-Reading Room Options & The Poker:**
   - Once you `look around` a second time, you discover the fireplace. With the fireplace revealed, your new available explicit command choices are:
-    - `search fireplace`: Getting the `fireplace poker` replaces the mop in the pack (you drop the mop). 
+    - `search fireplace`: Getting the `fireplace poker` replaces the mop in the pack (you drop the mop).
     - `go deeper`: If you skip searching the fireplace and continue on, you proceed while still carrying the mop.
 - **The Stacks Door & Final Foyer Gate:**
   - **`[ITEM CHECK: stacks key]`**
-  - **No Key:** The door is locked. You don't have the key. You turn around to look toward the circulation desk, and the monster is there. 
-  - **Choice / Outcome:** 
+  - **No Key:** The door is locked. You don't have the key. You turn around to look toward the circulation desk, and the monster is there.
+  - **Choice / Outcome:**
     - `defend yourself`: you swing frantically, but the monster bats it aside like a twig and drags you into the racks. `[DEAD: monster_attack]`
     - `slowly walk backwards`: you slowly step backward, but it pounces on you before you can make it. `[DEAD: monster_attack]`
   - **With Key:** You successfully open the door using the key to pass into the next area.
@@ -89,7 +89,7 @@ When facing the turnstiles after exploring the room, you are presented with two 
 
 ### The Five Parallel Rows / Paths
 - **Environment:** Dimly lit, flickering lights, sounds of movement. Five parallel rows/paths ahead. Players can choose to visit these rows in any order they choose.
-- **Core Exploration Mechanics:** 
+- **Core Exploration Mechanics:**
   - `peer down row`: The player can safely peer down any row to get a description.
   - `go down row`: The player commits to moving down a specific row, triggering encounters, searches, or hazards.
   - `go back`: The player can always choose to `go back` to the main stack junction as long as they are alive.
@@ -154,40 +154,32 @@ When facing the turnstiles after exploring the room, you are presented with two 
 
 ### The Maze
 
-- **Junction A:** When you reach Junction A, you are presented with explicit options:
-  - `go left`: you took the left path and triggered a structural collapse of shelving. `[DEAD: environmental_hazard]`
-  - `go right`: proceeds deeper into the maze.
-
-- **Junction B:** When you reach Junction B, you are presented with explicit options:
+- **Junction A:** When you reach Junction B, you are presented with explicit options:
   - `go straight`: you stepped onto a rotted floor section that gave way over a deep drop-off. `[DEAD: environmental_hazard]`
   - `go sideways`: proceeds deeper into the maze.
 
-- **Junction C (The Torn Tapestry):** When you reach Junction C, you are presented with explicit options:
+- **Junction B (The Torn Tapestry):** When you reach Junction C, you are presented with explicit options:
   - `go around`: you tried an alternate route, triggering a sudden structural cave-in. `[DEAD: environmental_hazard]`
-  - `go forward`: 
+  - `go forward`:
     - **`[ITEM CHECK: pocketknife]`**
     - **Without Pocketknife:** you tried to force your way past the heavy academic tapestries without a tool, you fall and hit your head and die. `[DEAD: environmental_hazard]`
     - **With Pocketknife:** you use `pocketknife` (or `cut tapestries`) to clear the heavy academic barrier safely and proceed deeper into the maze.
+
+- **Junction C (The Electrical Hazard):** When you reach Junction E, you are presented with explicit options:
+  - `step down`: you stepped into a flooded puddle in contact with a live electrical conduit. `[DEAD: environmental_hazard]`
+  - `step across`: proceeds deeper into the maze.
 
 - **Junction D (Loopback 1):** When you reach Junction D, you are presented with explicit options:
   - `go left`: you take the left path, looping all the way back to the very beginning of the maze.
   - `go right`: proceeds deeper into the maze.
 
-- **Junction E (The Electrical Hazard):** When you reach Junction E, you are presented with explicit options:
-  - `step down`: you stepped into a flooded puddle in contact with a live electrical conduit. `[DEAD: environmental_hazard]`
-  - `step across`: proceeds deeper into the maze.
-
-- **Junction F (The Monster's Nest - Alcove Death 1):** When you reach Junction F, you are presented with explicit options:
+- **Junction E (The Monster's Nest - Alcove Death 1):** When you reach Junction F, you are presented with explicit options:
   - `explore alcove`: you wandered into a dead-end alcove where the creature dropped straight down from the crossbeams. `[DEAD: monster_attack]`
   - `bypass alcove`: proceeds deeper into the maze.
 
-- **Junction G:** When you reach Junction G, you are presented with explicit options:
+- **Junction F:** When you reach Junction G, you are presented with explicit options:
   - `climb aisle`: you triggered an aisle where the monster rested atop an unstable bookshelf and knocked it over onto you. `[DEAD: environmental_hazard]`
   - `duck under`: proceeds deeper into the maze.
-
-- **Junction H (Loopback 2):** When you reach Junction H, you are presented with explicit options:
-  - `take left corridor`: you take the left corridor, looping backward to just after the last loopback, landing you right back at Junction E.
-  - `take right corridor`: proceeds to the end of the maze.
 
 ### End of Maze & The Final Branch
 - **Arrival at Structural Hub:** Exits into a central structural hub with a final binary choice leading to the next phases of the escape:
@@ -196,7 +188,7 @@ When facing the turnstiles after exploring the room, you are presented with two 
 
 ---
 
-## Final Stage: The Upper Mezzanine 
+## Final Stage: The Upper Mezzanine
 
 - **Arrival at the Upper Mezzanine:** You reach the upper level and find yourself on the mezzanine, which features an ornate railing.
 - **Initial Mezzanine Options:** When you arrive, you are presented with explicit options:

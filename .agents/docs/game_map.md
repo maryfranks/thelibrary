@@ -197,40 +197,32 @@
   - Choice 2: "give up" -> [game_over]
 
 - [stage4_junction_a] Junction A
-  - Choice 1: "go left" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
-  - Choice 2: "go right" -> [stage4_junction_b]
-
-- [stage4_junction_b] Junction B
   - Choice 1: "go straight" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
-  - Choice 2: "go sideways" -> [stage4_junction_c]
+  - Choice 2: "go sideways" -> [stage4_junction_b]
 
-- [stage4_junction_c] Junction C (The Torn Tapestry)
+- [stage4_junction_b] Junction B (The Torn Tapestry)
   - Choice 1: "go around" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
-  - Choice 2: "go forward" -> [stage4_junction_c_check]
+  - Choice 2: "go forward" -> [stage4_junction_b_check]
 
-- [stage4_junction_c_check] Junction C (Pocketknife Check; auto-resolves on entry, no menu)
+- [stage4_junction_b_check] Junction B (Pocketknife Check; auto-resolves on entry, no menu)
   - [No Pocketknife] -> [DEAD: environmental_hazard] -> [stage3_death_choice]
-  - [With Pocketknife] -> [stage4_junction_d]
+  - [With Pocketknife] -> [stage4_junction_c]
+
+- [stage4_junction_c] Junction C (The Electrical Hazard)
+  - Choice 1: "step down" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
+  - Choice 2: "step across" -> [stage4_junction_d]
 
 - [stage4_junction_d] Junction D (Loopback 1)
   - Choice 1: "go left" -> [stage4_junction_a]
   - Choice 2: "go right" -> [stage4_junction_e]
 
-- [stage4_junction_e] Junction E (The Electrical Hazard)
-  - Choice 1: "step down" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
-  - Choice 2: "step across" -> [stage4_junction_f]
-
-- [stage4_junction_f] Junction F (The Monster's Nest)
+- [stage4_junction_e] Junction E (The Monster's Nest)
   - Choice 1: "explore alcove" -> [DEAD: monster_attack] -> [stage4_death_choice]
-  - Choice 2: "bypass alcove" -> [stage4_junction_g]
+  - Choice 2: "bypass alcove" -> [stage4_junction_f]
 
-- [stage4_junction_g] Junction G
+- [stage4_junction_f] Junction F
   - Choice 1: "climb aisle" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
-  - Choice 2: "duck under" -> [stage4_junction_h]
-
-- [stage4_junction_h] Junction H (Loopback 2)
-  - Choice 1: "take left corridor" -> [stage4_junction_e]
-  - Choice 2: "take right corridor" -> [stage4_structural_hub]
+  - Choice 2: "duck under" -> [stage4_structural_hub]
 
 - [stage4_structural_hub] Structural Hub (End of Maze)
   - Choice 1: "go upstairs" -> [stage5_mezzanine_arrival]
