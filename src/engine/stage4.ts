@@ -6,6 +6,8 @@ interface Stage4ChoiceDefinition {
   command: string;
   target: NodeId;
   deathType?: DeathType;
+  deathScreenNode?: Stage4NodeId;
+  deathScreenCommand?: string;
 }
 
 const NO_POCKETKNIFE_CHOICE = "no pocketknife check";
@@ -35,38 +37,29 @@ export const STAGE4_TRANSITIONS: Record<Stage4NodeId, Stage4ChoiceDefinition[]> 
   ],
   stage4_junction_a: [
     {
-      command: "go left",
+      command: "walk down the middle",
       target: "stage4_death_choice",
       deathType: "environmental_hazard",
+      // content.json keys this death screen under the prior "go straight" wording.
+      deathScreenCommand: "go straight",
     },
     {
-      command: "go right",
+      command: "hug the wall",
       target: "stage4_junction_b",
     },
   ],
   stage4_junction_b: [
     {
-      command: "go straight",
-      target: "stage4_death_choice",
-      deathType: "environmental_hazard",
+      command: "remove tapestry",
+      target: "stage4_junction_b_check",
     },
-    {
-      command: "go sideways",
-      target: "stage4_junction_c",
-    },
-  ],
-  stage4_junction_c: [
     {
       command: "go around",
       target: "stage4_death_choice",
       deathType: "environmental_hazard",
     },
-    {
-      command: "go forward",
-      target: "stage4_junction_c_check",
-    },
   ],
-  stage4_junction_c_check: [
+  stage4_junction_b_check: [
     {
       command: NO_POCKETKNIFE_CHOICE,
       target: "stage3_death_choice",
@@ -74,42 +67,56 @@ export const STAGE4_TRANSITIONS: Record<Stage4NodeId, Stage4ChoiceDefinition[]> 
     },
     {
       command: WITH_POCKETKNIFE_CHOICE,
+      target: "stage4_junction_c",
+    },
+  ],
+  stage4_junction_c: [
+    {
+      command: "step across",
       target: "stage4_junction_d",
+    },
+    {
+      command: "step down",
+      target: "stage4_death_choice",
+      deathType: "environmental_hazard",
     },
   ],
   stage4_junction_d: [
     {
       command: "go left",
-      target: "stage4_junction_a",
+      target: "stage4_junction_d_loopback",
     },
     {
       command: "go right",
       target: "stage4_junction_e",
     },
   ],
-  stage4_junction_e: [
+  stage4_junction_d_loopback: [
     {
-      command: "step down",
+      command: "go straight",
       target: "stage4_death_choice",
       deathType: "environmental_hazard",
+      // Loopback 1 returns to the same physical intersection as Junction A; reuse its death screen
+      // rather than duplicating identical death text in content.json.
+      deathScreenNode: "stage4_junction_a",
     },
     {
-      command: "step across",
-      target: "stage4_junction_f",
+      command: "go sideways",
+      target: "stage4_junction_b",
     },
   ],
-  stage4_junction_f: [
+  stage4_junction_e: [
+    {
+      command: "bypass alcove",
+      target: "stage4_junction_f",
+    },
     {
       command: "explore alcove",
       target: "stage4_death_choice",
       deathType: "monster_attack",
     },
-    {
-      command: "bypass alcove",
-      target: "stage4_junction_g",
-    },
   ],
-  stage4_junction_g: [
+  stage4_junction_f: [
     {
       command: "climb aisle",
       target: "stage4_death_choice",
@@ -117,17 +124,8 @@ export const STAGE4_TRANSITIONS: Record<Stage4NodeId, Stage4ChoiceDefinition[]> 
     },
     {
       command: "duck under",
-      target: "stage4_junction_h",
-    },
-  ],
-  stage4_junction_h: [
-    {
-      command: "take left corridor",
-      target: "stage4_junction_e",
-    },
-    {
-      command: "take right corridor",
-      target: "stage4_structural_hub",
+      target: "temporary_game_over",
+      deathType: "mysterious_disappearance",
     },
   ],
   stage4_structural_hub: [
@@ -158,7 +156,7 @@ function resolvePocketknifeCheck(
 ): GameState {
   const hasPocketknife = inventory.includes("pocketknife");
   if (hasPocketknife) {
-    const nextNode: NodeId = "stage4_junction_d";
+    const nextNode: NodeId = "stage4_junction_c";
     return {
       ...state,
       currentNode: nextNode,
@@ -174,9 +172,9 @@ function resolvePocketknifeCheck(
   recordDeath({
     stage: "stage4",
     death_type: "environmental_hazard",
-    node_id: "stage4_junction_c_check",
+    node_id: "stage4_junction_b_check",
   });
-  const deathLines = getDeathScreenLines("stage4_junction_c_check", NO_POCKETKNIFE_CHOICE, content);
+  const deathLines = getDeathScreenLines("stage4_junction_b_check", NO_POCKETKNIFE_CHOICE, content);
   return {
     ...state,
     currentNode: nextNode,
@@ -197,7 +195,7 @@ export function transitionStage4(
     return state;
   }
 
-  if (state.currentNode === "stage4_junction_c_check") {
+  if (state.currentNode === "stage4_junction_b_check") {
     return resolvePocketknifeCheck(state, state.inventory, [], content);
   }
 
@@ -225,7 +223,7 @@ export function transitionStage4(
 
   const nextNode = matchedChoice.target;
 
-  if (nextNode === "stage4_junction_c_check") {
+  if (nextNode === "stage4_junction_b_check") {
     const checkLines = getNodeLines(nextNode, content);
     return resolvePocketknifeCheck(state, state.inventory, checkLines, content);
   }
@@ -250,16 +248,21 @@ export function transitionStage4(
     });
   }
 
-  const deathLines = matchedChoice.deathType
-    ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
-    : [];
+  const deathLines =
+    matchedChoice.deathType && nextNode !== "temporary_game_over"
+      ? getDeathScreenLines(
+          matchedChoice.deathScreenNode ?? state.currentNode,
+          matchedChoice.deathScreenCommand ?? matchedChoice.command,
+          content,
+        )
+      : [];
   const nodeLines = getNodeLines(nextNode, content);
 
   return {
     ...state,
     currentNode: nextNode,
     inventory: [...state.inventory],
-    isGameOver: nextNode === "game_over",
+    isGameOver: nextNode === "game_over" || nextNode === "temporary_game_over",
     isWin: nextNode === "game_win",
     lastDeathType: matchedChoice.deathType ?? null,
     output: [...deathLines, ...nodeLines],

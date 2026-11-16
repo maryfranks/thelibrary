@@ -20,3 +20,6 @@
 - Pure helpers render the numbered `Do you want to:` list from `getAvailableChoices(nodeId)` (empty for terminal nodes).
 - `formatChoicePrompt(nodeId)` appends to initial output on load; `getTransitionPrompt(prev, next)` appends after a transition only when `currentNode` changed.
 - The UI shell (`src/routes/index.tsx`) calls these helpers and never constructs prompt text directly.
+
+## Stage 4 Loopback Death-Screen Reuse (`src/engine/stage4.ts`)
+- `stage4_junction_d_loopback` (`"go straight"`) sets `deathScreenNode: "stage4_junction_a"` so `getDeathScreenLines` resolves `stage4_junction_a__go_straight` instead of duplicating identical death text in `content.json`, while `recordDeath` still logs `node_id: "stage4_junction_d_loopback"`.

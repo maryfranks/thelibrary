@@ -49,13 +49,12 @@ export type Stage4NodeId =
   | "stage4_death_choice"
   | "stage4_junction_a"
   | "stage4_junction_b"
+  | "stage4_junction_b_check"
   | "stage4_junction_c"
-  | "stage4_junction_c_check"
   | "stage4_junction_d"
+  | "stage4_junction_d_loopback"
   | "stage4_junction_e"
   | "stage4_junction_f"
-  | "stage4_junction_g"
-  | "stage4_junction_h"
   | "stage4_structural_hub";
 
 export type Stage5NodeId =
