@@ -306,7 +306,7 @@
       "Ducking under the beam opens onto a central stairwell. Stone",
       "steps climb toward pale window light along the mezzanine, while",
       "an open steel door leads down into the basement, carrying a",
-      "cool draft that coule be fresh outside air from a ground-level",
+      "cool draft that could be fresh outside air from a ground-level",
       "exit."
     ],
     "stage5_mezzanine_arrival": [
@@ -366,11 +366,23 @@
     "stage5_both_tested_hub": [
       "You have fully explored the archive hub."
     ],
-    "stage5_cave_approach_partial": [
-      "You approach the cave entrance."
-    ],
     "stage5_cave_approach_final": [
       "You approach the final cave exit."
+    ],
+    "stage5_mezzanine_end_death_choice": [
+      "Placeholder: Mezzanine dead end death prompt."
+    ],
+    "stage5_basement_umbrella_death_choice": [
+      "Placeholder: Missing umbrella death prompt (return to Stage 3)."
+    ],
+    "stage5_flooded_corridor_blocked": [
+      "Placeholder: Stairs have collapsed behind you."
+    ],
+    "stage5_cave_approach_unexplored": [
+      "Placeholder: Cave entrance (desk unsearched, nudge to search desk)."
+    ],
+    "stage5_cave_approach_windows_tested": [
+      "Placeholder: Cave entrance (windows tested, desk unsearched, nudge to search desk)."
     ],
     "temporary_game_over": [
       "That's all the game for now, but if you want to escape the library, come back soon."
@@ -577,27 +589,16 @@
     "stage5_water_step_3__rush_out_of_the_water": [
       "Rushing out triggers an attack."
     ],
-    "stage5_occult_archive_entry": [
-      "You reach dry concrete in the Occult Archive."
+    "stage5_flooded_corridor__get_in_the_water": [
+      "Placeholder: Monster attack for getting in the water without looking around."
     ],
-    "stage5_occult_archive_hub": [
-      "You are at the Occult Archive Hub."
+    "stage5_flooded_corridor_blocked__get_in_the_water": [
+      "Placeholder: Monster attack for getting in the water without looking around."
     ],
-    "stage5_windows_tested_hub": [
-      "You tested the windows."
+    "stage5_occult_archive_entry__go_towards_the_light": [
+      "Placeholder: Jagged debris environmental hazard."
     ],
-    "stage5_desk_searched_hub": [
-      "You searched the desk."
-    ],
-    "stage5_both_tested_hub": [
-      "You have fully explored the archive hub."
-    ],
-    "stage5_cave_approach_partial": [
-      "You approach the cave entrance."
-    ],
-    "stage5_cave_approach_final": [
-      "You approach the final cave exit."
-    ],
+
     "game_over": [
       "Game Over."
     ],
