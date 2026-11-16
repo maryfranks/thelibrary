@@ -213,8 +213,12 @@
   - Choice 2: "step across" -> [stage4_junction_d]
 
 - [stage4_junction_d] Junction D (Loopback 1)
-  - Choice 1: "go left" -> [stage4_junction_a]
+  - Choice 1: "go left" -> [stage4_junction_d_loopback]
   - Choice 2: "go right" -> [stage4_junction_e]
+
+- [stage4_junction_d_loopback] Junction D Loopback (Back at Junction A)
+  - Choice 1: "go straight" -> [DEAD: environmental_hazard] -> [stage4_death_choice]
+  - Choice 2: "go sideways" -> [stage4_junction_b]
 
 - [stage4_junction_e] Junction E (The Monster's Nest)
   - Choice 1: "explore alcove" -> [DEAD: monster_attack] -> [stage4_death_choice]

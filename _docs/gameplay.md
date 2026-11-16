@@ -154,18 +154,18 @@ When facing the turnstiles after exploring the room, you are presented with two 
 
 ### The Maze
 
-- **Junction A:** When you reach Junction B, you are presented with explicit options:
+- **Junction A:** When you reach Junction A, you are presented with explicit options:
   - `go straight`: you stepped onto a rotted floor section that gave way over a deep drop-off. `[DEAD: environmental_hazard]`
   - `go sideways`: proceeds deeper into the maze.
 
-- **Junction B (The Torn Tapestry):** When you reach Junction C, you are presented with explicit options:
+- **Junction B (The Torn Tapestry):** When you reach Junction B, you are presented with explicit options:
   - `go around`: you tried an alternate route, triggering a sudden structural cave-in. `[DEAD: environmental_hazard]`
   - `go forward`:
     - **`[ITEM CHECK: pocketknife]`**
     - **Without Pocketknife:** you tried to force your way past the heavy academic tapestries without a tool, you fall and hit your head and die. `[DEAD: environmental_hazard]`
     - **With Pocketknife:** you use `pocketknife` (or `cut tapestries`) to clear the heavy academic barrier safely and proceed deeper into the maze.
 
-- **Junction C (The Electrical Hazard):** When you reach Junction E, you are presented with explicit options:
+- **Junction C (The Electrical Hazard):** When you reach Junction C, you are presented with explicit options:
   - `step down`: you stepped into a flooded puddle in contact with a live electrical conduit. `[DEAD: environmental_hazard]`
   - `step across`: proceeds deeper into the maze.
 
@@ -173,7 +173,7 @@ When facing the turnstiles after exploring the room, you are presented with two 
   - `go left`: you take the left path, looping all the way back to the very beginning of the maze.
   - `go right`: proceeds deeper into the maze.
 
-- **Junction E (The Monster's Nest - Alcove Death 1):** When you reach Junction F, you are presented with explicit options:
+- **Junction E (The Monster's Nest - Alcove Death 1):** When you reach Junction E, you are presented with explicit options:
   - `explore alcove`: you wandered into a dead-end alcove where the creature dropped straight down from the crossbeams. `[DEAD: monster_attack]`
   - `bypass alcove`: proceeds deeper into the maze.
 

@@ -245,34 +245,69 @@
       "any closer."
     ],
     "stage4_entry": [
-      "You enter the deep stacks maze."
+      "The destruction down here is severe. Towering oak bookshelves lie",
+      "toppled across the floor, completely blocking the main aisle in a",
+      "tangle of splintered wood and fallen books. You don't see any way",
+      "through."
     ],
     "stage4_death_choice": [
       "You have died in the deep stacks maze."
     ],
     "stage4_junction_a": [
-      "You are at Junction A."
+      "Scanning the wreckage, you spot a narrow gap behind a toppled",
+      "shelf that opens into a dim corridor. Ahead, the center floorboards",
+      "are cracked and sagging, though the aisle looks passable. Along the",
+      "far bookshelf, the floor looks to be in better shape, but large,",
+      "jagged splinters jut dangerously out of the wood."
     ],
     "stage4_junction_b": [
-      "You are at Junction B (The Torn Tapestry)."
+      "Past the splinters, heavy academic tapestries hang down from the",
+      "wreckage, tangled with fallen wood to block the way forward. To",
+      "the side, a narrow gap winds around the cloth beneath a cracked",
+      "archway propped up by broken shelves."
     ],
     "stage4_junction_b_check": [
-      "You check for a pocketknife at the tapestry."
+      "You pull out your pocketknife and saw through the thick, dusty",
+      "fabric of the fallen tapestries. The heavy cloth parts under the",
+      "blade, opening a narrow gap through the tangled wood so you can",
+      "step into the corridor beyond."
     ],
     "stage4_junction_c": [
-      "You are at Junction C (The Electrical Hazard)."
+      "Beyond the cut tapestries, the corridor drops into a sunken",
+      "landing flooded with dark rainwater, too murky to tell how deep",
+      "it is. A narrow, cracked board spans the gap to the far side,",
+      "looking as though it might snap under your weight."
     ],
     "stage4_junction_d": [
-      "You are at Junction D (Loopback)."
+      "Across the cracked board, the passage forks between two toppled",
+      "bookcases. To the left, the corridor bends back toward a faint",
+      "pale glow that might be a window; to the right, a tight, pitch-",
+      "black gap squeezes deeper into the stacks."
+    ],
+    "stage4_junction_d_loopback": [
+      "You follow the pale glow around the bend, hoping for a window.",
+      "Instead, the corridor curves back to the start of the maze—you",
+      "are staring once more at the cracked center floorboards ahead and",
+      "the narrow, splinter-lined gap beside the far bookshelf."
     ],
     "stage4_junction_e": [
-      "You are at Junction E (The Monster's Nest)."
+      "Past the tight squeeze, an avalanche of toppled bookshelves and",
+      "spilled volumes blocks the main aisle. Beside the rubble, a clear",
+      "recessed alcove sits tucked under the stairs, heaped with shredded",
+      "carpet and torn bindings."
     ],
     "stage4_junction_f": [
-      "You are at Junction F."
+      "Further down the corridor, a collapsed mezzanine blocks the path",
+      "ahead. To one side, jammed bookcases form a sturdy-looking ramp",
+      "up the aisle; to the other, a low gap opens beneath a heavy oak",
+      "beam wedged at a sharp angle."
     ],
     "stage4_structural_hub": [
-      "You have reached the Structural Hub (End of Maze)."
+      "Ducking under the beam opens onto a central stairwell. Stone",
+      "steps climb toward pale window light along the mezzanine, while",
+      "an open steel door leads down into the basement, carrying a",
+      "cool draft that coule be fresh outside air from a ground-level",
+      "exit."
     ],
     "stage5_mezzanine_arrival": [
       "You arrive at the Upper Mezzanine."
@@ -470,25 +505,44 @@
       "out."
     ],
     "stage4_entry__go_deeper": [
-      "An environmental hazard claims you."
+      "With no clear path ahead, you try scrambling straight over the",
+      "mound of fallen books and splintered wood. Halfway up, your foot",
+      "slips, triggering a massive bookvalanche that buries you alive."
     ],
     "stage4_junction_a__go_straight": [
-      "Dead end hazard."
+      "You step out into the center aisle, testing your weight on the",
+      "sagging boards. The wood snaps clean through, dropping you into",
+      "an impossible, pitch-black abyss where no basement should be—you",
+      "fall until the air thins out and darkness swallows you whole."
     ],
     "stage4_junction_b__go_around": [
-      "Dead end hazard."
+      "You squeeze into the narrow gap beneath the cracked archway. As",
+      "you brush past the broken shelves propping it up, the stone gives",
+      "way, bringing the ceiling down in a sudden cave-in."
     ],
     "stage4_junction_b_check__no_pocketknife_check": [
-      "You cannot pass without a pocketknife."
+      "Without a pocketknife to cut through the thick fabric, you throw",
+      "your weight against the tangled tapestries to force your way",
+      "past. Your foot catches in the heavy folds and you pitch forward,",
+      "fracturing your skull against the edge of a fallen oak shelf."
     ],
     "stage4_junction_c__step_down": [
-      "Electrocution."
+      "You step down into the murky water, expecting solid floor beneath",
+      "the surface. A live electrical wire lies submerged in the puddle,",
+      "sending a lethal shock through your body the instant your foot",
+      "touches down."
     ],
     "stage4_junction_e__explore_alcove": [
-      "Monster attack."
+      "You step into the alcove and part the shredded carpet, uncovering",
+      "a warm nest packed with pale, hungry hatchlings. A low hiss",
+      "rises from the dark behind you—their mother drops from the beams,",
+      "pinning you down as the little ones swarm in for dinner."
     ],
     "stage4_junction_f__climb_aisle": [
-      "Hazard."
+      "You climb the jammed bookcases, unaware of the monster perched",
+      "along the top shelf. Your movement startles it—it scampers away",
+      "into the dark, kicking the unstable stack loose and bringing",
+      "the whole wall of timber and books down on top of you."
     ],
     "stage5_mezzanine_arrival__go_forward": [
       "Mezzanine hazard."
