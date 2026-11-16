@@ -556,7 +556,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(state.currentNode).toBe("stage4_entry");
       expect(state.isGameOver).toBe(false);
 
-      // Stage 4: Deep Stacks Maze -> navigate Junctions A through F -> temporary_game_over -> Structural Hub -> Basement
+      // Stage 4: Deep Stacks Maze -> navigate Junctions A through F -> Structural Hub -> Basement
       state = transition(state, "look around");
       expect(state.currentNode).toBe("stage4_junction_a");
 
@@ -576,15 +576,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(state.currentNode).toBe("stage4_junction_f");
 
       state = transition(state, "duck under");
-      expect(state.currentNode).toBe("temporary_game_over");
-      expect(state.isGameOver).toBe(true);
-
-      state = {
-        ...state,
-        currentNode: "stage4_structural_hub",
-        isGameOver: false,
-        lastDeathType: null,
-      };
+      expect(state.currentNode).toBe("stage4_structural_hub");
 
       state = transition(state, "go into basement");
       expect(state.currentNode).toBe("stage5_basement_arrival");

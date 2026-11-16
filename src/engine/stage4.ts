@@ -124,8 +124,7 @@ export const STAGE4_TRANSITIONS: Record<Stage4NodeId, Stage4ChoiceDefinition[]> 
     },
     {
       command: "duck under",
-      target: "temporary_game_over",
-      deathType: "mysterious_disappearance",
+      target: "stage4_structural_hub",
     },
   ],
   stage4_structural_hub: [
@@ -248,21 +247,20 @@ export function transitionStage4(
     });
   }
 
-  const deathLines =
-    matchedChoice.deathType && nextNode !== "temporary_game_over"
-      ? getDeathScreenLines(
-          matchedChoice.deathScreenNode ?? state.currentNode,
-          matchedChoice.deathScreenCommand ?? matchedChoice.command,
-          content,
-        )
-      : [];
+  const deathLines = matchedChoice.deathType
+    ? getDeathScreenLines(
+        matchedChoice.deathScreenNode ?? state.currentNode,
+        matchedChoice.deathScreenCommand ?? matchedChoice.command,
+        content,
+      )
+    : [];
   const nodeLines = getNodeLines(nextNode, content);
 
   return {
     ...state,
     currentNode: nextNode,
     inventory: [...state.inventory],
-    isGameOver: nextNode === "game_over" || nextNode === "temporary_game_over",
+    isGameOver: nextNode === "game_over",
     isWin: nextNode === "game_win",
     lastDeathType: matchedChoice.deathType ?? null,
     output: [...deathLines, ...nodeLines],

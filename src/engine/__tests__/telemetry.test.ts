@@ -577,15 +577,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage4_junction_f",
       });
 
-      // 9. stage4_junction_f 'duck under' -> mysterious_disappearance (temporary_game_over)
-      transition(makeState("stage4_junction_f", ["flashlight", "pocketknife"]), "duck under");
-      expect(deathSpy).toHaveBeenLastCalledWith(1, {
-        stage: "stage4",
-        death_type: "mysterious_disappearance",
-        node_id: "stage4_junction_f",
-      });
-
-      expect(deathSpy).toHaveBeenCalledTimes(9);
+      expect(deathSpy).toHaveBeenCalledTimes(8);
       expect(runCompletedSpy).not.toHaveBeenCalled();
     });
   });
