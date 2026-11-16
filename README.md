@@ -97,5 +97,5 @@ Continuous Integration (CI) automatically updates the Grafana dashboard (`monito
 
 ## Roadmap
 
-Testing of core game logic is still underway. The text remains largely a placeholder after the first two stages. There are tickets in the github issue backlog to address testing and expanding placeholder text. Real game text needs to be typed up and entered into the game once final logic is verified for stages 4 and 5. A temporary game over is placed at the end of stage 3 becuase the logic disintegrates in stage 4.
+Testing of core game logic is still underway. The text remains largely a placeholder after the first two stages. There are tickets in the github issue backlog to address testing and expanding placeholder text. Real game text needs to be typed up and entered into the game once final logic is verified for stages 4 and 5. A temporary game over is placed at the end of stage 4 becuase the logic disintegrates in stage 5.
 
