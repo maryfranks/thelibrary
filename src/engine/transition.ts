@@ -34,7 +34,7 @@ export const AUTO_RESOLVE_NODES: ReadonlySet<NodeId> = new Set<NodeId>([
   "stage2_stacks_door_check",
   "stage3_arrival",
   "stage3_row2_flashlight_check",
-  "stage4_junction_c_check",
+  "stage4_junction_b_check",
   "stage5_mezzanine_umbrella_check",
   "stage5_basement_umbrella_check",
 ]);

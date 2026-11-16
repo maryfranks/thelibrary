@@ -518,63 +518,74 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage4_entry",
       });
 
-      // 2. stage4_junction_a 'go left' -> environmental_hazard
-      transition(makeState("stage4_junction_a", ["flashlight"]), "go left");
+      // 2. stage4_junction_a 'go straight' -> environmental_hazard
+      transition(makeState("stage4_junction_a", ["flashlight"]), "go straight");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "environmental_hazard",
         node_id: "stage4_junction_a",
       });
 
-      // 3. stage4_junction_b 'go straight' -> environmental_hazard
-      transition(makeState("stage4_junction_b", ["flashlight"]), "go straight");
+      // 3. stage4_junction_b 'go around' -> environmental_hazard
+      transition(makeState("stage4_junction_b", ["flashlight"]), "go around");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "environmental_hazard",
         node_id: "stage4_junction_b",
       });
 
-      // 4. stage4_junction_c 'go around' -> environmental_hazard
-      transition(makeState("stage4_junction_c", ["flashlight"]), "go around");
+      // 4. stage4_junction_b_check [No Pocketknife] -> environmental_hazard
+      transition(makeState("stage4_junction_b", ["flashlight"]), "go forward");
+      expect(deathSpy).toHaveBeenLastCalledWith(1, {
+        stage: "stage4",
+        death_type: "environmental_hazard",
+        node_id: "stage4_junction_b_check",
+      });
+
+      // 5. stage4_junction_c 'step down' -> environmental_hazard
+      transition(makeState("stage4_junction_c", ["flashlight", "pocketknife"]), "step down");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "environmental_hazard",
         node_id: "stage4_junction_c",
       });
 
-      // 5. stage4_junction_c_check [No Pocketknife] -> environmental_hazard
-      transition(makeState("stage4_junction_c", ["flashlight"]), "go forward");
+      // 6. stage4_junction_d_loopback 'go straight' -> environmental_hazard (logs loopback node_id)
+      transition(
+        makeState("stage4_junction_d_loopback", ["flashlight", "pocketknife"]),
+        "go straight",
+      );
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "environmental_hazard",
-        node_id: "stage4_junction_c_check",
+        node_id: "stage4_junction_d_loopback",
       });
 
-      // 6. stage4_junction_e 'step down' -> environmental_hazard
-      transition(makeState("stage4_junction_e", ["flashlight", "pocketknife"]), "step down");
-      expect(deathSpy).toHaveBeenLastCalledWith(1, {
-        stage: "stage4",
-        death_type: "environmental_hazard",
-        node_id: "stage4_junction_e",
-      });
-
-      // 7. stage4_junction_f 'explore alcove' -> monster_attack
-      transition(makeState("stage4_junction_f", ["flashlight", "pocketknife"]), "explore alcove");
+      // 7. stage4_junction_e 'explore alcove' -> monster_attack
+      transition(makeState("stage4_junction_e", ["flashlight", "pocketknife"]), "explore alcove");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "monster_attack",
-        node_id: "stage4_junction_f",
+        node_id: "stage4_junction_e",
       });
 
-      // 8. stage4_junction_g 'climb aisle' -> environmental_hazard
-      transition(makeState("stage4_junction_g", ["flashlight", "pocketknife"]), "climb aisle");
+      // 8. stage4_junction_f 'climb aisle' -> environmental_hazard
+      transition(makeState("stage4_junction_f", ["flashlight", "pocketknife"]), "climb aisle");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "environmental_hazard",
-        node_id: "stage4_junction_g",
+        node_id: "stage4_junction_f",
       });
 
-      expect(deathSpy).toHaveBeenCalledTimes(8);
+      // 9. stage4_junction_f 'duck under' -> mysterious_disappearance (temporary_game_over)
+      transition(makeState("stage4_junction_f", ["flashlight", "pocketknife"]), "duck under");
+      expect(deathSpy).toHaveBeenLastCalledWith(1, {
+        stage: "stage4",
+        death_type: "mysterious_disappearance",
+        node_id: "stage4_junction_f",
+      });
+
+      expect(deathSpy).toHaveBeenCalledTimes(9);
       expect(runCompletedSpy).not.toHaveBeenCalled();
     });
   });

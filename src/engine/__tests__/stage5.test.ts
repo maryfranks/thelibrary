@@ -487,42 +487,38 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(state.inventory).toContain("umbrella");
 
       state = transition(state, "go deeper");
-      expect(state.currentNode).toBe("temporary_game_over");
-      expect(state.isGameOver).toBe(true);
+      expect(state.currentNode).toBe("stage4_entry");
+      expect(state.isGameOver).toBe(false);
 
-      // Stage 4: Deep Stacks Maze -> navigate Junctions A through H -> Structural Hub -> Basement
-      state = {
-        ...state,
-        currentNode: "stage4_entry",
-        isGameOver: false,
-        lastDeathType: null,
-      };
+      // Stage 4: Deep Stacks Maze -> navigate Junctions A through F -> temporary_game_over -> Structural Hub -> Basement
       state = transition(state, "look around");
       expect(state.currentNode).toBe("stage4_junction_a");
 
-      state = transition(state, "go right");
+      state = transition(state, "go sideways");
       expect(state.currentNode).toBe("stage4_junction_b");
 
-      state = transition(state, "go sideways");
+      state = transition(state, "go forward");
       expect(state.currentNode).toBe("stage4_junction_c");
 
-      state = transition(state, "go forward");
+      state = transition(state, "step across");
       expect(state.currentNode).toBe("stage4_junction_d");
 
       state = transition(state, "go right");
       expect(state.currentNode).toBe("stage4_junction_e");
 
-      state = transition(state, "step across");
+      state = transition(state, "bypass alcove");
       expect(state.currentNode).toBe("stage4_junction_f");
 
-      state = transition(state, "bypass alcove");
-      expect(state.currentNode).toBe("stage4_junction_g");
-
       state = transition(state, "duck under");
-      expect(state.currentNode).toBe("stage4_junction_h");
+      expect(state.currentNode).toBe("temporary_game_over");
+      expect(state.isGameOver).toBe(true);
 
-      state = transition(state, "take right corridor");
-      expect(state.currentNode).toBe("stage4_structural_hub");
+      state = {
+        ...state,
+        currentNode: "stage4_structural_hub",
+        isGameOver: false,
+        lastDeathType: null,
+      };
 
       state = transition(state, "go into basement");
       expect(state.currentNode).toBe("stage5_basement_arrival");

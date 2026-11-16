@@ -368,7 +368,7 @@ describe("Stage 3 Engine (The Stacks)", () => {
     });
   });
 
-  describe("Row 2 flashlight check & stage3_row2_dark_warning (stage3_row2_flashlight_check -> temporary_game_over)", () => {
+  describe("Row 2 flashlight check & stage3_row2_dark_warning (stage3_row2_flashlight_check -> stage4_entry)", () => {
     beforeEach(() => {
       vi.spyOn(metricExporter, "export").mockImplementation((_metrics, resultCallback) => {
         resultCallback({ code: 0 });
@@ -415,7 +415,7 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(backToHub.lastDeathType).toBeNull();
     });
 
-    it("terminates at temporary_game_over, renders content.nodes['temporary_game_over'], and records a single mysterious_disappearance death when going deeper in Row 2 with flashlight", () => {
+    it("advances to stage4_entry, renders content.nodes['stage4_entry'], and emits no death when going deeper in Row 2 with flashlight", () => {
       const deathSpy = vi.spyOn(deathsCounter, "add");
       const flushSpy = vi.spyOn(meterProvider, "forceFlush");
 
@@ -427,24 +427,13 @@ describe("Stage 3 Engine (The Stacks)", () => {
       ]);
       const next = transition(row2WithFlashlight, "go deeper");
 
-      expect(next.currentNode).toBe("temporary_game_over");
-      expect(next.lastDeathType).toBe("mysterious_disappearance");
-      expect(next.isGameOver).toBe(true);
+      expect(next.currentNode).toBe("stage4_entry");
+      expect(next.lastDeathType).toBeNull();
+      expect(next.isGameOver).toBe(false);
       expect(next.isWin).toBe(false);
       expect(next.inventory).toContain("flashlight");
-      expect(getAvailableChoices("temporary_game_over")).toEqual([]);
-      expect(deathSpy).toHaveBeenCalledTimes(1);
-      expect(deathSpy).toHaveBeenCalledWith(1, {
-        stage: "stage3",
-        death_type: "mysterious_disappearance",
-        node_id: "stage3_row2_flashlight_check",
-      });
-      expect(flushSpy).toHaveBeenCalledTimes(1);
-
-      // Terminal state accepts no further gameplay commands and emits no duplicate metrics
-      const afterCommand = transition(next, "go deeper");
-      expect(afterCommand).toBe(next);
-      expect(deathSpy).toHaveBeenCalledTimes(1);
+      expect(deathSpy).not.toHaveBeenCalled();
+      expect(flushSpy).not.toHaveBeenCalled();
     });
 
     it("evaluates direct transitions from stage3_row2_flashlight_check based on flashlight presence", () => {
@@ -460,11 +449,11 @@ describe("Stage 3 Engine (The Stacks)", () => {
         "fireplace poker",
         "flashlight",
       ]);
-      const terminated = transition(checkWithFlashlight, "2");
-      expect(terminated.currentNode).toBe("temporary_game_over");
-      expect(terminated.lastDeathType).toBe("mysterious_disappearance");
-      expect(terminated.isGameOver).toBe(true);
-      expect(deathSpy).toHaveBeenCalledTimes(1);
+      const enteredStage4 = transition(checkWithFlashlight, "2");
+      expect(enteredStage4.currentNode).toBe("stage4_entry");
+      expect(enteredStage4.lastDeathType).toBeNull();
+      expect(enteredStage4.isGameOver).toBe(false);
+      expect(deathSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -528,7 +517,7 @@ describe("Stage 3 Engine (The Stacks)", () => {
           stage3_row2_flashlight_check: ["flashlight-check-node"],
           stage3_row2_dark_warning: ["dark-warning-node"],
           stage3_row5_warning: ["row5-warning-node"],
-          temporary_game_over: ["temporary-game-over-node"],
+          stage4_entry: ["stage4-entry-node"],
         },
         death_screens: {
           stage3_foyer_blocked__go_deeper: ["foyer-blocked-death"],
@@ -571,8 +560,8 @@ describe("Stage 3 Engine (The Stacks)", () => {
         "go deeper",
         customCatalog,
       );
-      expect(withFlashlight.currentNode).toBe("temporary_game_over");
-      expect(withFlashlight.output).toEqual(["flashlight-check-node", "temporary-game-over-node"]);
+      expect(withFlashlight.currentNode).toBe("stage4_entry");
+      expect(withFlashlight.output).toEqual(["flashlight-check-node", "stage4-entry-node"]);
 
       const darkWarningDeath = transition(
         makeState("stage3_row2_dark_warning"),
