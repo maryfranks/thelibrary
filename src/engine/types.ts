@@ -64,11 +64,14 @@ export type Stage5NodeId =
   | "stage5_balcony_door"
   | "stage5_balcony_inspected"
   | "stage5_mezzanine_umbrella_check"
+  | "stage5_mezzanine_end_death_choice"
   | "stage5_basement_arrival"
   | "stage5_basement_death_choice"
   | "stage5_basement_searched"
   | "stage5_basement_umbrella_check"
+  | "stage5_basement_umbrella_death_choice"
   | "stage5_flooded_corridor"
+  | "stage5_flooded_corridor_blocked"
   | "stage5_water_step_1"
   | "stage5_water_step_2"
   | "stage5_water_step_3"
@@ -77,7 +80,8 @@ export type Stage5NodeId =
   | "stage5_windows_tested_hub"
   | "stage5_desk_searched_hub"
   | "stage5_both_tested_hub"
-  | "stage5_cave_approach_partial"
+  | "stage5_cave_approach_unexplored"
+  | "stage5_cave_approach_windows_tested"
   | "stage5_cave_approach_final";
 
 export type NodeId =
