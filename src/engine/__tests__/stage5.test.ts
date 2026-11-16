@@ -85,12 +85,12 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(inspectedFatal.lastDeathType).toBe("environmental_hazard");
     });
 
-    it("handles mezzanine umbrella check from stage5_balcony_inspected ('go back') as fatal monster_attack to game_over both with and without umbrella", () => {
+    it("handles mezzanine umbrella check from stage5_balcony_inspected ('go back') as fatal monster_attack to stage5_mezzanine_end_death_choice both with and without umbrella", () => {
       const withoutUmbrella = makeState("stage5_balcony_inspected", ["flashlight", "pocketknife"]);
       const deadNoUmbrella = transition(withoutUmbrella, "go back");
-      expect(deadNoUmbrella.currentNode).toBe("game_over");
+      expect(deadNoUmbrella.currentNode).toBe("stage5_mezzanine_end_death_choice");
       expect(deadNoUmbrella.lastDeathType).toBe("monster_attack");
-      expect(deadNoUmbrella.isGameOver).toBe(true);
+      expect(deadNoUmbrella.isGameOver).toBe(false);
       expect(deadNoUmbrella.isWin).toBe(false);
 
       const withUmbrella = makeState("stage5_balcony_inspected", [
@@ -99,24 +99,34 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
         "umbrella",
       ]);
       const deadWithUmbrella = transition(withUmbrella, "go back");
-      expect(deadWithUmbrella.currentNode).toBe("game_over");
+      expect(deadWithUmbrella.currentNode).toBe("stage5_mezzanine_end_death_choice");
       expect(deadWithUmbrella.lastDeathType).toBe("monster_attack");
-      expect(deadWithUmbrella.isGameOver).toBe(true);
+      expect(deadWithUmbrella.isGameOver).toBe(false);
       expect(deadWithUmbrella.isWin).toBe(false);
+
+      const retried = transition(deadWithUmbrella, "try again");
+      expect(retried.currentNode).toBe("stage4_structural_hub");
+      expect(retried.lastDeathType).toBeNull();
+      expect(retried.isGameOver).toBe(false);
+
+      const gaveUp = transition(deadWithUmbrella, "give up");
+      expect(gaveUp.currentNode).toBe("game_over");
+      expect(gaveUp.lastDeathType).toBeNull();
+      expect(gaveUp.isGameOver).toBe(true);
     });
 
     it("evaluates direct transitions from stage5_mezzanine_umbrella_check based on umbrella presence", () => {
       const directNoUmbrella = makeState("stage5_mezzanine_umbrella_check", []);
       const resNo = transition(directNoUmbrella, "1");
-      expect(resNo.currentNode).toBe("game_over");
+      expect(resNo.currentNode).toBe("stage5_mezzanine_end_death_choice");
       expect(resNo.lastDeathType).toBe("monster_attack");
-      expect(resNo.isGameOver).toBe(true);
+      expect(resNo.isGameOver).toBe(false);
 
       const directWithUmbrella = makeState("stage5_mezzanine_umbrella_check", ["umbrella"]);
       const resWith = transition(directWithUmbrella, "2");
-      expect(resWith.currentNode).toBe("game_over");
+      expect(resWith.currentNode).toBe("stage5_mezzanine_end_death_choice");
       expect(resWith.lastDeathType).toBe("monster_attack");
-      expect(resWith.isGameOver).toBe(true);
+      expect(resWith.isGameOver).toBe(false);
     });
   });
 
@@ -153,16 +163,26 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(searched.isGameOver).toBe(false);
     });
 
-    it("enforces basement umbrella check as a survival gate: terminates at game_over without umbrella and advances to stage5_flooded_corridor with umbrella", () => {
+    it("enforces basement umbrella check as a survival gate: routes to stage5_basement_umbrella_death_choice without umbrella and advances to stage5_flooded_corridor with umbrella", () => {
       const searchedNoUmbrella = makeState("stage5_basement_searched", [
         "flashlight",
         "pocketknife",
       ]);
       const failed = transition(searchedNoUmbrella, "go further");
-      expect(failed.currentNode).toBe("game_over");
+      expect(failed.currentNode).toBe("stage5_basement_umbrella_death_choice");
       expect(failed.lastDeathType).toBe("environmental_hazard");
-      expect(failed.isGameOver).toBe(true);
+      expect(failed.isGameOver).toBe(false);
       expect(failed.isWin).toBe(false);
+
+      const retried = transition(failed, "try again");
+      expect(retried.currentNode).toBe("stage3_row2_encounter");
+      expect(retried.lastDeathType).toBeNull();
+      expect(retried.isGameOver).toBe(false);
+
+      const gaveUp = transition(failed, "give up");
+      expect(gaveUp.currentNode).toBe("game_over");
+      expect(gaveUp.lastDeathType).toBeNull();
+      expect(gaveUp.isGameOver).toBe(true);
 
       const searchedWithUmbrella = makeState("stage5_basement_searched", [
         "flashlight",
@@ -179,9 +199,9 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
     it("evaluates direct transitions from stage5_basement_umbrella_check based on umbrella presence", () => {
       const checkNoUmbrella = makeState("stage5_basement_umbrella_check", []);
       const failed = transition(checkNoUmbrella, "1");
-      expect(failed.currentNode).toBe("game_over");
+      expect(failed.currentNode).toBe("stage5_basement_umbrella_death_choice");
       expect(failed.lastDeathType).toBe("environmental_hazard");
-      expect(failed.isGameOver).toBe(true);
+      expect(failed.isGameOver).toBe(false);
 
       const checkWithUmbrella = makeState("stage5_basement_umbrella_check", ["umbrella"]);
       const passed = transition(checkWithUmbrella, "2");
@@ -192,16 +212,30 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
   });
 
   describe("Flooded corridor & water movement progression", () => {
-    it("blocks 'go back' at stage5_flooded_corridor and advances to stage5_water_step_1 on 'enter the water'", () => {
+    it("transitions to stage5_flooded_corridor_blocked on 'go back', triggers monster_attack on 'get in the water', and advances to stage5_water_step_1 on 'look around'", () => {
       const corridor = makeState("stage5_flooded_corridor", ["umbrella"]);
 
       const blocked = transition(corridor, "go back");
-      expect(blocked.currentNode).toBe("stage5_flooded_corridor");
+      expect(blocked.currentNode).toBe("stage5_flooded_corridor_blocked");
       expect(blocked.lastDeathType).toBeNull();
 
-      const step1 = transition(corridor, "enter the water");
-      expect(step1.currentNode).toBe("stage5_water_step_1");
-      expect(step1.lastDeathType).toBeNull();
+      const corridorFatal = transition(corridor, "get in the water");
+      expect(corridorFatal.currentNode).toBe("stage5_basement_death_choice");
+      expect(corridorFatal.lastDeathType).toBe("monster_attack");
+      expect(corridorFatal.isGameOver).toBe(false);
+
+      const blockedFatal = transition(blocked, "get in the water");
+      expect(blockedFatal.currentNode).toBe("stage5_basement_death_choice");
+      expect(blockedFatal.lastDeathType).toBe("monster_attack");
+      expect(blockedFatal.isGameOver).toBe(false);
+
+      const step1FromCorridor = transition(corridor, "look around");
+      expect(step1FromCorridor.currentNode).toBe("stage5_water_step_1");
+      expect(step1FromCorridor.lastDeathType).toBeNull();
+
+      const step1FromBlocked = transition(blocked, "look around");
+      expect(step1FromBlocked.currentNode).toBe("stage5_water_step_1");
+      expect(step1FromBlocked.lastDeathType).toBeNull();
     });
 
     it("enforces slow movement through water steps 1, 2, and 3 and triggers monster_attack on rushing choices", () => {
@@ -249,34 +283,39 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(hub.lastDeathType).toBeNull();
     });
 
-    it("supports partial cave approach from unexplored, windows-tested, and desk-searched hub states, returning to hub or climbing out to game_win", () => {
+    it("supports cave approaches from unexplored, windows-tested, and desk-searched hub states, searching the desk or climbing out to game_win", () => {
       const hub = makeState("stage5_occult_archive_hub", ["umbrella"]);
 
       // Direct approach from unexplored hub
-      const partialFromHub = transition(hub, "approach cave");
-      expect(partialFromHub.currentNode).toBe("stage5_cave_approach_partial");
+      const caveUnexplored = transition(hub, "approach cave");
+      expect(caveUnexplored.currentNode).toBe("stage5_cave_approach_unexplored");
 
-      const backToHub = transition(partialFromHub, "go back to archive");
-      expect(backToHub.currentNode).toBe("stage5_occult_archive_hub");
+      const searchFromUnexplored = transition(caveUnexplored, "search desk");
+      expect(searchFromUnexplored.currentNode).toBe("stage5_desk_searched_hub");
 
-      const winFromPartial = transition(partialFromHub, "climb out to safety");
-      expect(winFromPartial.currentNode).toBe("game_win");
-      expect(winFromPartial.isWin).toBe(true);
-      expect(winFromPartial.isGameOver).toBe(false);
-      expect(winFromPartial.lastDeathType).toBeNull();
+      const winFromUnexplored = transition(caveUnexplored, "climb out to safety");
+      expect(winFromUnexplored.currentNode).toBe("game_win");
+      expect(winFromUnexplored.isWin).toBe(true);
+      expect(winFromUnexplored.isGameOver).toBe(false);
+      expect(winFromUnexplored.lastDeathType).toBeNull();
 
-      // Partial approach after testing windows only
+      // Approach after testing windows only
       const windowsTested = transition(hub, "try the windows");
       expect(windowsTested.currentNode).toBe("stage5_windows_tested_hub");
-      expect(transition(windowsTested, "approach cave").currentNode).toBe(
-        "stage5_cave_approach_partial",
-      );
+      const caveWindowsTested = transition(windowsTested, "approach cave");
+      expect(caveWindowsTested.currentNode).toBe("stage5_cave_approach_windows_tested");
 
-      // Partial approach after searching desk only
+      const searchFromWindowsCave = transition(caveWindowsTested, "search desk");
+      expect(searchFromWindowsCave.currentNode).toBe("stage5_both_tested_hub");
+
+      const winFromWindowsCave = transition(caveWindowsTested, "climb out to safety");
+      expect(winFromWindowsCave.currentNode).toBe("game_win");
+
+      // Approach after searching desk only goes directly to final cave approach
       const deskSearched = transition(hub, "search desk");
       expect(deskSearched.currentNode).toBe("stage5_desk_searched_hub");
       expect(transition(deskSearched, "approach cave").currentNode).toBe(
-        "stage5_cave_approach_partial",
+        "stage5_cave_approach_final",
       );
     });
 
@@ -318,6 +357,31 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
         "search desk",
         "approach cave",
       ]);
+      expect(getAvailableChoices("stage5_mezzanine_end_death_choice")).toEqual([
+        "try again",
+        "give up",
+      ]);
+      expect(getAvailableChoices("stage5_basement_umbrella_death_choice")).toEqual([
+        "try again",
+        "give up",
+      ]);
+      expect(getAvailableChoices("stage5_flooded_corridor")).toEqual([
+        "go back",
+        "get in the water",
+        "look around",
+      ]);
+      expect(getAvailableChoices("stage5_flooded_corridor_blocked")).toEqual([
+        "get in the water",
+        "look around",
+      ]);
+      expect(getAvailableChoices("stage5_cave_approach_unexplored")).toEqual([
+        "search desk",
+        "climb out to safety",
+      ]);
+      expect(getAvailableChoices("stage5_cave_approach_windows_tested")).toEqual([
+        "search desk",
+        "climb out to safety",
+      ]);
       expect(getAvailableChoices("stage5_cave_approach_final")).toEqual(["climb out to safety"]);
     });
 
@@ -342,8 +406,10 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
         nodes: {
           stage5_balcony_inspected: ["balcony-inspected-node"],
           stage5_mezzanine_umbrella_check: ["mezzanine-check-node"],
+          stage5_mezzanine_end_death_choice: ["mezzanine-end-death-choice-node"],
           stage5_basement_searched: ["basement-searched-node"],
           stage5_basement_umbrella_check: ["basement-umbrella-check-node"],
+          stage5_basement_umbrella_death_choice: ["basement-umbrella-death-choice-node"],
           stage5_flooded_corridor: ["flooded-corridor-node"],
           stage5_cave_approach_final: ["cave-final-node"],
           game_over: ["game-over-node"],
@@ -365,7 +431,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(mezzanineNoUmbrella.output).toEqual([
         "mezzanine-check-node",
         "mezzanine-no-umbrella-death",
-        "game-over-node",
+        "mezzanine-end-death-choice-node",
       ]);
 
       const mezzanineWithUmbrella = transition(
@@ -376,7 +442,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(mezzanineWithUmbrella.output).toEqual([
         "mezzanine-check-node",
         "mezzanine-with-umbrella-death",
-        "game-over-node",
+        "mezzanine-end-death-choice-node",
       ]);
 
       const basementNoUmbrella = transition(
@@ -387,7 +453,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(basementNoUmbrella.output).toEqual([
         "basement-umbrella-check-node",
         "basement-no-umbrella-death",
-        "game-over-node",
+        "basement-umbrella-death-choice-node",
       ]);
 
       const basementWithUmbrella = transition(
@@ -530,7 +596,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       state = transition(state, "go further");
       expect(state.currentNode).toBe("stage5_flooded_corridor");
 
-      state = transition(state, "enter the water");
+      state = transition(state, "look around");
       expect(state.currentNode).toBe("stage5_water_step_1");
 
       state = transition(state, "enter the water slowly");
