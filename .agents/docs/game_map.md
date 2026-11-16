@@ -253,8 +253,12 @@
   - Choice 2: "go back" -> [stage5_mezzanine_umbrella_check]
 
 - [stage5_mezzanine_umbrella_check] Stairwell Retreat (Umbrella Check; auto-resolves on entry, no menu)
-  - [No Umbrella] -> [DEAD: monster_attack] -> [game_over]
-  - [With Umbrella] -> [DEAD: monster_attack] -> [game_over]
+  - [No Umbrella] -> [DEAD: monster_attack] -> [stage5_mezzanine_end_death_choice]
+  - [With Umbrella] -> [DEAD: monster_attack] -> [stage5_mezzanine_end_death_choice]
+
+- [stage5_mezzanine_end_death_choice] Death Prompt (Mezzanine Dead End)
+  - Choice 1: "try again" -> [stage4_structural_hub]
+  - Choice 2: "give up" -> [game_over]
 
 - [stage5_basement_arrival] Basement Stairs (Initial Entry)
   - Choice 1: "go down the stairs" -> [DEAD: environmental_hazard] -> [stage5_basement_death_choice]
@@ -268,12 +272,21 @@
   - Choice 1: "go further" -> [stage5_basement_umbrella_check]
 
 - [stage5_basement_umbrella_check] Basement Stairs (Umbrella Check; auto-resolves on entry, no menu)
-  - [No Umbrella] -> [DEAD: environmental_hazard] -> [game_over]
+  - [No Umbrella] -> [DEAD: environmental_hazard] -> [stage5_basement_umbrella_death_choice]
   - [With Umbrella] -> [stage5_flooded_corridor]
 
+- [stage5_basement_umbrella_death_choice] Death Prompt (Missing Umbrella)
+  - Choice 1: "try again" -> [stage3_row2_encounter]
+  - Choice 2: "give up" -> [game_over]
+
 - [stage5_flooded_corridor] Flooded Corridor (Bottom of Stairs)
-  - Choice 1: "go back" -> [stage5_flooded_corridor] (Blocked / stairs have collapsed behind you)
-  - Choice 2: "enter the water" -> [stage5_water_step_1]
+  - Choice 1: "go back" -> [stage5_flooded_corridor_blocked]
+  - Choice 2: "get in the water" -> [DEAD: monster_attack] -> [stage5_basement_death_choice]
+  - Choice 3: "look around" -> [stage5_water_step_1]
+
+- [stage5_flooded_corridor_blocked] Flooded Corridor (Stairs Collapsed)
+  - Choice 1: "get in the water" -> [DEAD: monster_attack] -> [stage5_basement_death_choice]
+  - Choice 2: "look around" -> [stage5_water_step_1]
 
 - [stage5_water_step_1] Flooded Corridor (First Movement Choice)
   - Choice 1: "jump in" -> [DEAD: monster_attack] -> [stage5_basement_death_choice]
@@ -294,21 +307,25 @@
 - [stage5_occult_archive_hub] Occult Archive (Hub - Unexplored)
   - Choice 1: "try the windows" -> [stage5_windows_tested_hub]
   - Choice 2: "search desk" -> [stage5_desk_searched_hub]
-  - Choice 3: "approach cave" -> [stage5_cave_approach_partial]
+  - Choice 3: "approach cave" -> [stage5_cave_approach_unexplored]
 
 - [stage5_windows_tested_hub] Occult Archive (Windows Tested)
   - Choice 1: "search desk" -> [stage5_both_tested_hub]
-  - Choice 2: "approach cave" -> [stage5_cave_approach_partial]
+  - Choice 2: "approach cave" -> [stage5_cave_approach_windows_tested]
 
 - [stage5_desk_searched_hub] Occult Archive (Desk Searched)
   - Choice 1: "try the windows" -> [stage5_both_tested_hub]
-  - Choice 2: "approach cave" -> [stage5_cave_approach_partial]
+  - Choice 2: "approach cave" -> [stage5_cave_approach_final]
 
 - [stage5_both_tested_hub] Occult Archive (Fully Explored)
   - Choice 1: "approach cave" -> [stage5_cave_approach_final]
 
-- [stage5_cave_approach_partial] Underground Cave Entrance (Options Available)
-  - Choice 1: "go back to archive" -> [stage5_occult_archive_hub]
+- [stage5_cave_approach_unexplored] Underground Cave Entrance (Desk Unsearched)
+  - Choice 1: "search desk" -> [stage5_desk_searched_hub]
+  - Choice 2: "climb out to safety" -> [game_win]
+
+- [stage5_cave_approach_windows_tested] Underground Cave Entrance (Windows Tested, Desk Unsearched)
+  - Choice 1: "search desk" -> [stage5_both_tested_hub]
   - Choice 2: "climb out to safety" -> [game_win]
 
 - [stage5_cave_approach_final] Underground Cave Entrance (Final Exit)
