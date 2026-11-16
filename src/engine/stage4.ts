@@ -7,6 +7,7 @@ interface Stage4ChoiceDefinition {
   target: NodeId;
   deathType?: DeathType;
   deathScreenNode?: Stage4NodeId;
+  deathScreenCommand?: string;
 }
 
 const NO_POCKETKNIFE_CHOICE = "no pocketknife check";
@@ -36,24 +37,26 @@ export const STAGE4_TRANSITIONS: Record<Stage4NodeId, Stage4ChoiceDefinition[]> 
   ],
   stage4_junction_a: [
     {
-      command: "go straight",
+      command: "walk down the middle",
       target: "stage4_death_choice",
       deathType: "environmental_hazard",
+      // content.json keys this death screen under the prior "go straight" wording.
+      deathScreenCommand: "go straight",
     },
     {
-      command: "go sideways",
+      command: "hug the wall",
       target: "stage4_junction_b",
     },
   ],
   stage4_junction_b: [
     {
+      command: "remove tapestry",
+      target: "stage4_junction_b_check",
+    },
+    {
       command: "go around",
       target: "stage4_death_choice",
       deathType: "environmental_hazard",
-    },
-    {
-      command: "go forward",
-      target: "stage4_junction_b_check",
     },
   ],
   stage4_junction_b_check: [
@@ -69,13 +72,13 @@ export const STAGE4_TRANSITIONS: Record<Stage4NodeId, Stage4ChoiceDefinition[]> 
   ],
   stage4_junction_c: [
     {
+      command: "step across",
+      target: "stage4_junction_d",
+    },
+    {
       command: "step down",
       target: "stage4_death_choice",
       deathType: "environmental_hazard",
-    },
-    {
-      command: "step across",
-      target: "stage4_junction_d",
     },
   ],
   stage4_junction_d: [
@@ -104,13 +107,13 @@ export const STAGE4_TRANSITIONS: Record<Stage4NodeId, Stage4ChoiceDefinition[]> 
   ],
   stage4_junction_e: [
     {
+      command: "bypass alcove",
+      target: "stage4_junction_f",
+    },
+    {
       command: "explore alcove",
       target: "stage4_death_choice",
       deathType: "monster_attack",
-    },
-    {
-      command: "bypass alcove",
-      target: "stage4_junction_f",
     },
   ],
   stage4_junction_f: [
@@ -249,7 +252,7 @@ export function transitionStage4(
     matchedChoice.deathType && nextNode !== "temporary_game_over"
       ? getDeathScreenLines(
           matchedChoice.deathScreenNode ?? state.currentNode,
-          matchedChoice.command,
+          matchedChoice.deathScreenCommand ?? matchedChoice.command,
           content,
         )
       : [];

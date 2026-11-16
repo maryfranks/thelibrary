@@ -53,16 +53,16 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
   });
 
   describe("Junctions A and B (dead ends & progression)", () => {
-    it("handles Junction A dead end ('go straight') and safe path ('go sideways' -> stage4_junction_b)", () => {
+    it("handles Junction A dead end ('walk down the middle') and safe path ('hug the wall' -> stage4_junction_b)", () => {
       const junctionA = makeState("stage4_junction_a", ["flashlight"]);
 
-      const straightFatal = transition(junctionA, "go straight");
-      expect(straightFatal.currentNode).toBe("stage4_death_choice");
-      expect(straightFatal.lastDeathType).toBe("environmental_hazard");
+      const middleFatal = transition(junctionA, "walk down the middle");
+      expect(middleFatal.currentNode).toBe("stage4_death_choice");
+      expect(middleFatal.lastDeathType).toBe("environmental_hazard");
 
-      const sidewaysSafe = transition(junctionA, "go sideways");
-      expect(sidewaysSafe.currentNode).toBe("stage4_junction_b");
-      expect(sidewaysSafe.lastDeathType).toBeNull();
+      const wallSafe = transition(junctionA, "hug the wall");
+      expect(wallSafe.currentNode).toBe("stage4_junction_b");
+      expect(wallSafe.lastDeathType).toBeNull();
     });
 
     it("handles Junction B dead end ('go around' -> stage4_death_choice)", () => {
@@ -77,7 +77,7 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
   describe("Junction B pocketknife check (stage4_junction_b -> stage4_junction_b_check)", () => {
     it("fails pocketknife check with environmental_hazard and routes to stage3_death_choice when pocketknife is missing", () => {
       const withoutKnife = makeState("stage4_junction_b", ["flashlight"]);
-      const next = transition(withoutKnife, "go forward");
+      const next = transition(withoutKnife, "remove tapestry");
 
       expect(next.currentNode).toBe("stage3_death_choice");
       expect(next.lastDeathType).toBe("environmental_hazard");
@@ -86,7 +86,7 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
 
     it("passes pocketknife check and transitions to stage4_junction_c when holding pocketknife", () => {
       const withKnife = makeState("stage4_junction_b", ["flashlight", "pocketknife"]);
-      const next = transition(withKnife, "go forward");
+      const next = transition(withKnife, "remove tapestry");
 
       expect(next.currentNode).toBe("stage4_junction_c");
       expect(next.lastDeathType).toBeNull();
@@ -218,10 +218,10 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
       state = transition(state, "look around");
       expect(state.currentNode).toBe("stage4_junction_a");
 
-      state = transition(state, "go sideways");
+      state = transition(state, "hug the wall");
       expect(state.currentNode).toBe("stage4_junction_b");
 
-      state = transition(state, "go forward");
+      state = transition(state, "remove tapestry");
       expect(state.currentNode).toBe("stage4_junction_c");
 
       state = transition(state, "step across");
@@ -232,9 +232,9 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
       expect(state.currentNode).toBe("stage4_junction_d_loopback");
       state = transition(state, "2");
       expect(state.currentNode).toBe("stage4_junction_b");
-      state = transition(state, "2");
+      state = transition(state, "1");
       expect(state.currentNode).toBe("stage4_junction_c");
-      state = transition(state, "2");
+      state = transition(state, "1");
       expect(state.currentNode).toBe("stage4_junction_d");
 
       state = transition(state, "go right");
@@ -252,10 +252,17 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
   describe("available choices, invalid inputs, and content decoupling", () => {
     it("returns Stage 4 choices via getAvailableChoices", () => {
       expect(getAvailableChoices("stage4_entry")).toEqual(["go deeper", "look around"]);
+      expect(getAvailableChoices("stage4_junction_a")).toEqual([
+        "walk down the middle",
+        "hug the wall",
+      ]);
+      expect(getAvailableChoices("stage4_junction_b")).toEqual(["remove tapestry", "go around"]);
+      expect(getAvailableChoices("stage4_junction_c")).toEqual(["step across", "step down"]);
       expect(getAvailableChoices("stage4_junction_d_loopback")).toEqual([
         "go straight",
         "go sideways",
       ]);
+      expect(getAvailableChoices("stage4_junction_e")).toEqual(["bypass alcove", "explore alcove"]);
       expect(getAvailableChoices("stage4_structural_hub")).toEqual([
         "go upstairs",
         "go into basement",
@@ -298,6 +305,13 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
       const aroundFatal = transition(makeState("stage4_junction_b"), "go around", customCatalog);
       expect(aroundFatal.output).toEqual(["around-death", "stage4-death-node"]);
 
+      const junctionAFatal = transition(
+        makeState("stage4_junction_a"),
+        "walk down the middle",
+        customCatalog,
+      );
+      expect(junctionAFatal.output).toEqual(["straight-death", "stage4-death-node"]);
+
       const loopbackFatal = transition(
         makeState("stage4_junction_d_loopback"),
         "go straight",
@@ -307,7 +321,7 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
 
       const noKnife = transition(
         makeState("stage4_junction_b", ["flashlight"]),
-        "go forward",
+        "remove tapestry",
         customCatalog,
       );
       expect(noKnife.output).toEqual([
@@ -318,7 +332,7 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
 
       const withKnife = transition(
         makeState("stage4_junction_b", ["flashlight", "pocketknife"]),
-        "go forward",
+        "remove tapestry",
         customCatalog,
       );
       expect(withKnife.output).toEqual(["pocketknife-check-node", "junction-c-node"]);

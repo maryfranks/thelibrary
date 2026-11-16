@@ -494,10 +494,10 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       state = transition(state, "look around");
       expect(state.currentNode).toBe("stage4_junction_a");
 
-      state = transition(state, "go sideways");
+      state = transition(state, "hug the wall");
       expect(state.currentNode).toBe("stage4_junction_b");
 
-      state = transition(state, "go forward");
+      state = transition(state, "remove tapestry");
       expect(state.currentNode).toBe("stage4_junction_c");
 
       state = transition(state, "step across");

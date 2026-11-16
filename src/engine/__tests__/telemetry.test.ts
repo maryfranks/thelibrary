@@ -518,8 +518,8 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage4_entry",
       });
 
-      // 2. stage4_junction_a 'go straight' -> environmental_hazard
-      transition(makeState("stage4_junction_a", ["flashlight"]), "go straight");
+      // 2. stage4_junction_a 'walk down the middle' -> environmental_hazard
+      transition(makeState("stage4_junction_a", ["flashlight"]), "walk down the middle");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "environmental_hazard",
@@ -535,7 +535,7 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       });
 
       // 4. stage4_junction_b_check [No Pocketknife] -> environmental_hazard
-      transition(makeState("stage4_junction_b", ["flashlight"]), "go forward");
+      transition(makeState("stage4_junction_b", ["flashlight"]), "remove tapestry");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage4",
         death_type: "environmental_hazard",
