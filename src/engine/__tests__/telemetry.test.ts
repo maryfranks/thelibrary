@@ -664,21 +664,33 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         node_id: "stage5_occult_archive_entry",
       });
 
-      expect(deathSpy).toHaveBeenCalledTimes(9);
+      // 10. stage5_flooded_corridor 'get in the water' -> monster_attack
+      transition(makeState("stage5_flooded_corridor", ["umbrella"]), "get in the water");
+      expect(deathSpy).toHaveBeenLastCalledWith(1, {
+        stage: "stage5",
+        death_type: "monster_attack",
+        node_id: "stage5_flooded_corridor",
+      });
+
+      // 11. stage5_flooded_corridor_blocked 'get in the water' -> monster_attack
+      transition(makeState("stage5_flooded_corridor_blocked", ["umbrella"]), "get in the water");
+      expect(deathSpy).toHaveBeenLastCalledWith(1, {
+        stage: "stage5",
+        death_type: "monster_attack",
+        node_id: "stage5_flooded_corridor_blocked",
+      });
+
+      expect(deathSpy).toHaveBeenCalledTimes(11);
       expect(runCompletedSpy).not.toHaveBeenCalled();
     });
 
-    it("emits both game.deaths and game.runs.completed (loss) on Stage 5 umbrella checks that terminate directly at game_over", () => {
+    it("emits game.deaths (without game.runs.completed) on Stage 5 umbrella checks that route to death prompts", () => {
       // stage5_mezzanine_umbrella_check without umbrella
       transition(makeState("stage5_balcony_inspected", []), "go back");
       expect(deathSpy).toHaveBeenLastCalledWith(1, {
         stage: "stage5",
         death_type: "monster_attack",
         node_id: "stage5_mezzanine_umbrella_check",
-      });
-      expect(runCompletedSpy).toHaveBeenLastCalledWith(1, {
-        outcome: "loss",
-        final_stage: "stage5",
       });
 
       // stage5_mezzanine_umbrella_check with umbrella
@@ -688,10 +700,6 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         death_type: "monster_attack",
         node_id: "stage5_mezzanine_umbrella_check",
       });
-      expect(runCompletedSpy).toHaveBeenLastCalledWith(1, {
-        outcome: "loss",
-        final_stage: "stage5",
-      });
 
       // stage5_basement_umbrella_check without umbrella
       transition(makeState("stage5_basement_searched", []), "go further");
@@ -700,15 +708,11 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         death_type: "environmental_hazard",
         node_id: "stage5_basement_umbrella_check",
       });
-      expect(runCompletedSpy).toHaveBeenLastCalledWith(1, {
-        outcome: "loss",
-        final_stage: "stage5",
-      });
 
       expect(deathSpy).toHaveBeenCalledTimes(3);
-      expect(runCompletedSpy).toHaveBeenCalledTimes(3);
-      // each death and each run completion flushes once
-      expect(providerForceFlushSpy).toHaveBeenCalledTimes(6);
+      expect(runCompletedSpy).not.toHaveBeenCalled();
+      // each death flushes once
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -797,7 +801,9 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         { node: "stage3_death_choice", stage: "stage3" },
         { node: "stage4_death_choice", stage: "stage4" },
         { node: "stage5_mezzanine_death_choice", stage: "stage5" },
+        { node: "stage5_mezzanine_end_death_choice", stage: "stage5" },
         { node: "stage5_basement_death_choice", stage: "stage5" },
+        { node: "stage5_basement_umbrella_death_choice", stage: "stage5" },
       ];
 
       for (const { node, stage } of deathPromptCases) {
@@ -816,12 +822,23 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
     });
 
     it("emits game.runs.completed with outcome 'win' and final_stage 'stage5' when reaching game_win", () => {
-      const winFromPartial = transition(
-        makeState("stage5_cave_approach_partial", ["umbrella"]),
+      const winFromUnexplored = transition(
+        makeState("stage5_cave_approach_unexplored", ["umbrella"]),
         "climb out to safety",
       );
-      expect(winFromPartial.currentNode).toBe("game_win");
-      expect(winFromPartial.isWin).toBe(true);
+      expect(winFromUnexplored.currentNode).toBe("game_win");
+      expect(winFromUnexplored.isWin).toBe(true);
+      expect(runCompletedSpy).toHaveBeenLastCalledWith(1, {
+        outcome: "win",
+        final_stage: "stage5",
+      });
+
+      const winFromWindowsTested = transition(
+        makeState("stage5_cave_approach_windows_tested", ["umbrella"]),
+        "climb out to safety",
+      );
+      expect(winFromWindowsTested.currentNode).toBe("game_win");
+      expect(winFromWindowsTested.isWin).toBe(true);
       expect(runCompletedSpy).toHaveBeenLastCalledWith(1, {
         outcome: "win",
         final_stage: "stage5",
@@ -838,14 +855,14 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         final_stage: "stage5",
       });
 
-      expect(runCompletedSpy).toHaveBeenCalledTimes(2);
-      expect(providerForceFlushSpy).toHaveBeenCalledTimes(2);
+      expect(runCompletedSpy).toHaveBeenCalledTimes(3);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(3);
       expect(deathSpy).not.toHaveBeenCalled();
 
       // Verify no duplicate metrics after run is already completed
       transition(winFromFinal, "climb out to safety");
-      expect(runCompletedSpy).toHaveBeenCalledTimes(2);
-      expect(providerForceFlushSpy).toHaveBeenCalledTimes(2);
+      expect(runCompletedSpy).toHaveBeenCalledTimes(3);
+      expect(providerForceFlushSpy).toHaveBeenCalledTimes(3);
     });
   });
 });
