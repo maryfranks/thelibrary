@@ -52,6 +52,11 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
     });
 
     it("handles stage5_mezzanine_searched options ('look around', 'look in the pack', fatal 'look over railing', 'sneak through stacks')", () => {
+      expect(getAvailableChoices("stage5_mezzanine_searched")).toEqual([
+        "look over railing",
+        "sneak through stacks",
+      ]);
+
       const searched = makeState("stage5_mezzanine_searched", ["flashlight", "pocketknife"]);
 
       expect(transition(searched, "look around").currentNode).toBe("stage5_mezzanine_searched");

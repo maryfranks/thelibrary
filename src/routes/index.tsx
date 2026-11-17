@@ -100,7 +100,7 @@ function Terminal() {
   return (
     <div className="flex w-full max-w-3xl flex-col items-center gap-4">
       <div
-        className="w-full rounded-md border border-brass-border bg-muted"
+        className="flex w-full flex-col rounded-md border border-brass-border bg-muted"
         style={{ boxShadow: "var(--shadow-terminal)" }}
         onClick={() => inputRef.current?.focus()}
       >
@@ -146,6 +146,13 @@ function Terminal() {
               autoComplete="off"
             />
           </div>
+        </div>
+        <div
+          aria-label="Ambient actions"
+          className="flex flex-wrap items-center gap-3 border-t border-border px-4 py-2 font-mono text-xs tracking-wider text-muted-foreground"
+        >
+          <span>[look around]</span>
+          <span>[look in the pack]</span>
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">

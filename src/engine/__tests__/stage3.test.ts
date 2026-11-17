@@ -479,15 +479,11 @@ describe("Stage 3 Engine (The Stacks)", () => {
         "go deeper",
         "go back",
       ]);
+      expect(getAvailableChoices("stage3_row4_looted")).toEqual(["go deeper", "go back"]);
       expect(getAvailableChoices("stage3_row2_looted")).toEqual(["go deeper", "go back"]);
       expect(getAvailableChoices("stage3_row2_dark_warning")).toEqual(["go deeper", "go back"]);
       expect(getAvailableChoices("stage3_row4_encounter")).toEqual([
         "search backpack",
-        "go deeper",
-        "go back",
-      ]);
-      expect(getAvailableChoices("stage3_row4_looted")).toEqual([
-        "look around",
         "go deeper",
         "go back",
       ]);

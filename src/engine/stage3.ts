@@ -241,10 +241,6 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
   ],
   stage3_row4_looted: [
     {
-      command: "look around",
-      target: "stage3_row4_looted",
-    },
-    {
       command: "go deeper",
       target: "stage3_death_choice",
       deathType: "monster_attack",

@@ -48,14 +48,6 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
   ],
   stage5_mezzanine_searched: [
     {
-      command: "look around",
-      target: "stage5_mezzanine_searched",
-    },
-    {
-      command: "look in the pack",
-      target: "stage5_mezzanine_searched",
-    },
-    {
       command: "look over railing",
       target: "stage5_mezzanine_death_choice",
       deathType: "monster_attack",
