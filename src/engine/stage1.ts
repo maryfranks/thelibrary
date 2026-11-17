@@ -31,6 +31,7 @@ export const STAGE1_TRANSITIONS: Record<Stage1NodeId, ChoiceDefinition[]> = {
     {
       command: "look in the pack",
       target: "stage1_pack_checked",
+      addItems: ["snack", "novel", "pen"],
     },
   ],
   stage1_pack_checked: [

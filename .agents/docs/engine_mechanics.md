@@ -7,7 +7,7 @@
 - Unmatched input in Stage 2 yields a parser fallback rather than a death; deaths occur only on explicit choices.
 
 ## Inventory Snapshots & Stage Respawn / Retry (`src/engine/`)
-- Stage 2 Snapshot: Captured upon entering `stage2_foyer` from Stage 1 (preserving `["mop"]` or `[]`).
+- Stage 2 Snapshot: Captured upon entering `stage2_foyer` from Stage 1 (preserving Stage 1 inventory).
 - Stage 3 Snapshot: Captured upon surviving arrival at `stage3_arrival` and transitioning to `stage3_hub_unexplored`.
 - Stage 2 Death Retry: Restores `stage2InventorySnapshot` before entering `stage2_respawn_check`, discarding any items gathered during Stage 2.
 - Stage 3 Arrival Death Retry: Retrying before a Stage 3 snapshot exists restores `stage2InventorySnapshot` and routes through `stage2_respawn_check` to prevent soft-locks.

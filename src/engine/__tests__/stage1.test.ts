@@ -4,6 +4,7 @@ import {
   getAvailableChoices,
   getNodeLines,
   loadContent,
+  processCommand,
   transition,
 } from "../index";
 import type { ContentCatalog, GameState } from "../types";
@@ -65,10 +66,29 @@ describe("Stage 1 Engine (Vestibule)", () => {
       expect(next.inventory).toEqual([]);
     });
 
-    it("transitions to stage1_pack_checked on 'look in the pack'", () => {
+    it("transitions to stage1_pack_checked on 'look in the pack' and adds pack items", () => {
       const next = transition(searchedState, "look in the pack");
       expect(next.currentNode).toBe("stage1_pack_checked");
-      expect(next.inventory).toEqual([]);
+      expect(next.inventory).toEqual(["snack", "novel", "pen"]);
+    });
+
+    it("reflects newly acquired pack items when inspecting inventory immediately", () => {
+      const afterSearch = processCommand(searchedState, "look in the pack");
+      const afterInv = processCommand(afterSearch.state, "inventory");
+      expect(afterInv.entries).toContainEqual({
+        kind: "sys",
+        text: "Inventory: snack, novel, pen",
+      });
+    });
+
+    it("does not duplicate pack items when re-searching the pack", () => {
+      const alreadyHasItems: GameState = {
+        ...searchedState,
+        inventory: ["snack", "novel", "pen"],
+      };
+      const next = transition(alreadyHasItems, "look in the pack");
+      expect(next.currentNode).toBe("stage1_pack_checked");
+      expect(next.inventory).toEqual(["snack", "novel", "pen"]);
     });
   });
 
@@ -97,7 +117,9 @@ describe("Stage 1 Engine (Vestibule)", () => {
 
     it("interpolates [INVENTORY] placeholder in stage1_pack_checked node lines", () => {
       const lines = getNodeLines("stage1_pack_checked");
-      expect(lines.join(" ")).not.toContain("[INVENTORY]");
+      const text = lines.join(" ");
+      expect(text).not.toContain("[INVENTORY]");
+      expect(text).toContain("snack, novel, pen");
     });
 
     it("transitions to stage1_turnstile_check without mop on 'hop turnstiles'", () => {

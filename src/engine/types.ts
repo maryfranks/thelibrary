@@ -95,6 +95,9 @@ export type NodeId =
 
 export type ItemId =
   | "mop"
+  | "snack"
+  | "novel"
+  | "pen"
   | "lemon candy"
   | "pack of gum"
   | "mace"
