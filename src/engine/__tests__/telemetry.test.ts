@@ -814,10 +814,12 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
     });
 
     it("emits game.runs.completed with outcome 'win' and final_stage 'stage5' when reaching game_win", () => {
-      const winFromUnexplored = transition(
+      const finalFromUnexplored = transition(
         makeState("stage5_cave_approach_unexplored", ["umbrella"]),
-        "climb out to safety",
+        "step closer",
       );
+      expect(finalFromUnexplored.currentNode).toBe("stage5_cave_approach_final");
+      const winFromUnexplored = transition(finalFromUnexplored, "climb out to safety");
       expect(winFromUnexplored.currentNode).toBe("game_win");
       expect(winFromUnexplored.isWin).toBe(true);
       expect(runCompletedSpy).toHaveBeenLastCalledWith(1, {
@@ -825,10 +827,12 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
         final_stage: "stage5",
       });
 
-      const winFromWindowsTested = transition(
+      const finalFromWindowsTested = transition(
         makeState("stage5_cave_approach_windows_tested", ["umbrella"]),
-        "climb out to safety",
+        "step closer",
       );
+      expect(finalFromWindowsTested.currentNode).toBe("stage5_cave_approach_final");
+      const winFromWindowsTested = transition(finalFromWindowsTested, "climb out to safety");
       expect(winFromWindowsTested.currentNode).toBe("game_win");
       expect(winFromWindowsTested.isWin).toBe(true);
       expect(runCompletedSpy).toHaveBeenLastCalledWith(1, {

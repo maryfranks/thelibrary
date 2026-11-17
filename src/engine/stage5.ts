@@ -262,8 +262,8 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
       target: "stage5_desk_searched_hub",
     },
     {
-      command: "climb out to safety",
-      target: "game_win",
+      command: "step closer",
+      target: "stage5_cave_approach_final",
     },
   ],
   stage5_cave_approach_windows_tested: [
@@ -272,8 +272,8 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
       target: "stage5_both_tested_hub",
     },
     {
-      command: "climb out to safety",
-      target: "game_win",
+      command: "step closer",
+      target: "stage5_cave_approach_final",
     },
   ],
   stage5_cave_approach_final: [

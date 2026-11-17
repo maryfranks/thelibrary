@@ -283,7 +283,7 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       expect(hub.lastDeathType).toBeNull();
     });
 
-    it("supports cave approaches from unexplored, windows-tested, and desk-searched hub states, searching the desk or climbing out to game_win", () => {
+    it("supports cave approaches from unexplored, windows-tested, and desk-searched hub states, searching the desk or stepping closer to stage5_cave_approach_final -> game_win", () => {
       const hub = makeState("stage5_occult_archive_hub", ["umbrella"]);
 
       // Direct approach from unexplored hub
@@ -293,7 +293,12 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       const searchFromUnexplored = transition(caveUnexplored, "search desk");
       expect(searchFromUnexplored.currentNode).toBe("stage5_desk_searched_hub");
 
-      const winFromUnexplored = transition(caveUnexplored, "climb out to safety");
+      const finalFromUnexplored = transition(caveUnexplored, "step closer");
+      expect(finalFromUnexplored.currentNode).toBe("stage5_cave_approach_final");
+      expect(finalFromUnexplored.isWin).toBe(false);
+      expect(finalFromUnexplored.lastDeathType).toBeNull();
+
+      const winFromUnexplored = transition(finalFromUnexplored, "climb out to safety");
       expect(winFromUnexplored.currentNode).toBe("game_win");
       expect(winFromUnexplored.isWin).toBe(true);
       expect(winFromUnexplored.isGameOver).toBe(false);
@@ -308,7 +313,9 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       const searchFromWindowsCave = transition(caveWindowsTested, "search desk");
       expect(searchFromWindowsCave.currentNode).toBe("stage5_both_tested_hub");
 
-      const winFromWindowsCave = transition(caveWindowsTested, "climb out to safety");
+      const finalFromWindowsCave = transition(caveWindowsTested, "step closer");
+      expect(finalFromWindowsCave.currentNode).toBe("stage5_cave_approach_final");
+      const winFromWindowsCave = transition(finalFromWindowsCave, "climb out to safety");
       expect(winFromWindowsCave.currentNode).toBe("game_win");
 
       // Approach after searching desk only goes directly to final cave approach
@@ -376,11 +383,11 @@ describe("Stage 5 Engine (Endgame, Mezzanine, Basement & Win)", () => {
       ]);
       expect(getAvailableChoices("stage5_cave_approach_unexplored")).toEqual([
         "search desk",
-        "climb out to safety",
+        "step closer",
       ]);
       expect(getAvailableChoices("stage5_cave_approach_windows_tested")).toEqual([
         "search desk",
-        "climb out to safety",
+        "step closer",
       ]);
       expect(getAvailableChoices("stage5_cave_approach_final")).toEqual(["climb out to safety"]);
     });
