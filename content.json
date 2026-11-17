@@ -496,7 +496,14 @@
       "Game Over."
     ],
     "game_win": [
-      "You win!"
+      "You scramble up the narrow concrete steps, your shoulder",
+      "slamming against the slanted storm cellar door as you wrench",
+      "the rusted latch free. Cold rain lashes your face as the heavy",
+      "iron flaps bang open against the wet grass outside, drowning",
+      "out the low, hungry hum rising from the cavern behind you.",
+      "Hauling yourself out into the storm, you slam the cellar doors",
+      "shut and drop the bolt into place, leaving the library and",
+      "whatever waits beneath it sealed in the dark."
     ]
   },
   "death_screens": {
@@ -761,12 +768,6 @@
       "something low in the dark, pitching you forward onto the",
       "concrete—your head cracks hard against the floor, and everything",
       "goes black."
-    ],
-    "game_over": [
-      "Game Over."
-    ],
-    "game_win": [
-      "You win!"
     ]
   },
   "parser_fallbacks": [
