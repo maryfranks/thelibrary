@@ -14,12 +14,12 @@ const WITH_UMBRELLA_CHOICE = "with umbrella check";
 const MEZZANINE_UMBRELLA_CHECK_CHOICES: Stage5ChoiceDefinition[] = [
   {
     command: NO_UMBRELLA_CHOICE,
-    target: "game_over",
+    target: "stage5_mezzanine_end_death_choice",
     deathType: "monster_attack",
   },
   {
     command: WITH_UMBRELLA_CHOICE,
-    target: "game_over",
+    target: "stage5_mezzanine_end_death_choice",
     deathType: "monster_attack",
   },
 ];
@@ -88,6 +88,16 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
     },
   ],
   stage5_mezzanine_umbrella_check: MEZZANINE_UMBRELLA_CHECK_CHOICES,
+  stage5_mezzanine_end_death_choice: [
+    {
+      command: "try again",
+      target: "stage4_structural_hub",
+    },
+    {
+      command: "give up",
+      target: "game_over",
+    },
+  ],
   stage5_basement_arrival: [
     {
       command: "go down the stairs",
@@ -118,7 +128,7 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
   stage5_basement_umbrella_check: [
     {
       command: NO_UMBRELLA_CHOICE,
-      target: "game_over",
+      target: "stage5_basement_umbrella_death_choice",
       deathType: "environmental_hazard",
     },
     {
@@ -126,13 +136,39 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
       target: "stage5_flooded_corridor",
     },
   ],
+  stage5_basement_umbrella_death_choice: [
+    {
+      command: "try again",
+      target: "stage3_row2_encounter",
+    },
+    {
+      command: "give up",
+      target: "game_over",
+    },
+  ],
   stage5_flooded_corridor: [
     {
       command: "go back",
-      target: "stage5_flooded_corridor",
+      target: "stage5_flooded_corridor_blocked",
     },
     {
-      command: "enter the water",
+      command: "get in the water",
+      target: "stage5_basement_death_choice",
+      deathType: "monster_attack",
+    },
+    {
+      command: "look around",
+      target: "stage5_water_step_1",
+    },
+  ],
+  stage5_flooded_corridor_blocked: [
+    {
+      command: "get in the water",
+      target: "stage5_basement_death_choice",
+      deathType: "monster_attack",
+    },
+    {
+      command: "look around",
       target: "stage5_water_step_1",
     },
   ],
@@ -191,7 +227,7 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
     },
     {
       command: "approach cave",
-      target: "stage5_cave_approach_partial",
+      target: "stage5_cave_approach_unexplored",
     },
   ],
   stage5_windows_tested_hub: [
@@ -201,7 +237,7 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
     },
     {
       command: "approach cave",
-      target: "stage5_cave_approach_partial",
+      target: "stage5_cave_approach_windows_tested",
     },
   ],
   stage5_desk_searched_hub: [
@@ -211,7 +247,7 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
     },
     {
       command: "approach cave",
-      target: "stage5_cave_approach_partial",
+      target: "stage5_cave_approach_final",
     },
   ],
   stage5_both_tested_hub: [
@@ -220,14 +256,24 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
       target: "stage5_cave_approach_final",
     },
   ],
-  stage5_cave_approach_partial: [
+  stage5_cave_approach_unexplored: [
     {
-      command: "go back to archive",
-      target: "stage5_occult_archive_hub",
+      command: "search desk",
+      target: "stage5_desk_searched_hub",
     },
     {
-      command: "climb out to safety",
-      target: "game_win",
+      command: "step closer",
+      target: "stage5_cave_approach_final",
+    },
+  ],
+  stage5_cave_approach_windows_tested: [
+    {
+      command: "search desk",
+      target: "stage5_both_tested_hub",
+    },
+    {
+      command: "step closer",
+      target: "stage5_cave_approach_final",
     },
   ],
   stage5_cave_approach_final: [
@@ -254,15 +300,11 @@ function resolveMezzanineUmbrellaCheck(
 ): GameState {
   const hasUmbrella = inventory.includes("umbrella");
   const choice = hasUmbrella ? WITH_UMBRELLA_CHOICE : NO_UMBRELLA_CHOICE;
-  const nextNode: NodeId = "game_over";
+  const nextNode: NodeId = "stage5_mezzanine_end_death_choice";
   recordDeath({
     stage: "stage5",
     death_type: "monster_attack",
     node_id: "stage5_mezzanine_umbrella_check",
-  });
-  recordRunCompleted({
-    outcome: "loss",
-    final_stage: "stage5",
   });
   const deathLines = getDeathScreenLines("stage5_mezzanine_umbrella_check", choice, content);
 
@@ -270,7 +312,7 @@ function resolveMezzanineUmbrellaCheck(
     ...state,
     currentNode: nextNode,
     inventory: [...inventory],
-    isGameOver: true,
+    isGameOver: false,
     isWin: false,
     lastDeathType: "monster_attack",
     output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],
@@ -297,15 +339,11 @@ function resolveBasementUmbrellaCheck(
     };
   }
 
-  const nextNode: NodeId = "game_over";
+  const nextNode: NodeId = "stage5_basement_umbrella_death_choice";
   recordDeath({
     stage: "stage5",
     death_type: "environmental_hazard",
     node_id: "stage5_basement_umbrella_check",
-  });
-  recordRunCompleted({
-    outcome: "loss",
-    final_stage: "stage5",
   });
   const deathLines = getDeathScreenLines(
     "stage5_basement_umbrella_check",
@@ -316,7 +354,7 @@ function resolveBasementUmbrellaCheck(
     ...state,
     currentNode: nextNode,
     inventory: [...inventory],
-    isGameOver: true,
+    isGameOver: false,
     isWin: false,
     lastDeathType: "environmental_hazard",
     output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],

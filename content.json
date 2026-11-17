@@ -306,80 +306,204 @@
       "Ducking under the beam opens onto a central stairwell. Stone",
       "steps climb toward pale window light along the mezzanine, while",
       "an open steel door leads down into the basement, carrying a",
-      "cool draft that coule be fresh outside air from a ground-level",
+      "cool draft that could be fresh outside air from a ground-level",
       "exit."
     ],
     "stage5_mezzanine_arrival": [
-      "You arrive at the Upper Mezzanine."
+      "You climb the stone steps to the upper level and emerge onto a",
+      "dimly lit mezzanine overlooking the main floor below. Pale",
+      "stormlight filters through tall arched windows across an ornate",
+      "wooden railing, throwing long shadows across the upper gallery."
     ],
     "stage5_mezzanine_death_choice": [
       "You have died on the mezzanine."
     ],
     "stage5_mezzanine_searched": [
-      "You search the Upper Mezzanine."
+      "As your eyes adjust from the darkness, you see that the central",
+      "floorboards are warped and sagging—crossing the open landing",
+      "would never hold your weight. Along the back wall, tight,",
+      "pitch-black rows of tall stacks wind toward a distant glass",
+      "door, though anything could be hiding in the narrow shadows",
+      "between the shelves. Beside you, the ornate railing overlooks",
+      "the main hall; leaning over it might give you a clear view of",
+      "an exit below, even if the dark, water-stained wood looks a",
+      "little weathered."
     ],
     "stage5_balcony_door": [
-      "You reach the exterior balcony door."
+      "You slip quietly through the narrow shadows between the upper",
+      "stacks, emerging at the far end of the gallery in front of a pair",
+      "of heavy metal-framed doors. Through the rain-streaked glass, you",
+      "can see a stone balcony overlooking the storm-lashed grounds",
+      "outside—though the glass is smeared with grime, making it hard to",
+      "tell how high up you are or what condition the ledge is in."
     ],
     "stage5_balcony_inspected": [
-      "You inspect the balcony."
+      "You wipe a patch of grime from the glass and peer closely at the",
+      "balcony outside. Deep cracks spiderweb across the weathered stone,",
+      "chunks of masonry missing from the jagged edge. There is so way down",
+      "and the ground below is too far to jump."
     ],
     "stage5_mezzanine_umbrella_check": [
-      "You check your umbrella in the stairwell trap."
+      "Realizing the balcony is a dead end, you turn away from the glass",
+      "doors and slip quietly back through the dark mezzanine stacks",
+      "toward the stairwell to find another way out. As you reach the top",
+      "of the stone steps, you freeze. You're face to face with what you",
+      "can only assume is the creature you heard in the stacks. You can",
+      "see its long, hooked claws. It's blocking your only way down."
     ],
     "stage5_basement_arrival": [
-      "You arrive at the basement stairs."
+      "You push through the open steel door onto a narrow iron landing",
+      "at the top of the basement stairs. A cool, damp draft rises from",
+      "the pitch blackness below, carrying the faint smell of stagnant",
+      "water and wet concrete. Steep metal steps lead down into the",
+      "dark, though you can barely see a few feet ahead of you."
     ],
     "stage5_basement_death_choice": [
       "You have died in the basement."
     ],
     "stage5_basement_searched": [
-      "You explore the basement stairs."
+      "You click on your flashlight and aim the beam down the stairwell.",
+      "The rusted iron steps are missing in places, with entire sections",
+      "collapsed into the dark water below—you will have to pick your",
+      "way down carefully to avoid stepping into empty air"
     ],
     "stage5_basement_umbrella_check": [
-      "You check for the umbrella in the basement."
+      "You pick your way carefully down the surviving treads, stepping",
+      "over the first few missing sections until the stairs end altogether",
+      "in a wide gap above the flooded landing below. Just overhead runs a",
+      "thick iron pipe, slick with cold condensation."
     ],
     "stage5_flooded_corridor": [
-      "You enter the flooded corridor."
+      "You pull the heavy black umbrella from your pack, hook its curved",
+      "wooden handle securely over the overhead iron pipe, and swing",
+      "yourself cleanly across the broken gap onto the dry concrete",
+      "ledge at the bottom of the stairwell. Ahead stretches a long",
+      "basement corridor submerged in black, waist-deep water, disappearing",
+      "into the shadows past the reach of your flashlight."
     ],
     "stage5_water_step_1": [
-      "First movement choice in water."
+      "You sweep your flashlight beam across the black water. Far down",
+      "the corridor, a row of jagged spines breaks the surface, gliding",
+      "slowly away into the shadows. Ahead across the flooded stretch,",
+      "the concrete floor rises back out of the water toward even more",
+      "bookcases. If the water isn't too deep, you can probably make it."
     ],
     "stage5_water_step_2": [
-      "Second movement choice in water."
+      "You ease yourself off the concrete ledge into the waist-deep",
+      "water, letting it close around you with barely a ripple. Out in",
+      "the flooded basement, the jagged spines stop moving and turn",
+      "toward you. You freeze, but it doesn't come closer. The dry floor",
+      "on the other side is only a few feet ahead."
     ],
     "stage5_water_step_3": [
-      "Third movement choice in water."
+      "You take a few slow, careful steps until you feel the concrete",
+      "embankment rising beneath your feet. Out in the dark water, the",
+      "jagged spines begin drifting slowly toward you. They are close",
+      "enough now it has to know you're here. The dry ground slopes",
+      "up just ahead."
     ],
     "stage5_occult_archive_entry": [
-      "You reach dry concrete in the Occult Archive."
+      "You ease yourself up the concrete embankment without a sound and",
+      "look back at the black water. The jagged spines linger near the",
+      "edge for a long moment before turning and gliding away into the",
+      "dark. You stand on slick concrete among rows of basement",
+      "bookshelves. Farther back beyond the stacks, a faint glow of",
+      "light cuts through the gloom."
     ],
     "stage5_occult_archive_hub": [
-      "You are at the Occult Archive Hub."
+      "You edge forward cautiously through the dark stacks and peek",
+      "around the end of a bookcase into a vast basement chamber. Pale",
+      "light filters down from a narrow window high up on the wall,",
+      "falling across a heavy central desk cluttered with open books.",
+      "The pages are covered in cramped handwriting and detailed sketches",
+      "of what look like the monsters infesting the library. Beyond the desk, the",
+      "foundation wall breaks open into a massive cavern mouth, as if",
+      "the entire library were built here just to seal it off. A steady",
+      "cold draft spills out from the depths, carrying an eerie,",
+      "unnatural glow that pulls at your eyes even as every instinct",
+      "tells you to stay back."
     ],
     "stage5_windows_tested_hub": [
-      "You tested the windows."
+      "You climb onto some heavy wooden crates stacked beneath the high",
+      "window and shove against the frame. It's locked tight and the",
+      "glass is thick and reinforced. It's too solid to break, even if you",
+      "wanted to risk the noise. You drop back down to the floor, leaving",
+      "only the cluttered desk and the glowing cavern mouth ahead."
     ],
     "stage5_desk_searched_hub": [
-      "You searched the desk."
+      "You sift through the medieval manuscripts and loose English",
+      "translations scattered across the desk. The library upstairs was",
+      "just a cover—they spent years down here translating these pages,",
+      "the cavern's glow slowly eating away at their sanity until they",
+      "finally cracked the ritual. Their notes gush over lines promising",
+      "'a great awakening from the deep, crowned in bone and tooth,'",
+      "The double meaning obvious, the manuscripts covered in sketches of",
+      "the creatures set loose by the ritual. The final entry is an ecstatic",
+      "scrawl: 'Tonight we descend.' Only the glowing cavern mouth",
+      "remains."
     ],
     "stage5_both_tested_hub": [
-      "You have fully explored the archive hub."
-    ],
-    "stage5_cave_approach_partial": [
-      "You approach the cave entrance."
+      "You linger beneath the high window, reluctant to step away from",
+      "the only normal light in this nightmare, even knowing the thick",
+      "glass won't budge. Behind you, the manuscripts on the desk have",
+      "already spelled out the madness that emptied this place. Across",
+      "the chamber, the cavern's eerie glow seems to tug steadily at",
+      "your chest. With nowhere else left to turn, you know you",
+      "have to face it."
     ],
     "stage5_cave_approach_final": [
-      "You approach the final cave exit."
+      "Bracing yourself against the pull of the light, you step closer",
+      "to the massive cavern mouth. The strange glow washes over your",
+      "face, hypnotic and heavy, begging you to keep walking into the",
+      "depths. You plant your heels at the edge and force your",
+      "eyes away. Set into the far wall beside the cavern is a short",
+      "flight of concrete steps leading up to a slanted storm cellar",
+      "door, a cold draft of storm air whistling around the latch. You",
+      "don't have to go down into the dark after all."
     ],
-    "temporary_game_over": [
-      "That's all the game for now, but if you want to escape the library, come back soon."
+    "stage5_mezzanine_end_death_choice": [
+      "You have died on the mezzanine. Despite the stormlight filtering",
+      "through those high arched windows, the upper gallery is a complete",
+      "dead end. There is no way out up here."
+    ],
+    "stage5_basement_umbrella_death_choice": [
+      "You have died in the basement stairwell. You probably missed",
+      "something you really should have picked up. Do you want to go",
+      "all the way back to Stage 3 for it?"
+    ],
+    "stage5_flooded_corridor_blocked": [
+      "You shine your flashlight back up toward the broken stairwell, but",
+      "the jagged edge of the upper flight hangs far out of reach above",
+      "the drop. Even with the umbrella, there is no way to climb back",
+      "up. The flooded corridor ahead is your only way forward."
+    ],
+    "stage5_cave_approach_unexplored": [
+      "You walk toward the massive cavern mouth, the strange glow",
+      "washing over your face as something deep inside tugs",
+      "straight at your chest. A cold wave of dread breaks the spell.",
+      "You stumble back a step, heart hammering. You still don't know",
+      "what this place is and you aren't sure you want to get any closer",
+      "to that cave without knowing more."
+    ],
+    "stage5_cave_approach_windows_tested": [
+      "You walk toward the massive cavern mouth, the strange glow",
+      "washing over your face as the the hum from the cavern penetrates",
+      "your skull. A cold wave of dread breaks the spell and you stumble",
+      "back a step, heart hammering. The window is locked tight but you",
+      "haven't checked the desk yet for a key."
     ],
     "game_over": [
       "Game Over."
     ],
     "game_win": [
-      "You win!"
+      "You scramble up the narrow concrete steps, your shoulder",
+      "slamming against the slanted storm cellar door as you wrench",
+      "the rusted latch free. Cold rain lashes your face as the heavy",
+      "iron flaps bang open against the wet grass outside, drowning",
+      "out the low, hungry hum rising from the cavern behind you.",
+      "Hauling yourself out into the storm, you slam the cellar doors",
+      "shut and drop the bolt into place, leaving the library and",
+      "whatever waits beneath it sealed in the dark."
     ]
   },
   "death_screens": {
@@ -545,64 +669,105 @@
       "the whole wall of timber and books down on top of you."
     ],
     "stage5_mezzanine_arrival__go_forward": [
-      "Mezzanine hazard."
+      "You stride straight across the open landing without checking your",
+      "footing. Halfway across, the water-damaged timber groans and snaps",
+      "clean through beneath you, sending you crashing through the rotted",
+      "floorboards to the stone floor far below."
     ],
     "stage5_mezzanine_searched__look_over_railing": [
-      "Monster attack from below."
+      "You step up to the edge and lean over the ornate railing to scan",
+      "the hall below. With a sharp crack, the rotted wooden balusters",
+      "snap clean away under your weight, sending you plunging onto the",
+      "stone floor right in front of the massive, hulking behemoth.",
+      "Before you can even scramble to your feet, it slowly lowers its",
+      "enormous head and crushes you in its jaws."
     ],
     "stage5_balcony_door__go_out_on_the_balcony": [
-      "Balcony hazard."
+      "You push open the doors and step out into the storm. Behind you,",
+      "the heavy metal frames slam shut and lock permanently into place.",
+      "Before you can even pound on the glass, the weathered stone ledge",
+      "fractures beneath your boots, giving way completely and plunging",
+      "you dozens of feet onto the jagged rocks below."
     ],
     "stage5_balcony_inspected__go_out_on_the_balcony": [
-      "Balcony hazard."
+      "You see the cracks in the stone, you know it isn't safe, and",
+      "you push the doors open anyway. Terrified and desperate for any",
+      "way out of this nightmare, you lunge into the storm—only to hear",
+      "the heavy metal frames slam and lock behind you a split second",
+      "before the weathered ledge gives way beneath your feet, sending",
+      "you plunging onto the jagged rocks below."
     ],
     "stage5_mezzanine_umbrella_check__no_umbrella_check": [
-      "Without the umbrella, a monster attacks you in the dead end."
+      "Your hand drops instinctively to your side for the fireplace",
+      "poker, only for your fingers to close on empty air—you must",
+      "have set it down somewhere back in that maze. Before you",
+      "can turn back toward the shelves, the creature bounds up",
+      "the stone steps in a blur of claws and teeth, overpowering you",
+      "in seconds."
     ],
     "stage5_mezzanine_umbrella_check__with_umbrella_check": [
-      "The umbrella fails against the dead-end environmental hazard on the mezzanine."
+      "Your hand drops instinctively for the fireplace poker before you",
+      "realize that you must have set it down somewhere back in that maze.",
+      "Instead, your fingers close around the heavy black umbrella. With an",
+      "unhinged yell, you charge down the steps and whack the thing repeatedly",
+      "over the head. Maybe you've lost your mind, maybe you're hoping to scare",
+      "it away. The thin metal ribs snap and crumple against its skull and",
+      "its hooked claws tear through the thin nylon. It pounces."
     ],
     "stage5_basement_arrival__go_down_the_stairs": [
-      "Basement hazard."
+      "You start down the steep metal steps without checking the",
+      "darkness ahead. Halfway down, your boot finds nothing but empty",
+      "air where a rusted section of the staircase has collapsed away.",
+      "You pitch forward into the dark, your head slamming hard against",
+      "the jagged edge of the broken landing before you plunge",
+      "unconscious into the murky water below and drown."
     ],
     "stage5_basement_umbrella_check__no_umbrella_check": [
-      "You need the umbrella to survive."
+      "You reach up and grab the wet iron pipe with both bare hands,",
+      "trying to swing yourself across to the lower landing. Your",
+      "fingers slip on the slimy metal and you drop straight onto",
+      "the submerged concrete below, cracking your skull on the edge of",
+      "the landing before the dark water closes over you."
     ],
     "stage5_water_step_1__jump_in": [
-      "Jumping in attracts a monster."
+      "You hop off the concrete ledge into the waist-deep water, making",
+      "a splash louder than you expected. Across the flooded basement,",
+      "the jagged spines whip around—a heavy wake surges straight toward",
+      "you, and jaws close over you before you can take a single step."
     ],
     "stage5_water_step_2__start_running": [
-      "Running makes too much noise."
+      "You lunge forward, thrashing through the waist-deep water toward",
+      "the dry floor. The water drags heavily at your legs, slowing you",
+      "to a crawl. Out in the dark, the creature whips around—you watch",
+      "the jagged spines slice across the surface at blinding speed,",
+      "and jaws clamp down on you just as your fingers scrape the",
+      "concrete edge."
     ],
     "stage5_water_step_3__rush_out_of_the_water": [
-      "Rushing out triggers an attack."
+      "You rush out of the water and start scrambling up the concrete",
+      "embankment. You're almost at the top. You're sure you've made",
+      "it when your wet shoe slips on the slick slope, dropping you hard",
+      "onto your hands and knees. Before you can get back up, jaws clamp",
+      "around your ankle and drag you back into the dark water."
     ],
-    "stage5_occult_archive_entry": [
-      "You reach dry concrete in the Occult Archive."
+    "stage5_flooded_corridor__get_in_the_water": [
+      "You step down into the black water, your boot slipping on the",
+      "slick concrete step with a loud splash. Seconds later, something",
+      "massive surges through the water toward the noise and drags you",
+      "under."
     ],
-    "stage5_occult_archive_hub": [
-      "You are at the Occult Archive Hub."
+    "stage5_flooded_corridor_blocked__get_in_the_water": [
+      "With no way to get back, you step down into the black water, your",
+      "foot slipping on the slick concrete step with a loud splash. Seconds",
+      "later, something massive surges through the water toward the noise",
+      "and drags you under."
     ],
-    "stage5_windows_tested_hub": [
-      "You tested the windows."
-    ],
-    "stage5_desk_searched_hub": [
-      "You searched the desk."
-    ],
-    "stage5_both_tested_hub": [
-      "You have fully explored the archive hub."
-    ],
-    "stage5_cave_approach_partial": [
-      "You approach the cave entrance."
-    ],
-    "stage5_cave_approach_final": [
-      "You approach the final cave exit."
-    ],
-    "game_over": [
-      "Game Over."
-    ],
-    "game_win": [
-      "You win!"
+    "stage5_occult_archive_entry__go_towards_the_light": [
+      "You hurry straight toward the light without checking the floor",
+      "ahead. Halfway between the shelves, your foot catches on",
+      "something low in the dark, pitching you forward onto the",
+      "concrete—your head cracks hard against the floor, and everything",
+      "goes black."
     ]
   },
   "parser_fallbacks": [

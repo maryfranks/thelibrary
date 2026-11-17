@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createInitialState, getAvailableChoices, loadContent, transition } from "../index";
-import { deathsCounter, meterProvider, metricExporter } from "../telemetry";
 import type { ContentCatalog, GameState, ItemId, NodeId } from "../types";
 
 function makeState(
@@ -158,46 +157,17 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
       expect(bypassSafe.lastDeathType).toBeNull();
     });
 
-    describe("Junction F temporary_game_over ('duck under')", () => {
-      beforeEach(() => {
-        vi.spyOn(metricExporter, "export").mockImplementation((_metrics, resultCallback) => {
-          resultCallback({ code: 0 });
-        });
-        vi.spyOn(metricExporter, "forceFlush").mockResolvedValue(undefined);
-      });
+    it("handles Junction F hazard ('climb aisle') and safe path ('duck under' -> stage4_structural_hub)", () => {
+      const junctionF = makeState("stage4_junction_f", ["flashlight", "pocketknife"]);
 
-      afterEach(() => {
-        vi.restoreAllMocks();
-      });
+      const climbFatal = transition(junctionF, "climb aisle");
+      expect(climbFatal.currentNode).toBe("stage4_death_choice");
+      expect(climbFatal.lastDeathType).toBe("environmental_hazard");
 
-      it("handles Junction F hazard ('climb aisle') and terminates at temporary_game_over ('duck under')", () => {
-        const deathSpy = vi.spyOn(deathsCounter, "add");
-        const flushSpy = vi.spyOn(meterProvider, "forceFlush");
-        const junctionF = makeState("stage4_junction_f", ["flashlight", "pocketknife"]);
-
-        const climbFatal = transition(junctionF, "climb aisle");
-        expect(climbFatal.currentNode).toBe("stage4_death_choice");
-        expect(climbFatal.lastDeathType).toBe("environmental_hazard");
-
-        const duckSafe = transition(junctionF, "duck under");
-        expect(duckSafe.currentNode).toBe("temporary_game_over");
-        expect(duckSafe.lastDeathType).toBe("mysterious_disappearance");
-        expect(duckSafe.isGameOver).toBe(true);
-        expect(duckSafe.isWin).toBe(false);
-        expect(getAvailableChoices("temporary_game_over")).toEqual([]);
-        expect(deathSpy).toHaveBeenCalledTimes(2);
-        expect(deathSpy).toHaveBeenLastCalledWith(1, {
-          stage: "stage4",
-          death_type: "mysterious_disappearance",
-          node_id: "stage4_junction_f",
-        });
-        expect(flushSpy).toHaveBeenCalledTimes(2);
-
-        // Terminal state accepts no further gameplay commands and emits no duplicate metrics
-        const afterCommand = transition(duckSafe, "duck under");
-        expect(afterCommand).toBe(duckSafe);
-        expect(deathSpy).toHaveBeenCalledTimes(2);
-      });
+      const duckSafe = transition(junctionF, "duck under");
+      expect(duckSafe.currentNode).toBe("stage4_structural_hub");
+      expect(duckSafe.lastDeathType).toBeNull();
+      expect(duckSafe.isGameOver).toBe(false);
     });
 
     it("branches from stage4_structural_hub to stage5_mezzanine_arrival ('go upstairs') and stage5_basement_arrival ('go into basement')", () => {
@@ -244,8 +214,7 @@ describe("Stage 4 Engine (Deep Stacks Maze)", () => {
       expect(state.currentNode).toBe("stage4_junction_f");
 
       state = transition(state, "duck under");
-      expect(state.currentNode).toBe("temporary_game_over");
-      expect(state.isGameOver).toBe(true);
+      expect(state.currentNode).toBe("stage4_structural_hub");
     });
   });
 

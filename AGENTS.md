@@ -2,7 +2,7 @@
 Terminal adventure game built with TanStack Start (React 19), Vite, TypeScript, and Tailwind CSS v4.
 
 ## Role Routing
-- Feature Implementation & Refactoring: `~/.agents/roles/ts_engineer.md`
+- Feature Implementation & Refactoring: `~/.agents/roles/engineer.md`
 - Documentation & Narrative Specs: `~/.agents/roles/librarian.md`
 - Pull Request Review: `~/.agents/roles/reviewer.md`
 
@@ -12,6 +12,8 @@ Terminal adventure game built with TanStack Start (React 19), Vite, TypeScript, 
 - **Design System:** All UI components and styling updates must follow `_docs/design_system.md`.
 
 ## Documentation Index & Access Control
+
+ Read `~/.agents/` (including `AGENTS.md`, `rules/`, `roles/`, and `skills/`) as your global baseline configuration;repository-level configurations in this repo take precedence over `~/.agents/` wherever they conflict.
 
 ### Active Specifications (Agent Permitted)
 - `_docs/architecture.md`: 3-tier system boundary rules (UI vs. Engine vs. Content) and telemetry pipeline.
