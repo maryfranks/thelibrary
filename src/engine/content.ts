@@ -20,7 +20,7 @@ export function getIntroLines(content: ContentCatalog = catalog): string[] {
 }
 
 const NODE_DISCOVERED_ITEMS: Partial<Record<NodeId, readonly ItemId[]>> = {
-  stage1_pack_checked: [],
+  stage1_pack_checked: ["snack", "novel", "pen"],
   stage2_corpse_looted: ["lemon candy", "pack of gum", "mace", "hair ties"],
 };
 
