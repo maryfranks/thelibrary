@@ -322,11 +322,11 @@
 
 - [stage5_cave_approach_unexplored] Underground Cave Entrance (Desk Unsearched)
   - Choice 1: "search desk" -> [stage5_desk_searched_hub]
-  - Choice 2: "climb out to safety" -> [game_win]
+  - Choice 2: "step closer" -> [stage5_cave_approach_final]
 
 - [stage5_cave_approach_windows_tested] Underground Cave Entrance (Windows Tested, Desk Unsearched)
   - Choice 1: "search desk" -> [stage5_both_tested_hub]
-  - Choice 2: "climb out to safety" -> [game_win]
+  - Choice 2: "step closer" -> [stage5_cave_approach_final]
 
 - [stage5_cave_approach_final] Underground Cave Entrance (Final Exit)
   - Choice 1: "climb out to safety" -> [game_win]
