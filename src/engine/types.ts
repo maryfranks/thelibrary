@@ -133,6 +133,7 @@ export interface GameState {
   row3_safe: boolean;
   row4_safe: boolean;
   row5_safe: boolean;
+  hasPack?: boolean;
   stage2InventorySnapshot?: ItemId[] | null;
   stage3InventorySnapshot?: ItemId[] | null;
 }
