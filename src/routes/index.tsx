@@ -4,6 +4,7 @@ import {
   createInitialState,
   getSceneEntries,
   getStageFromNodeId,
+  hasPack,
   isActiveSession,
   processCommand,
   recordDeath,
@@ -152,7 +153,7 @@ function Terminal() {
           className="flex flex-wrap items-center gap-3 border-t border-border px-4 py-2 font-mono text-xs tracking-wider text-muted-foreground"
         >
           <span>[look around]</span>
-          <span>[look in the pack]</span>
+          {hasPack(gameState) && <span>[look in the pack]</span>}
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">

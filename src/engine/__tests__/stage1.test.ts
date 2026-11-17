@@ -3,6 +3,7 @@ import {
   createInitialState,
   getAvailableChoices,
   getNodeLines,
+  hasPack,
   loadContent,
   processCommand,
   transition,
@@ -67,9 +68,18 @@ describe("Stage 1 Engine (Vestibule)", () => {
     });
 
     it("transitions to stage1_pack_checked on 'look in the pack' and adds pack items", () => {
+      expect(hasPack(createInitialState())).toBe(false);
+      expect(hasPack(searchedState)).toBe(false);
+
       const next = transition(searchedState, "look in the pack");
       expect(next.currentNode).toBe("stage1_pack_checked");
       expect(next.inventory).toEqual(["snack", "novel", "pen"]);
+      expect(next.hasPack).toBe(true);
+      expect(hasPack(next)).toBe(true);
+
+      const stage2 = transition(transition(next, "hop turnstiles"), "proceed anyway");
+      expect(stage2.currentNode).toBe("stage2_foyer");
+      expect(hasPack(stage2)).toBe(true);
     });
 
     it("reflects newly acquired pack items when inspecting inventory immediately", () => {

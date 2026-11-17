@@ -144,6 +144,7 @@ export function transitionStage1(
     ...state,
     currentNode: nextNode,
     inventory: nextInventory,
+    hasPack: Boolean(state.hasPack) || nextNode === "stage1_pack_checked",
     stage2InventorySnapshot,
     isGameOver: nextNode === "game_over",
     isWin: nextNode === "game_win",
