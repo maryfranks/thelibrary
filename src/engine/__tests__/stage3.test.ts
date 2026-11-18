@@ -312,6 +312,21 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(backFromEncounter.currentNode).toBe("stage3_hub");
       expect(backFromEncounter.lastDeathType).toBeNull();
     });
+
+    it("resolves stage3_row1_encounter__enter_the_reading_room death screen when entering reading room after looking around", () => {
+      const catalog = loadContent();
+      const lookedAround = makeState("stage3_row1_looked", ["fireplace poker"]);
+
+      const fatalAfterLook = transition(lookedAround, "enter the reading room", catalog);
+      const expectedDeathLines =
+        catalog.death_screens["stage3_row1_encounter__enter_the_reading_room"] ?? [];
+      const expectedNodeLines = catalog.nodes["stage3_death_choice"] ?? [];
+
+      expect(expectedDeathLines.length).toBeGreaterThan(0);
+      expect(fatalAfterLook.currentNode).toBe("stage3_death_choice");
+      expect(fatalAfterLook.lastDeathType).toBe("monster_attack");
+      expect(fatalAfterLook.output).toEqual([...expectedDeathLines, ...expectedNodeLines]);
+    });
   });
 
   describe("Row 2 & Row 4 looting", () => {
