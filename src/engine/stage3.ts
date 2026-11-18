@@ -21,6 +21,7 @@ interface Stage3ChoiceDefinition {
   target: NodeId;
   addItems?: ItemId[];
   deathType?: DeathType;
+  deathScreenNode?: NodeId;
   setSafeRow?: RowSafetyKey;
   requireSafeRow?: RowSafetyKey;
   elseTarget?: NodeId;
@@ -176,6 +177,7 @@ export const STAGE3_TRANSITIONS: Record<Stage3NodeId, Stage3ChoiceDefinition[]> 
       command: "enter the reading room",
       target: "stage3_death_choice",
       deathType: "monster_attack",
+      deathScreenNode: "stage3_row1_encounter",
     },
     {
       command: "go back",
@@ -448,7 +450,7 @@ export function transitionStage3(
     inventory: resolvedInventory,
     deathType: matchedChoice.deathType,
     deathNodeId: state.currentNode,
-    deathScreenNode: state.currentNode,
+    deathScreenNode: matchedChoice.deathScreenNode ?? state.currentNode,
     deathScreenCommand: matchedChoice.command,
     prefixLines: actionLines,
     suppressNodeLines: actionLines.length > 0 && resolvedNode === "stage3_hub",
