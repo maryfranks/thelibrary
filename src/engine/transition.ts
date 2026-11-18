@@ -118,5 +118,3 @@ function dispatchTransition(state: GameState, input: string, content?: ContentCa
     output: getParserFallback(0, content),
   };
 }
-
-export const step = transition;

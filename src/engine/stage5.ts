@@ -1,5 +1,5 @@
-import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
-import { recordDeath, recordRunCompleted } from "./telemetry";
+import { getNodeLines } from "./content";
+import { applyChoiceOutcome, matchStageChoice, parserFallbackState } from "./stageHelpers";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage5NodeId } from "./types";
 
 interface Stage5ChoiceDefinition {
@@ -10,19 +10,6 @@ interface Stage5ChoiceDefinition {
 
 const NO_UMBRELLA_CHOICE = "no umbrella check";
 const WITH_UMBRELLA_CHOICE = "with umbrella check";
-
-const MEZZANINE_UMBRELLA_CHECK_CHOICES: Stage5ChoiceDefinition[] = [
-  {
-    command: NO_UMBRELLA_CHOICE,
-    target: "stage5_mezzanine_end_death_choice",
-    deathType: "monster_attack",
-  },
-  {
-    command: WITH_UMBRELLA_CHOICE,
-    target: "stage5_mezzanine_end_death_choice",
-    deathType: "monster_attack",
-  },
-];
 
 export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> = {
   stage5_mezzanine_arrival: [
@@ -79,7 +66,18 @@ export const STAGE5_TRANSITIONS: Record<Stage5NodeId, Stage5ChoiceDefinition[]> 
       target: "stage5_mezzanine_umbrella_check",
     },
   ],
-  stage5_mezzanine_umbrella_check: MEZZANINE_UMBRELLA_CHECK_CHOICES,
+  stage5_mezzanine_umbrella_check: [
+    {
+      command: NO_UMBRELLA_CHOICE,
+      target: "stage5_mezzanine_end_death_choice",
+      deathType: "monster_attack",
+    },
+    {
+      command: WITH_UMBRELLA_CHOICE,
+      target: "stage5_mezzanine_end_death_choice",
+      deathType: "monster_attack",
+    },
+  ],
   stage5_mezzanine_end_death_choice: [
     {
       command: "try again",
@@ -290,25 +288,18 @@ function resolveMezzanineUmbrellaCheck(
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  const hasUmbrella = inventory.includes("umbrella");
-  const choice = hasUmbrella ? WITH_UMBRELLA_CHOICE : NO_UMBRELLA_CHOICE;
-  const nextNode: NodeId = "stage5_mezzanine_end_death_choice";
-  recordDeath({
+  const choice = inventory.includes("umbrella") ? WITH_UMBRELLA_CHOICE : NO_UMBRELLA_CHOICE;
+  return applyChoiceOutcome(state, {
     stage: "stage5",
-    death_type: "monster_attack",
-    node_id: "stage5_mezzanine_umbrella_check",
-  });
-  const deathLines = getDeathScreenLines("stage5_mezzanine_umbrella_check", choice, content);
-
-  return {
-    ...state,
-    currentNode: nextNode,
+    nextNode: "stage5_mezzanine_end_death_choice",
     inventory: [...inventory],
-    isGameOver: false,
-    isWin: false,
-    lastDeathType: "monster_attack",
-    output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],
-  };
+    deathType: "monster_attack",
+    deathNodeId: "stage5_mezzanine_umbrella_check",
+    deathScreenNode: "stage5_mezzanine_umbrella_check",
+    deathScreenCommand: choice,
+    prefixLines,
+    content,
+  });
 }
 
 function resolveBasementUmbrellaCheck(
@@ -317,40 +308,27 @@ function resolveBasementUmbrellaCheck(
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  const hasUmbrella = inventory.includes("umbrella");
-  if (hasUmbrella) {
-    const nextNode: NodeId = "stage5_flooded_corridor";
-    return {
-      ...state,
-      currentNode: nextNode,
+  if (inventory.includes("umbrella")) {
+    return applyChoiceOutcome(state, {
+      stage: "stage5",
+      nextNode: "stage5_flooded_corridor",
       inventory: [...inventory],
-      isGameOver: false,
-      isWin: false,
-      lastDeathType: null,
-      output: [...prefixLines, ...getNodeLines(nextNode, content)],
-    };
+      prefixLines,
+      content,
+    });
   }
 
-  const nextNode: NodeId = "stage5_basement_umbrella_death_choice";
-  recordDeath({
+  return applyChoiceOutcome(state, {
     stage: "stage5",
-    death_type: "environmental_hazard",
-    node_id: "stage5_basement_umbrella_check",
-  });
-  const deathLines = getDeathScreenLines(
-    "stage5_basement_umbrella_check",
-    NO_UMBRELLA_CHOICE,
-    content,
-  );
-  return {
-    ...state,
-    currentNode: nextNode,
+    nextNode: "stage5_basement_umbrella_death_choice",
     inventory: [...inventory],
-    isGameOver: false,
-    isWin: false,
-    lastDeathType: "environmental_hazard",
-    output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],
-  };
+    deathType: "environmental_hazard",
+    deathNodeId: "stage5_basement_umbrella_check",
+    deathScreenNode: "stage5_basement_umbrella_check",
+    deathScreenCommand: NO_UMBRELLA_CHOICE,
+    prefixLines,
+    content,
+  });
 }
 
 export function transitionStage5(
@@ -370,72 +348,37 @@ export function transitionStage5(
     return resolveBasementUmbrellaCheck(state, state.inventory, [], content);
   }
 
-  const normalized = rawInput.trim().toLowerCase();
-  if (!normalized) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
-  }
-
-  const choices = STAGE5_TRANSITIONS[state.currentNode];
-  const matchedChoice = choices.find((choice, index) => {
-    return choice.command === normalized || String(index + 1) === normalized;
-  });
-
+  const matchedChoice = matchStageChoice(STAGE5_TRANSITIONS[state.currentNode], rawInput);
   if (!matchedChoice) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
+    return parserFallbackState(state, content);
   }
 
   const nextNode = matchedChoice.target;
 
   if (nextNode === "stage5_mezzanine_umbrella_check") {
-    const checkLines = getNodeLines(nextNode, content);
-    return resolveMezzanineUmbrellaCheck(state, state.inventory, checkLines, content);
+    return resolveMezzanineUmbrellaCheck(
+      state,
+      state.inventory,
+      getNodeLines(nextNode, content),
+      content,
+    );
   }
 
   if (nextNode === "stage5_basement_umbrella_check") {
-    const checkLines = getNodeLines(nextNode, content);
-    return resolveBasementUmbrellaCheck(state, state.inventory, checkLines, content);
+    return resolveBasementUmbrellaCheck(
+      state,
+      state.inventory,
+      getNodeLines(nextNode, content),
+      content,
+    );
   }
 
-  if (matchedChoice.deathType) {
-    recordDeath({
-      stage: "stage5",
-      death_type: matchedChoice.deathType,
-      node_id: state.currentNode,
-    });
-  }
-
-  if (nextNode === "game_over") {
-    recordRunCompleted({
-      outcome: "loss",
-      final_stage: "stage5",
-    });
-  } else if (nextNode === "game_win") {
-    recordRunCompleted({
-      outcome: "win",
-      final_stage: "stage5",
-    });
-  }
-
-  const deathLines = matchedChoice.deathType
-    ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
-    : [];
-  const nodeLines = getNodeLines(nextNode, content);
-
-  return {
-    ...state,
-    currentNode: nextNode,
+  return applyChoiceOutcome(state, {
+    stage: "stage5",
+    nextNode,
     inventory: [...state.inventory],
-    isGameOver: nextNode === "game_over",
-    isWin: nextNode === "game_win",
-    lastDeathType: matchedChoice.deathType ?? null,
-    output: [...deathLines, ...nodeLines],
-  };
+    deathType: matchedChoice.deathType,
+    deathScreenCommand: matchedChoice.command,
+    content,
+  });
 }

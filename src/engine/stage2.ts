@@ -1,5 +1,10 @@
-import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
-import { recordDeath, recordRunCompleted } from "./telemetry";
+import { getNodeLines } from "./content";
+import {
+  applyChoiceOutcome,
+  matchStageChoice,
+  mutateInventory,
+  parserFallbackState,
+} from "./stageHelpers";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage2NodeId } from "./types";
 
 interface Stage2ChoiceDefinition {
@@ -216,25 +221,6 @@ export function getStage2Choices(nodeId: Stage2NodeId): string[] {
   return STAGE2_TRANSITIONS[nodeId].map((choice) => choice.command);
 }
 
-function mutateInventory(
-  inventory: ItemId[],
-  itemsToAdd?: ItemId[],
-  itemsToRemove?: ItemId[],
-): ItemId[] {
-  const removeSet = new Set(itemsToRemove ?? []);
-  const next = inventory.filter((item) => !removeSet.has(item));
-
-  if (itemsToAdd) {
-    for (const item of itemsToAdd) {
-      if (!next.includes(item)) {
-        next.push(item);
-      }
-    }
-  }
-
-  return next;
-}
-
 export const WEAPON_ITEMS: ItemId[] = ["mop", "fireplace poker"];
 
 export function hasWeapon(inventory: ItemId[]): boolean {
@@ -270,34 +256,26 @@ function resolvePeriodicalsCheck(
   content?: ContentCatalog,
 ): GameState {
   if (hasWeapon(inventory)) {
-    const nextNode: NodeId = "stage2_reading_room_door";
-    return {
-      ...state,
-      currentNode: nextNode,
+    return applyChoiceOutcome(state, {
+      stage: "stage2",
+      nextNode: "stage2_reading_room_door",
       inventory: [...inventory],
-      isGameOver: false,
-      isWin: false,
-      lastDeathType: null,
-      output: [...prefixLines, ...getNodeLines(nextNode, content)],
-    };
+      prefixLines,
+      content,
+    });
   }
 
-  const nextNode: NodeId = "stage2_death_choice";
-  recordDeath({
+  return applyChoiceOutcome(state, {
     stage: "stage2",
-    death_type: "monster_attack",
-    node_id: "stage2_periodicals_check",
-  });
-  const deathLines = getDeathScreenLines("stage2_periodicals_check", NO_MOP_CHOICE, content);
-  return {
-    ...state,
-    currentNode: nextNode,
+    nextNode: "stage2_death_choice",
     inventory: [...inventory],
-    isGameOver: false,
-    isWin: false,
-    lastDeathType: "monster_attack",
-    output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],
-  };
+    deathType: "monster_attack",
+    deathNodeId: "stage2_periodicals_check",
+    deathScreenNode: "stage2_periodicals_check",
+    deathScreenCommand: NO_MOP_CHOICE,
+    prefixLines,
+    content,
+  });
 }
 
 function resolveStacksDoorCheck(
@@ -309,15 +287,13 @@ function resolveStacksDoorCheck(
   const hasStacksKey = inventory.includes("stacks key");
   const nextNode: NodeId = hasStacksKey ? "stage3_arrival" : "stage2_stacks_door_locked_no_key";
 
-  return {
-    ...state,
-    currentNode: nextNode,
+  return applyChoiceOutcome(state, {
+    stage: "stage2",
+    nextNode,
     inventory: [...inventory],
-    isGameOver: false,
-    isWin: false,
-    lastDeathType: null,
-    output: [...prefixLines, ...getNodeLines(nextNode, content)],
-  };
+    prefixLines,
+    content,
+  });
 }
 
 export function transitionStage2(
@@ -341,26 +317,9 @@ export function transitionStage2(
     return resolveStacksDoorCheck(state, state.inventory, [], content);
   }
 
-  const normalized = rawInput.trim().toLowerCase();
-  if (!normalized) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
-  }
-
-  const choices = STAGE2_TRANSITIONS[state.currentNode];
-  const matchedChoice = choices.find((choice, index) => {
-    return choice.command === normalized || String(index + 1) === normalized;
-  });
-
+  const matchedChoice = matchStageChoice(STAGE2_TRANSITIONS[state.currentNode], rawInput);
   if (!matchedChoice) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
+    return parserFallbackState(state, content);
   }
 
   const nextInventory = mutateInventory(
@@ -375,51 +334,28 @@ export function transitionStage2(
   }
 
   if (nextNode === "stage2_periodicals_check") {
-    const checkLines = getNodeLines(nextNode, content);
-    return resolvePeriodicalsCheck(state, nextInventory, checkLines, content);
+    return resolvePeriodicalsCheck(state, nextInventory, getNodeLines(nextNode, content), content);
   }
 
   if (nextNode === "stage2_stacks_door_check") {
-    const checkLines = getNodeLines(nextNode, content);
-    return resolveStacksDoorCheck(state, nextInventory, checkLines, content);
+    return resolveStacksDoorCheck(state, nextInventory, getNodeLines(nextNode, content), content);
   }
 
-  if (matchedChoice.deathType) {
-    recordDeath({
-      stage: "stage2",
-      death_type: matchedChoice.deathType,
-      node_id: state.currentNode,
-    });
-  }
+  const outcomeState = applyChoiceOutcome(state, {
+    stage: "stage2",
+    nextNode,
+    inventory: nextInventory,
+    deathType: matchedChoice.deathType,
+    deathScreenCommand: matchedChoice.command,
+    content,
+  });
 
-  if (nextNode === "game_over") {
-    recordRunCompleted({
-      outcome: "loss",
-      final_stage: "stage2",
-    });
-  } else if (nextNode === "game_win") {
-    recordRunCompleted({
-      outcome: "win",
-      final_stage: "stage2",
-    });
-  }
-
-  const deathLines = matchedChoice.deathType
-    ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
-    : [];
-  const nodeLines = getNodeLines(nextNode, content);
   const stage2InventorySnapshot =
     state.stage2InventorySnapshot ??
     (state.currentNode === "stage2_foyer" ? [...state.inventory] : null);
 
   return {
-    ...state,
-    currentNode: nextNode,
-    inventory: nextInventory,
+    ...outcomeState,
     stage2InventorySnapshot,
-    isGameOver: nextNode === "game_over",
-    isWin: nextNode === "game_win",
-    lastDeathType: matchedChoice.deathType ?? null,
-    output: [...deathLines, ...nodeLines],
   };
 }

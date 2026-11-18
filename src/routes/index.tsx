@@ -31,7 +31,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Line = { kind: "in" | "out" | "sys" | "warn"; text: string };
+type Line = { kind: "in" | "out" | "sys"; text: string };
 
 function buildInitialLines(initialState: GameState): Line[] {
   return [
@@ -45,12 +45,11 @@ const color: Record<Line["kind"], string> = {
   in: "text-foreground",
   out: "text-body",
   sys: "text-primary",
-  warn: "text-warning",
 };
 
 function Terminal() {
   const [gameState, setGameState] = useState<GameState>(() => createInitialState());
-  const [lines, setLines] = useState<Line[]>(() => buildInitialLines(createInitialState()));
+  const [lines, setLines] = useState<Line[]>(() => buildInitialLines(gameState));
   const [input, setInput] = useState("");
   const [turn, setTurn] = useState(1);
   const [hist, setHist] = useState<string[]>([]);
@@ -82,6 +81,7 @@ function Terminal() {
 
   const handleStartOver = () => {
     if (isActiveSession(gameState)) {
+      // Intentionally record mysterious_disappearance even on turn === 1; any active session reset counts as a disappearance.
       recordDeath({
         stage: getStageFromNodeId(gameState.currentNode),
         death_type: "mysterious_disappearance",

@@ -1,5 +1,5 @@
-import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
-import { recordDeath, recordRunCompleted } from "./telemetry";
+import { getNodeLines } from "./content";
+import { applyChoiceOutcome, matchStageChoice, parserFallbackState } from "./stageHelpers";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage4NodeId } from "./types";
 
 interface Stage4ChoiceDefinition {
@@ -153,36 +153,27 @@ function resolvePocketknifeCheck(
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  const hasPocketknife = inventory.includes("pocketknife");
-  if (hasPocketknife) {
-    const nextNode: NodeId = "stage4_junction_c";
-    return {
-      ...state,
-      currentNode: nextNode,
+  if (inventory.includes("pocketknife")) {
+    return applyChoiceOutcome(state, {
+      stage: "stage4",
+      nextNode: "stage4_junction_c",
       inventory: [...inventory],
-      isGameOver: false,
-      isWin: false,
-      lastDeathType: null,
-      output: [...prefixLines, ...getNodeLines(nextNode, content)],
-    };
+      prefixLines,
+      content,
+    });
   }
 
-  const nextNode: NodeId = "stage3_death_choice";
-  recordDeath({
+  return applyChoiceOutcome(state, {
     stage: "stage4",
-    death_type: "environmental_hazard",
-    node_id: "stage4_junction_b_check",
-  });
-  const deathLines = getDeathScreenLines("stage4_junction_b_check", NO_POCKETKNIFE_CHOICE, content);
-  return {
-    ...state,
-    currentNode: nextNode,
+    nextNode: "stage3_death_choice",
     inventory: [...inventory],
-    isGameOver: false,
-    isWin: false,
-    lastDeathType: "environmental_hazard",
-    output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],
-  };
+    deathType: "environmental_hazard",
+    deathNodeId: "stage4_junction_b_check",
+    deathScreenNode: "stage4_junction_b_check",
+    deathScreenCommand: NO_POCKETKNIFE_CHOICE,
+    prefixLines,
+    content,
+  });
 }
 
 export function transitionStage4(
@@ -198,71 +189,30 @@ export function transitionStage4(
     return resolvePocketknifeCheck(state, state.inventory, [], content);
   }
 
-  const normalized = rawInput.trim().toLowerCase();
-  if (!normalized) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
-  }
-
-  const choices = STAGE4_TRANSITIONS[state.currentNode];
-  const matchedChoice = choices.find((choice, index) => {
-    return choice.command === normalized || String(index + 1) === normalized;
-  });
-
+  const matchedChoice = matchStageChoice(STAGE4_TRANSITIONS[state.currentNode], rawInput);
   if (!matchedChoice) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
+    return parserFallbackState(state, content);
   }
 
   const nextNode = matchedChoice.target;
 
   if (nextNode === "stage4_junction_b_check") {
-    const checkLines = getNodeLines(nextNode, content);
-    return resolvePocketknifeCheck(state, state.inventory, checkLines, content);
+    return resolvePocketknifeCheck(
+      state,
+      state.inventory,
+      getNodeLines(nextNode, content),
+      content,
+    );
   }
 
-  if (matchedChoice.deathType) {
-    recordDeath({
-      stage: "stage4",
-      death_type: matchedChoice.deathType,
-      node_id: state.currentNode,
-    });
-  }
-
-  if (nextNode === "game_over") {
-    recordRunCompleted({
-      outcome: "loss",
-      final_stage: "stage4",
-    });
-  } else if (nextNode === "game_win") {
-    recordRunCompleted({
-      outcome: "win",
-      final_stage: "stage4",
-    });
-  }
-
-  const deathLines = matchedChoice.deathType
-    ? getDeathScreenLines(
-        matchedChoice.deathScreenNode ?? state.currentNode,
-        matchedChoice.deathScreenCommand ?? matchedChoice.command,
-        content,
-      )
-    : [];
-  const nodeLines = getNodeLines(nextNode, content);
-
-  return {
-    ...state,
-    currentNode: nextNode,
+  return applyChoiceOutcome(state, {
+    stage: "stage4",
+    nextNode,
     inventory: [...state.inventory],
-    isGameOver: nextNode === "game_over",
-    isWin: nextNode === "game_win",
-    lastDeathType: matchedChoice.deathType ?? null,
-    output: [...deathLines, ...nodeLines],
-  };
+    deathType: matchedChoice.deathType,
+    deathNodeId: state.currentNode,
+    deathScreenNode: matchedChoice.deathScreenNode ?? state.currentNode,
+    deathScreenCommand: matchedChoice.deathScreenCommand ?? matchedChoice.command,
+    content,
+  });
 }

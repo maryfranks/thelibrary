@@ -11,7 +11,7 @@ export function formatChoicePrompt(nodeId: NodeId): string[] {
 }
 
 /** Prompt lines to append after a transition; empty for terminal nodes. */
-export function getTransitionPrompt(_prev: GameState, next: GameState): string[] {
+export function getTransitionPrompt(next: GameState): string[] {
   if (next.isGameOver || next.isWin) return [];
   return formatChoicePrompt(next.currentNode);
 }

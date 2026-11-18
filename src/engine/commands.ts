@@ -77,7 +77,7 @@ export function processCommand(state: GameState, rawInput: string): CommandResul
   if (shouldShowInventory(state, next, lower)) {
     entries.push({ kind: "sys", text: formatInventory(next) });
   }
-  entries.push(...asOut(getTransitionPrompt(state, next)));
+  entries.push(...asOut(getTransitionPrompt(next)));
   return {
     state: next,
     entries,
