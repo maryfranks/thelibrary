@@ -7,6 +7,7 @@ import {
   type MetricOptions,
 } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
+import { defaultResource, resourceFromAttributes, type Resource } from "@opentelemetry/resources";
 import { MeterProvider, MetricReader, type PushMetricExporter } from "@opentelemetry/sdk-metrics";
 import type { DeathType, GameState, NodeId, StageId } from "./types";
 
@@ -26,9 +27,86 @@ export interface DeathAttributes extends Attributes {
 }
 
 export const METER_NAME = "the-library-engine";
+export const SERVICE_NAME = "the-library";
 export const RUNS_COMPLETED_COUNTER_NAME = "game.runs.completed";
 export const DEATHS_COUNTER_NAME = "game.deaths";
 export const COLLECTOR_URL = "https://collector.littlefuzzydinos.com/v1/metrics";
+
+/**
+ * Returns true when running inside a test runner so OTLP network exports are suppressed.
+ */
+export function isTestEnvironment(): boolean {
+  const metaEnv = typeof import.meta !== "undefined" ? import.meta.env : undefined;
+  if (metaEnv?.MODE === "test" || Boolean(metaEnv?.["VITEST"])) {
+    return true;
+  }
+  if (typeof process !== "undefined") {
+    if (process.env?.["NODE_ENV"] === "test" || Boolean(process.env?.["VITEST"])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Resolves the deployment environment name from Vite mode or NODE_ENV.
+ */
+export function getDeploymentEnvironment(): string {
+  const viteMode = typeof import.meta !== "undefined" ? import.meta.env?.MODE : undefined;
+  if (viteMode) {
+    return viteMode;
+  }
+  if (typeof process !== "undefined") {
+    const nodeEnv = process.env?.["NODE_ENV"];
+    if (nodeEnv) {
+      return nodeEnv;
+    }
+  }
+  return "production";
+}
+
+/**
+ * Builds the OpenTelemetry Resource with explicit service.name and deployment.environment
+ * attributes merged over SDK defaults so browser telemetry does not report unknown_service.
+ */
+export function createTelemetryResource(
+  environment: string = getDeploymentEnvironment(),
+): Resource {
+  return defaultResource().merge(
+    resourceFromAttributes({
+      "service.name": SERVICE_NAME,
+      "deployment.environment": environment,
+    }),
+  );
+}
+
+/**
+ * No-op PushMetricExporter used in test environments to prevent live OTLP network requests.
+ */
+export class NoopMetricExporter implements PushMetricExporter {
+  export(
+    _metrics: Parameters<PushMetricExporter["export"]>[0],
+    resultCallback: Parameters<PushMetricExporter["export"]>[1],
+  ): void {
+    resultCallback({ code: 0 });
+  }
+
+  async forceFlush(): Promise<void> {}
+
+  async shutdown(): Promise<void> {}
+}
+
+/**
+ * Creates the active metric exporter (NoopMetricExporter in test runs, OTLPMetricExporter otherwise).
+ */
+export function createMetricExporter(isTest: boolean = isTestEnvironment()): PushMetricExporter {
+  if (isTest) {
+    return new NoopMetricExporter();
+  }
+  return new OTLPMetricExporter({
+    url: COLLECTOR_URL,
+  }) as unknown as PushMetricExporter;
+}
 
 /**
  * MetricReader that exports collected metrics only on explicit flush/shutdown
@@ -72,15 +150,14 @@ export class ImmediateMetricReader extends MetricReader {
   }
 }
 
-export const metricExporter = new OTLPMetricExporter({
-  url: COLLECTOR_URL,
-});
+export const telemetryResource = createTelemetryResource();
 
-export const metricReader = new ImmediateMetricReader(
-  metricExporter as unknown as PushMetricExporter,
-);
+export const metricExporter = createMetricExporter();
+
+export const metricReader = new ImmediateMetricReader(metricExporter);
 
 export const meterProvider = new MeterProvider({
+  resource: telemetryResource,
   readers: [metricReader],
 });
 
