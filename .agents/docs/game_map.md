@@ -149,7 +149,7 @@
   - Choice 2: "give up" -> [game_over]
 
 - [stage3_row1_encounter] Row 1 (Reading Room Entrance)
-  - Choice 1: "look around" -> [sstage3_row1_looked]
+  - Choice 1: "look around" -> [stage3_row1_looked]
   - Choice 2: "enter the reading room" -> [DEAD: monster_attack] -> [stage3_death_choice]
   - Choice 3: "go back" -> [stage3_hub]
 
