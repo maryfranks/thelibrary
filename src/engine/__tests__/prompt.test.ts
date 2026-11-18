@@ -29,7 +29,7 @@ describe("choice prompt", () => {
     const initial = createInitialState();
     const next = transition(initial, "look around");
     expect(next.currentNode).not.toBe(initial.currentNode);
-    expect(getTransitionPrompt(initial, next)).toEqual(expectedPrompt(next));
+    expect(getTransitionPrompt(next)).toEqual(expectedPrompt(next));
   });
 
   it("is omitted on terminal nodes", () => {
@@ -38,19 +38,19 @@ describe("choice prompt", () => {
     const over: GameState = { ...base, currentNode: "game_over", isGameOver: true };
     expect(formatChoicePrompt("game_win")).toEqual([]);
     expect(formatChoicePrompt("game_over")).toEqual([]);
-    expect(getTransitionPrompt(base, win)).toEqual([]);
-    expect(getTransitionPrompt(base, over)).toEqual([]);
+    expect(getTransitionPrompt(win)).toEqual([]);
+    expect(getTransitionPrompt(over)).toEqual([]);
   });
 
   it("re-renders choices when a command leaves the node unchanged (ambient, blocked, or invalid)", () => {
     const initial = createInitialState();
     const next = transition(initial, "xyzzy");
     expect(next.currentNode).toBe(initial.currentNode);
-    expect(getTransitionPrompt(initial, next)).toEqual(expectedPrompt(next));
+    expect(getTransitionPrompt(next)).toEqual(expectedPrompt(next));
 
     const packLook = transition(initial, "look in the pack");
     expect(packLook.currentNode).toBe(initial.currentNode);
-    expect(getTransitionPrompt(initial, packLook)).toEqual(expectedPrompt(packLook));
+    expect(getTransitionPrompt(packLook)).toEqual(expectedPrompt(packLook));
   });
 
   it("still accepts 1-based index input matching the listed option", () => {

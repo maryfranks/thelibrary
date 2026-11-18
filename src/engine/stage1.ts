@@ -1,5 +1,9 @@
-import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
-import { recordDeath, recordRunCompleted } from "./telemetry";
+import {
+  applyChoiceOutcome,
+  matchStageChoice,
+  mutateInventory,
+  parserFallbackState,
+} from "./stageHelpers";
 import type { ContentCatalog, DeathType, GameState, ItemId, NodeId, Stage1NodeId } from "./types";
 
 interface ChoiceDefinition {
@@ -72,19 +76,6 @@ export function getStage1Choices(nodeId: Stage1NodeId): string[] {
   return STAGE1_TRANSITIONS[nodeId].map((choice) => choice.command);
 }
 
-function addUniqueItems(inventory: ItemId[], itemsToAdd?: ItemId[]): ItemId[] {
-  if (!itemsToAdd || itemsToAdd.length === 0) {
-    return [...inventory];
-  }
-  const next = [...inventory];
-  for (const item of itemsToAdd) {
-    if (!next.includes(item)) {
-      next.push(item);
-    }
-  }
-  return next;
-}
-
 export function transitionStage1(
   state: GameState,
   rawInput: string,
@@ -94,61 +85,29 @@ export function transitionStage1(
     return state;
   }
 
-  const normalized = rawInput.trim().toLowerCase();
-  const choices = STAGE1_TRANSITIONS[state.currentNode];
-
-  const matchedChoice = choices.find((choice, index) => {
-    return choice.command === normalized || String(index + 1) === normalized;
-  });
-
+  const matchedChoice = matchStageChoice(STAGE1_TRANSITIONS[state.currentNode], rawInput);
   if (!matchedChoice) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
+    return parserFallbackState(state, content);
   }
 
-  const nextInventory = addUniqueItems(state.inventory, matchedChoice.addItems);
+  const nextInventory = mutateInventory(state.inventory, matchedChoice.addItems);
   const nextNode = matchedChoice.target;
 
-  if (matchedChoice.deathType) {
-    recordDeath({
-      stage: "stage1",
-      death_type: matchedChoice.deathType,
-      node_id: state.currentNode,
-    });
-  }
-
-  if (nextNode === "game_over") {
-    recordRunCompleted({
-      outcome: "loss",
-      final_stage: "stage1",
-    });
-  } else if (nextNode === "game_win") {
-    recordRunCompleted({
-      outcome: "win",
-      final_stage: "stage1",
-    });
-  }
-
-  const deathLines = matchedChoice.deathType
-    ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
-    : [];
-  const nodeLines = getNodeLines(nextNode, content);
+  const outcomeState = applyChoiceOutcome(state, {
+    stage: "stage1",
+    nextNode,
+    inventory: nextInventory,
+    deathType: matchedChoice.deathType,
+    deathScreenCommand: matchedChoice.command,
+    content,
+  });
 
   const stage2InventorySnapshot =
     nextNode === "stage2_foyer" ? [...nextInventory] : (state.stage2InventorySnapshot ?? null);
 
   return {
-    ...state,
-    currentNode: nextNode,
-    inventory: nextInventory,
+    ...outcomeState,
     hasPack: Boolean(state.hasPack) || nextNode === "stage1_pack_checked",
     stage2InventorySnapshot,
-    isGameOver: nextNode === "game_over",
-    isWin: nextNode === "game_win",
-    lastDeathType: matchedChoice.deathType ?? null,
-    output: [...deathLines, ...nodeLines],
   };
 }

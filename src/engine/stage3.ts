@@ -1,6 +1,11 @@
-import { getDeathScreenLines, getNodeLines, getParserFallback } from "./content";
+import { getDeathScreenLines, getNodeLines } from "./content";
 import { resolveRespawnCheck } from "./stage2";
-import { recordDeath, recordRunCompleted } from "./telemetry";
+import {
+  applyChoiceOutcome,
+  matchStageChoice,
+  mutateInventory,
+  parserFallbackState,
+} from "./stageHelpers";
 import type {
   ContentCatalog,
   DeathType,
@@ -271,19 +276,6 @@ export function getStage3Choices(nodeId: Stage3NodeId): string[] {
   return STAGE3_TRANSITIONS[nodeId].map((choice) => choice.command);
 }
 
-function addUniqueItems(inventory: ItemId[], itemsToAdd?: ItemId[]): ItemId[] {
-  if (!itemsToAdd || itemsToAdd.length === 0) {
-    return [...inventory];
-  }
-  const next = [...inventory];
-  for (const item of itemsToAdd) {
-    if (!next.includes(item)) {
-      next.push(item);
-    }
-  }
-  return next;
-}
-
 function getConditionalDeathScreenLines(
   nodeId: NodeId,
   command: string,
@@ -306,34 +298,30 @@ function resolveArrivalCheck(
   if (hasPoker) {
     const nextNode: NodeId = "stage3_hub_unexplored";
     const arrivalLines = getNodeLines("stage3_arrival", content);
-    return {
-      ...state,
-      currentNode: nextNode,
+    const outcomeState = applyChoiceOutcome(state, {
+      stage: "stage3",
+      nextNode,
       inventory: [...inventory],
+      prefixLines: [...prefixLines, ...arrivalLines],
+      content,
+    });
+    return {
+      ...outcomeState,
       stage3InventorySnapshot: [...inventory],
-      isGameOver: false,
-      isWin: false,
-      lastDeathType: null,
-      output: [...prefixLines, ...arrivalLines, ...getNodeLines(nextNode, content)],
     };
   }
 
-  const nextNode: NodeId = "stage3_early_death_choice";
-  recordDeath({
+  return applyChoiceOutcome(state, {
     stage: "stage3",
-    death_type: "environmental_hazard",
-    node_id: "stage3_arrival",
-  });
-  const deathLines = getDeathScreenLines("stage3_arrival", WITH_MOP_CHOICE, content);
-  return {
-    ...state,
-    currentNode: nextNode,
+    nextNode: "stage3_early_death_choice",
     inventory: [...inventory],
-    isGameOver: false,
-    isWin: false,
-    lastDeathType: "environmental_hazard",
-    output: [...prefixLines, ...deathLines, ...getNodeLines(nextNode, content)],
-  };
+    deathType: "environmental_hazard",
+    deathNodeId: "stage3_arrival",
+    deathScreenNode: "stage3_arrival",
+    deathScreenCommand: WITH_MOP_CHOICE,
+    prefixLines,
+    content,
+  });
 }
 
 function resolveFlashlightCheck(
@@ -342,30 +330,17 @@ function resolveFlashlightCheck(
   prefixLines: string[],
   content?: ContentCatalog,
 ): GameState {
-  const hasFlashlight = inventory.includes("flashlight");
-  if (hasFlashlight) {
-    const nextNode: NodeId = "stage4_entry";
-    return {
-      ...state,
-      currentNode: nextNode,
-      inventory: [...inventory],
-      isGameOver: false,
-      isWin: false,
-      lastDeathType: null,
-      output: [...prefixLines, ...getNodeLines(nextNode, content)],
-    };
-  }
+  const nextNode: NodeId = inventory.includes("flashlight")
+    ? "stage4_entry"
+    : "stage3_row2_dark_warning";
 
-  const nextNode: NodeId = "stage3_row2_dark_warning";
-  return {
-    ...state,
-    currentNode: nextNode,
+  return applyChoiceOutcome(state, {
+    stage: "stage3",
+    nextNode,
     inventory: [...inventory],
-    isGameOver: false,
-    isWin: false,
-    lastDeathType: null,
-    output: [...prefixLines, ...getNodeLines(nextNode, content)],
-  };
+    prefixLines,
+    content,
+  });
 }
 
 export function transitionStage3(
@@ -385,29 +360,12 @@ export function transitionStage3(
     return resolveFlashlightCheck(state, state.inventory, [], content);
   }
 
-  const normalized = rawInput.trim().toLowerCase();
-  if (!normalized) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
-  }
-
-  const choices = STAGE3_TRANSITIONS[state.currentNode];
-  const matchedChoice = choices.find((choice, index) => {
-    return choice.command === normalized || String(index + 1) === normalized;
-  });
-
+  const matchedChoice = matchStageChoice(STAGE3_TRANSITIONS[state.currentNode], rawInput);
   if (!matchedChoice) {
-    return {
-      ...state,
-      lastDeathType: null,
-      output: getParserFallback(0, content),
-    };
+    return parserFallbackState(state, content);
   }
 
-  const nextInventory = addUniqueItems(state.inventory, matchedChoice.addItems);
+  const nextInventory = mutateInventory(state.inventory, matchedChoice.addItems);
 
   if (
     matchedChoice.requireSafeRow &&
@@ -415,37 +373,14 @@ export function transitionStage3(
     matchedChoice.elseTarget &&
     matchedChoice.elseDeathType
   ) {
-    const nextNode = matchedChoice.elseTarget;
-    recordDeath({
+    return applyChoiceOutcome(state, {
       stage: "stage3",
-      death_type: matchedChoice.elseDeathType,
-      node_id: state.currentNode,
-    });
-    if (nextNode === "game_over") {
-      recordRunCompleted({
-        outcome: "loss",
-        final_stage: "stage3",
-      });
-    } else if (nextNode === "game_win") {
-      recordRunCompleted({
-        outcome: "win",
-        final_stage: "stage3",
-      });
-    }
-    const deathLines = getConditionalDeathScreenLines(
-      state.currentNode,
-      matchedChoice.command,
-      content,
-    );
-    return {
-      ...state,
-      currentNode: nextNode,
+      nextNode: matchedChoice.elseTarget,
       inventory: nextInventory,
-      isGameOver: nextNode === "game_over",
-      isWin: nextNode === "game_win",
-      lastDeathType: matchedChoice.elseDeathType,
-      output: [...deathLines, ...getNodeLines(nextNode, content)],
-    };
+      deathType: matchedChoice.elseDeathType,
+      deathLines: getConditionalDeathScreenLines(state.currentNode, matchedChoice.command, content),
+      content,
+    });
   }
 
   const nextState: GameState = matchedChoice.setSafeRow
@@ -496,47 +431,27 @@ export function transitionStage3(
   }
 
   if (resolvedNode === "stage3_row2_flashlight_check") {
-    const checkLines = getNodeLines(resolvedNode, content);
-    return resolveFlashlightCheck(nextState, resolvedInventory, checkLines, content);
-  }
-
-  if (matchedChoice.deathType) {
-    recordDeath({
-      stage: "stage3",
-      death_type: matchedChoice.deathType,
-      node_id: state.currentNode,
-    });
-  }
-
-  if (resolvedNode === "game_over") {
-    recordRunCompleted({
-      outcome: "loss",
-      final_stage: "stage3",
-    });
-  } else if (resolvedNode === "game_win") {
-    recordRunCompleted({
-      outcome: "win",
-      final_stage: "stage3",
-    });
+    return resolveFlashlightCheck(
+      nextState,
+      resolvedInventory,
+      getNodeLines(resolvedNode, content),
+      content,
+    );
   }
 
   const actionKey = `${state.currentNode}__${matchedChoice.command.replace(/ /g, "_")}`;
   const actionLines = getNodeLines(actionKey as NodeId, content);
-  const deathLines = matchedChoice.deathType
-    ? getDeathScreenLines(state.currentNode, matchedChoice.command, content)
-    : [];
-  const nodeLines =
-    actionLines.length > 0 && resolvedNode === "stage3_hub"
-      ? []
-      : getNodeLines(resolvedNode, content);
 
-  return {
-    ...nextState,
-    currentNode: resolvedNode,
+  return applyChoiceOutcome(nextState, {
+    stage: "stage3",
+    nextNode: resolvedNode,
     inventory: resolvedInventory,
-    isGameOver: resolvedNode === "game_over",
-    isWin: resolvedNode === "game_win",
-    lastDeathType: matchedChoice.deathType ?? null,
-    output: [...actionLines, ...deathLines, ...nodeLines],
-  };
+    deathType: matchedChoice.deathType,
+    deathNodeId: state.currentNode,
+    deathScreenNode: state.currentNode,
+    deathScreenCommand: matchedChoice.command,
+    prefixLines: actionLines,
+    suppressNodeLines: actionLines.length > 0 && resolvedNode === "stage3_hub",
+    content,
+  });
 }
