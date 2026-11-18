@@ -361,6 +361,71 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(arrived.currentNode).toBe("stage3_hub_unexplored");
     });
 
+    it("emits stage3_arrival text only once when entering Stage 3 from Stage 2 with stacks key", () => {
+      const customCatalog: ContentCatalog = {
+        intro: ["intro"],
+        nodes: {
+          stage2_stacks_door_check: ["stacks-door-check"],
+          stage3_arrival: ["stage3-arrival-node"],
+          stage3_hub_unexplored: ["stage3-hub-unexplored"],
+          stage3_early_death_choice: ["stage3-early-death-choice"],
+        },
+        death_screens: {
+          stage3_arrival__with_mop_check: ["stage3-arrival-mop-death"],
+        },
+        parser_fallbacks: ["fallback"],
+      };
+
+      const pokerEntry = transition(
+        makeState("stage2_poker_acquired", ["stacks key", "fireplace poker"]),
+        "go deeper",
+        customCatalog,
+      );
+      expect(pokerEntry.currentNode).toBe("stage3_hub_unexplored");
+      expect(pokerEntry.output).toEqual([
+        "stacks-door-check",
+        "stage3-arrival-node",
+        "stage3-hub-unexplored",
+      ]);
+
+      const mopEntry = transition(
+        makeState("stage2_fireplace_revealed", ["mop", "stacks key"]),
+        "go deeper",
+        customCatalog,
+      );
+      expect(mopEntry.currentNode).toBe("stage3_early_death_choice");
+      expect(mopEntry.output).toEqual([
+        "stacks-door-check",
+        "stage3-arrival-mop-death",
+        "stage3-early-death-choice",
+      ]);
+
+      const directPoker = transition(
+        makeState("stage3_arrival", ["stacks key", "fireplace poker"]),
+        "2",
+        customCatalog,
+      );
+      expect(directPoker.output).toEqual(["stage3-arrival-node", "stage3-hub-unexplored"]);
+
+      const directMop = transition(
+        makeState("stage3_arrival", ["mop", "stacks key"]),
+        "1",
+        customCatalog,
+      );
+      expect(directMop.output).toEqual(["stage3-arrival-mop-death", "stage3-early-death-choice"]);
+
+      const arrivalLines = getNodeLines("stage3_arrival");
+      expect(arrivalLines.length).toBeGreaterThan(0);
+      const realPokerEntry = transition(
+        makeState("stage2_poker_acquired", ["stacks key", "fireplace poker"]),
+        "go deeper",
+      );
+      const arrivalOccurrences = realPokerEntry.output.filter(
+        (line) => line === arrivalLines[0],
+      ).length;
+      expect(arrivalOccurrences).toBe(1);
+    });
+
     it("triggers monster_attack and transitions to stage2_no_key_death_choice on both choices at stage2_stacks_door_locked_no_key", () => {
       const state = makeState("stage2_stacks_door_locked_no_key", ["fireplace poker"]);
 

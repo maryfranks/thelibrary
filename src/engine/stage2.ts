@@ -292,6 +292,7 @@ function resolveStacksDoorCheck(
     nextNode,
     inventory: [...inventory],
     prefixLines,
+    suppressNodeLines: hasStacksKey,
     content,
   });
 }
