@@ -6,7 +6,7 @@ The application is structured as a client-side Single Page Application (SPA) dep
 
 ## Strict 3-Tier Decoupling & Component Boundaries
 
-### 1. Frontend UI Shell (`src/routes/`, `src/components/`)
+### 1. Frontend UI Shell (`src/routes/`)
 
 - Presentational React interface simulating a retro terminal console with a self-contained local browser state loop handling command inputs, text history output, and active session state.
 - Completely decoupled from game rules; never imports, parses, or inspects `content.json` directly and contains no embedded narrative logic.

@@ -23,7 +23,7 @@
 
 - Pure helpers render the numbered `Do you want to:` list from `getAvailableChoices(nodeId)` (empty for terminal nodes).
 - `formatChoicePrompt(nodeId)` appends to initial output on load; `getTransitionPrompt(next)` appends after a transition for non-terminal states (`!next.isGameOver && !next.isWin`).
-- The UI shell (`src/routes/index.tsx`) calls these helpers and never constructs prompt text directly.
+- `src/engine/commands.ts` (`getSceneEntries`, `processCommand`) calls these helpers; the UI shell (`src/routes/index.tsx`) never constructs prompt text directly.
 
 ## Stage 4 Loopback Death-Screen Reuse (`src/engine/stage4.ts`)
 
