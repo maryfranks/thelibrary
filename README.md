@@ -32,7 +32,7 @@ bun install
 bun run dev
 ```
 
-When running locally, the Dev Warp feature fast forwards the game to the beginning of the next stage. Use `stage3`, `stage4`, `stage5 mezzanine` and `stage5 basement` to warp to the beginning of the stage with all necessary inventory.
+When running locally, the Dev Warp feature fast forwards the game to the beginning of the next stage. Use `atage1`, `stage2`, `stage3`, `stage4`, `stage5 mezzanine` and `stage5 basement` to warp to the beginning of the stage with all necessary inventory.
 
 Open the URL it prints in your browser.
 
@@ -51,7 +51,7 @@ Open the URL it prints in your browser.
 ### Production build
 
 ```sh
-bun run build      # builds the app into the dist/ output
+bun run build      # builds the app into the .output
 bun run preview    # serves the built app locally
 ```
 
@@ -65,10 +65,8 @@ I organized the codebase around a strict three-tier separation of concerns: pres
 ├── monitoring/       # Grafana dashboard definitions and telemetry configurations
 ├── public/           # Static web assets (favicon, robots.txt)
 ├── src/
-│   ├── components/   # Presentational terminal User Interface (UI) chrome and Radix primitives
 │   ├── engine/       # Headless state machine, stage logic, commands, and telemetry
 │   │   └── __tests__/ # Vitest unit tests for transitions, inventory, and puzzles
-│   ├── hooks/        # React lifecycle helpers (such as mobile viewport detection)
 │   ├── lib/          # Error boundaries and utility helpers
 │   ├── routes/       # TanStack Start file-based routes and root layout
 │   ├── router.tsx    # Router instance configuration
@@ -80,7 +78,7 @@ I organized the codebase around a strict three-tier separation of concerns: pres
 
 ### Core Architecture Layers
 
-- **Presentation Layer (`src/routes/`, `src/components/`, `src/styles.css`):**
+- **Presentation Layer (`src/routes/`, `src/styles.css`):**
   Built with TanStack Start and React 19. It functions as a retro terminal UI shell handling raw keystrokes, scroll history, and visual styling. It never imports `content.json` or evaluates puzzle logic directly; it simply renders what the game engine produces.
 - **Headless Game Engine (`src/engine/`):**
   A pure TypeScript state machine governing player inventory, room transitions, and command parsing across all five stages (`stage1.ts` through `stage5.ts`). It has zero Document Object Model (DOM) dependencies and zero React imports, allowing full test coverage in isolation via Vitest (`bun run test`).
@@ -95,7 +93,4 @@ Client-side gameplay metrics (such as run completions and fatal transitions) are
 
 Continuous Integration (CI) automatically updates the Grafana dashboard (`monitoring/dashboards/game-telemetry.json`) on pushes to `main` via GitHub Actions (`.github/workflows/deploy-dashboard.yaml`).
 
-## Roadmap
-
-Testing of core game logic is still underway. The text remains largely a placeholder after the first two stages. There are tickets in the github issue backlog to address testing and expanding placeholder text. Real game text needs to be typed up and entered into the game once final logic is verified for stages 4 and 5. A temporary game over is placed at the end of stage 4 becuase the logic disintegrates in stage 5.
 
