@@ -1,5 +1,5 @@
 import { tryDevWarp } from "./devwarp";
-import { getAvailableChoices } from "./choices";
+import { getAvailableChoices, hasPack } from "./choices";
 import { getIntroLines, getNodeLines, getParserFallback } from "./content";
 import { isStage1Node, transitionStage1 } from "./stage1";
 import { isStage2Node, transitionStage2 } from "./stage2";
@@ -81,7 +81,7 @@ function dispatchTransition(state: GameState, input: string, content?: ContentCa
         };
       }
 
-      if (normalized === "look in the pack") {
+      if (normalized === "look in the pack" && hasPack(state)) {
         return {
           ...state,
           inventory: [...state.inventory],
