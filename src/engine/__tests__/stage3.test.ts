@@ -299,6 +299,7 @@ describe("Stage 3 Engine (The Stacks)", () => {
       const fatalAfterLook = transition(lookedAround, "enter the reading room");
       expect(fatalAfterLook.currentNode).toBe("stage3_death_choice");
       expect(fatalAfterLook.lastDeathType).toBe("monster_attack");
+      expect(fatalAfterLook.output.length).toBeGreaterThan(0);
 
       const backAfterLook = transition(lookedAround, "go back");
       expect(backAfterLook.currentNode).toBe("stage3_hub");

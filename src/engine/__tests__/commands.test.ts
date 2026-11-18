@@ -83,6 +83,7 @@ describe("processCommand", () => {
       const r = processCommand(state, "look in the pack");
       expect(r.state.currentNode).toBe(node);
       expect(r.state.output).toEqual(getParserFallback(0));
+      expect(r.entries.some((e) => e.text.startsWith("Inventory:"))).toBe(false);
       expect(promptCount(r.entries)).toBe(1);
     }
   });
