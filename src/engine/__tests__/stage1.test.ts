@@ -3,6 +3,7 @@ import {
   createInitialState,
   getAvailableChoices,
   getNodeLines,
+  getParserFallback,
   hasPack,
   loadContent,
   processCommand,
@@ -41,6 +42,15 @@ describe("Stage 1 Engine (Vestibule)", () => {
       expect(next.isGameOver).toBe(false);
       expect(next.isWin).toBe(false);
     });
+
+    it("rejects ambient 'look in the pack' with parser fallback before the pack is found", () => {
+      const initial = createInitialState();
+      const next = transition(initial, "look in the pack");
+
+      expect(next.currentNode).toBe("stage1_vestibule");
+      expect(next.inventory).toEqual([]);
+      expect(next.output).toEqual(getParserFallback(0));
+    });
   });
 
   describe("stage1_vestibule_respawn", () => {
@@ -52,6 +62,15 @@ describe("Stage 1 Engine (Vestibule)", () => {
       expect(next.currentNode).toBe("stage1_vestibule_searched");
       expect(next.lastDeathType).toBeNull();
       expect(next.inventory).toEqual([]);
+    });
+
+    it("rejects ambient 'look in the pack' with parser fallback before the pack is found", () => {
+      const respawnState = transition(createInitialState(), "try to leave");
+      const next = transition(respawnState, "look in the pack");
+
+      expect(next.currentNode).toBe("stage1_vestibule_respawn");
+      expect(next.inventory).toEqual([]);
+      expect(next.output).toEqual(getParserFallback(0));
     });
   });
 

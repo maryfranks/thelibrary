@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createInitialState, getAvailableChoices, getSceneEntries, processCommand } from "../index";
+import {
+  createInitialState,
+  getAvailableChoices,
+  getParserFallback,
+  getSceneEntries,
+  processCommand,
+} from "../index";
 import type { GameState } from "../types";
 
 const promptCount = (entries: { text: string }[]) =>
@@ -68,6 +74,16 @@ describe("processCommand", () => {
     expect(lookResult.state.currentNode).toBe("stage2_reading_room_door");
     expect(lookResult.state.output.length).toBeGreaterThan(0);
     expect(promptCount(lookResult.entries)).toBe(1);
+  });
+
+  it("returns parser fallback for 'look in the pack' before the pack is found", () => {
+    for (const node of ["stage1_vestibule", "stage1_vestibule_respawn"] as const) {
+      const state: GameState = { ...createInitialState(), currentNode: node };
+      const r = processCommand(state, "look in the pack");
+      expect(r.state.currentNode).toBe(node);
+      expect(r.state.output).toEqual(getParserFallback(0));
+      expect(promptCount(r.entries)).toBe(1);
+    }
   });
 
   it("does not prompt when the game is already over", () => {
