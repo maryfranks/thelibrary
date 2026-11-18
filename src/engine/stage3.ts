@@ -420,16 +420,7 @@ export function transitionStage3(
   }
 
   if (resolvedNode === "stage2_respawn_check") {
-    return resolveRespawnCheck(
-      {
-        ...nextState,
-        stage2InventorySnapshot:
-          state.stage2InventorySnapshot ?? (resolvedInventory.includes("mop") ? ["mop"] : []),
-      },
-      resolvedInventory,
-      [],
-      content,
-    );
+    return resolveRespawnCheck(nextState, resolvedInventory, [], content);
   }
 
   if (resolvedNode === "stage3_row2_flashlight_check") {

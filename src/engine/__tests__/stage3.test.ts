@@ -73,6 +73,30 @@ describe("Stage 3 Engine (The Stacks)", () => {
       expect(gaveUp.lastDeathType).toBeNull();
       expect(gaveUp.isGameOver).toBe(true);
     });
+
+    it("normalizes inventory and stage2InventorySnapshot when retrying stage3_early_death_choice with stage2InventorySnapshot: null", () => {
+      const withMop = makeState("stage3_early_death_choice", ["mop", "stacks key"], {
+        stage2InventorySnapshot: null,
+        stage3InventorySnapshot: null,
+      });
+      const retriedWithMop = transition(withMop, "try again");
+      expect(retriedWithMop.currentNode).toBe("stage2_foyer");
+      expect(retriedWithMop.inventory).toEqual(["mop"]);
+      expect(retriedWithMop.stage2InventorySnapshot).toEqual(["mop"]);
+      expect(retriedWithMop.lastDeathType).toBeNull();
+      expect(retriedWithMop.isGameOver).toBe(false);
+
+      const withoutMop = makeState("stage3_early_death_choice", ["stacks key"], {
+        stage2InventorySnapshot: null,
+        stage3InventorySnapshot: null,
+      });
+      const retriedWithoutMop = transition(withoutMop, "try again");
+      expect(retriedWithoutMop.currentNode).toBe("stage2_respawn_no_mop");
+      expect(retriedWithoutMop.inventory).toEqual([]);
+      expect(retriedWithoutMop.stage2InventorySnapshot).toEqual([]);
+      expect(retriedWithoutMop.lastDeathType).toBeNull();
+      expect(retriedWithoutMop.isGameOver).toBe(false);
+    });
     it("lets a mop holder who died at arrival retry, get the poker and reach stage3_hub_unexplored (no soft-lock)", () => {
       let state = makeState("stage2_stacks_door_check", ["mop", "stacks key"], {
         stage2InventorySnapshot: ["mop"],
