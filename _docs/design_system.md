@@ -26,9 +26,7 @@ A compact reference derived from `BRAND.md` and configured in `src/styles.css`. 
 | **Primary Accent / Prompt**| `text-primary` / `bg-primary` | `#C7A362` | Polished marine brass-400 |
 | **Brass Border** | `border-brass-border` | `#6E5A34` | Antiqued brass-800 |
 | **Standard Hairline Border**| `border-border` | `#333A41` | Cold-rolled steel hairline |
-| **Success State** | `text-success` | `#86A47E` | Forest foliage-400 |
 | **Warning State** | `text-warning` | `#D2BD7A` | Ochre lantern-400 |
-| **Error / Destructive** | `text-destructive` | `#A29BBE` | Muted distress violet-400 |
 
 ### Elevation & Effects
 - **Terminal Shadow:** `var(--shadow-terminal)` (`0 8px 24px -8px rgb(26 21 18 / 0.6), inset 0 1px 0 rgb(237 230 214 / 0.04)`)
@@ -57,7 +55,7 @@ A compact reference derived from `BRAND.md` and configured in `src/styles.css`. 
 
 ## 5. Strict Design Anti-Patterns
 
-1. **No Forbidden Hues:** No bright red, orange, or hot pink. Critical failure/death states use distress purple (`#A29BBE`), not saturated red.
+1. **No Forbidden Hues:** No bright red, orange, or hot pink.
 2. **No Pure Black / Pure White:** `#FFFFFF` and `#000000` are banned. Use `#EDE6D6` for brightest text and `#0F1114` for deepest background.
 3. **No Neons or Glows:** Do not apply high-saturation glows, blur filters, or bright retro-green CRT scanline effects.
 4. **No Ad-Hoc Inline Colors:** Never write hex codes or inline `style={{ color: ... }}` in JSX. Reference semantic Tailwind classes mapped in `src/styles.css`.
