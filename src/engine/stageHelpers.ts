@@ -49,14 +49,14 @@ export interface ApplyChoiceOutcomeOptions {
   stage: StageId;
   nextNode: NodeId;
   inventory: ItemId[];
-  deathType?: DeathType;
-  deathNodeId?: NodeId;
-  deathScreenNode?: NodeId;
-  deathScreenCommand?: string;
-  deathLines?: string[];
-  prefixLines?: string[];
-  suppressNodeLines?: boolean;
-  content?: ContentCatalog;
+  deathType?: DeathType | undefined;
+  deathNodeId?: NodeId | undefined;
+  deathScreenNode?: NodeId | undefined;
+  deathScreenCommand?: string | undefined;
+  deathLines?: string[] | undefined;
+  prefixLines?: string[] | undefined;
+  suppressNodeLines?: boolean | undefined;
+  content?: ContentCatalog | undefined;
 }
 
 /** Records death/run-completion telemetry and builds the next GameState for a transition. */
