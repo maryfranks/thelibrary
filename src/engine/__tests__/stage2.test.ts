@@ -64,7 +64,7 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
       expect(next.currentNode).toBe("stage2_respawn_no_mop");
       expect(next.lastDeathType).toBeNull();
       expect(next.isGameOver).toBe(false);
-      expect(next.output).toEqual([...catalog.nodes.stage2_respawn_no_mop]);
+      expect(next.output).toEqual([...(catalog.nodes["stage2_respawn_no_mop"] ?? [])]);
     });
 
     it("handles stage2_respawn_no_mop choices: 'pick up mop' -> stage1_mop_acquired (adds mop), 'proceed anyway' -> stage2_foyer", () => {
@@ -91,9 +91,9 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
     });
 
     it("routes reading room door rattle death to stage2_rattle_death_choice and 'try again' to stage2_reading_room_door_respawn preserving inventory", () => {
-      let state = {
+      let state: GameState = {
         ...makeState("stage2_reading_room_door", ["mop", "stacks key", "lemon candy"]),
-        stage2InventorySnapshot: ["mop" as ItemId],
+        stage2InventorySnapshot: ["mop"],
       };
       state = transition(state, "rattle reading room door");
       expect(state.currentNode).toBe("stage2_rattle_death_choice");
@@ -134,7 +134,7 @@ describe("Stage 2 Engine (Foyer & Reading Room Door)", () => {
 
       expect(next.currentNode).toBe("stage2_respawn_no_mop");
       expect(next.inventory).toEqual([]);
-      expect(next.output).toEqual([...catalog.nodes.stage2_respawn_no_mop]);
+      expect(next.output).toEqual([...(catalog.nodes["stage2_respawn_no_mop"] ?? [])]);
     });
 
     it("resolves stage2_respawn_check directly on entry", () => {

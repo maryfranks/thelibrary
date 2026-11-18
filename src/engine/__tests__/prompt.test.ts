@@ -55,7 +55,11 @@ describe("choice prompt", () => {
 
   it("still accepts 1-based index input matching the listed option", () => {
     const initial = createInitialState();
-    const byText = transition(initial, getAvailableChoices(initial.currentNode)[0]);
+    const firstChoice = getAvailableChoices(initial.currentNode)[0];
+    if (!firstChoice) {
+      throw new Error("Expected at least one available choice");
+    }
+    const byText = transition(initial, firstChoice);
     const byIndex = transition(initial, "1");
     expect(byIndex.currentNode).toBe(byText.currentNode);
   });

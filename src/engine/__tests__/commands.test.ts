@@ -36,8 +36,12 @@ describe("processCommand", () => {
 
   it("accepts index input", () => {
     const initial = createInitialState();
+    const firstChoice = getAvailableChoices(initial.currentNode)[0];
+    if (!firstChoice) {
+      throw new Error("Expected at least one available choice");
+    }
     const byIndex = processCommand(initial, " 1 ");
-    const byText = processCommand(initial, getAvailableChoices(initial.currentNode)[0]);
+    const byText = processCommand(initial, firstChoice);
     expect(byIndex.state.currentNode).toBe(byText.state.currentNode);
   });
 
@@ -99,15 +103,15 @@ describe("processCommand", () => {
     const initial = createInitialState();
     const r = processCommand(initial, "help");
     for (const c of getAvailableChoices(initial.currentNode)) {
-      expect(r.entries[0].text).toContain(c);
+      expect(r.entries[0]?.text).toContain(c);
     }
   });
 
   it("inventory reports contents or empty", () => {
     const initial = createInitialState();
-    expect(processCommand(initial, "inv").entries[0].text).toContain("empty");
+    expect(processCommand(initial, "inv").entries[0]?.text).toContain("empty");
     const withItem = { ...initial, inventory: ["umbrella" as const] };
-    expect(processCommand(withItem, "i").entries[0].text).toContain("umbrella");
+    expect(processCommand(withItem, "i").entries[0]?.text).toContain("umbrella");
   });
 
   it("clear requests a buffer wipe with no entries or prompt", () => {

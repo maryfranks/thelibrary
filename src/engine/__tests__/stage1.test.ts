@@ -233,7 +233,10 @@ describe("Stage 1 Engine (Vestibule)", () => {
     it("loads narrative text dynamically from content.json and supports injected catalogs", () => {
       const catalog = loadContent();
       const initial = createInitialState(catalog);
-      expect(initial.output).toEqual([...catalog.intro, ...(catalog.nodes.stage1_vestibule ?? [])]);
+      expect(initial.output).toEqual([
+        ...catalog.intro,
+        ...(catalog.nodes["stage1_vestibule"] ?? []),
+      ]);
 
       const customCatalog: ContentCatalog = {
         intro: ["custom-intro"],

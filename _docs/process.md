@@ -2,11 +2,12 @@
 
 ## Pull Requests & Verification
 
-- **Pre-PR Checks:** Run all checks before opening a PR:
+- **Pre-PR Checks:** Run all checks before completing tasks or opening a PR:
   - `bun run lint`
   - `bun run format` (or `bunx prettier` on modified source files; never format read-only files such as `content.json` or `.agents/docs/game_map.md`)
   - `bun run test`
-  - `bun run build`
+  - `bun run build` (run before `bunx tsc --noEmit` when route changes regenerate `src/routeTree.gen.ts`)
+  - `bunx tsc --noEmit`
 - **Documentation Sync:** Update relevant documentation in the same PR as code changes.
 
 ## Testing

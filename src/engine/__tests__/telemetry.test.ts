@@ -6,7 +6,11 @@ import {
   type MeterProvider,
 } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import { MeterProvider as SdkMeterProvider, MetricReader } from "@opentelemetry/sdk-metrics";
+import {
+  MeterProvider as SdkMeterProvider,
+  MetricReader,
+  type PushMetricExporter,
+} from "@opentelemetry/sdk-metrics";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   COLLECTOR_URL,
@@ -224,12 +228,17 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
 
     it("degrades silently on network drops, offline execution, and collector timeouts without throwing", async () => {
       // 1. Exporter callback reports failed export (e.g. HTTP 500 / connection refused)
-      exportSpy.mockImplementation((_metrics, resultCallback) => {
-        resultCallback({
-          code: 1,
-          error: new Error("Network drop: connect ECONNREFUSED"),
-        });
-      });
+      exportSpy.mockImplementation(
+        (
+          _metrics: Parameters<PushMetricExporter["export"]>[0],
+          resultCallback: Parameters<PushMetricExporter["export"]>[1],
+        ) => {
+          resultCallback({
+            code: 1,
+            error: new Error("Network drop: connect ECONNREFUSED"),
+          });
+        },
+      );
 
       recordDeath({
         stage: "stage1",
@@ -281,7 +290,9 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       const mockMeter: Meter = {
         createCounter: <T extends Attributes = Attributes>(name: string): Counter<T> => ({
           add: (value: number, attributes?: T) => {
-            recordedMetrics.push({ name, value, attributes });
+            recordedMetrics.push(
+              attributes !== undefined ? { name, value, attributes } : { name, value },
+            );
           },
         }),
         createGauge: vi.fn(),
