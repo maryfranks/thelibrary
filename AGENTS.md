@@ -7,9 +7,9 @@ Terminal adventure game built with TanStack Start (React 19), Vite, TypeScript, 
 - Pull Request Review: `~/.agents/roles/reviewer.md`
 
 ## Guardrails
-- **Read-Only Files:** Never modify `content.json` or `.agents/docs/game_map.md`.
-- **Decoupling:** Load all narrative strings dynamically from `content.json`; never hardcode text in `src/engine/`.
-- **Design System:** All UI components and styling updates must follow `_docs/design_system.md`.
+- Read-only files: Never modify `content.json` or `.agents/docs/game_map.md`.
+- Decoupling: Load all narrative strings dynamically from `content.json`; never hardcode text in `src/engine/`.
+- Design system: All UI components and styling updates must follow `_docs/design_system.md`.
 
 ## Documentation Index & Access Control
 
@@ -23,7 +23,7 @@ Terminal adventure game built with TanStack Start (React 19), Vite, TypeScript, 
 - `_docs/process.md`: Repository PR verification checks, documentation rules, and testing standards.
 - `content.json`: Read-only string dictionary.
 
-### Ignored / Human Only (Agents Do Not Read)
+## Ignored / Human Only (Agents Do Not Read)
 - `_docs/archive/`: Historical notes and deprecated planning docs.
 - `_docs/gameplay.md`: Author walkthrough (use `.agents/docs/game_map.md` instead).
 - `README.md`: Human-facing overview and local setup guide.
