@@ -79,7 +79,7 @@ describe("error-capture", () => {
 
     it("falls back to name and message when stack is absent", () => {
       const err = new Error("no stack");
-      err.stack = undefined;
+      delete err.stack;
       expect(describeError(err)).toBe("Error: no stack");
     });
 
