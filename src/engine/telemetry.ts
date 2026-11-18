@@ -116,9 +116,11 @@ export class ImmediateMetricReader extends MetricReader {
   private readonly _exporter: PushMetricExporter;
 
   constructor(exporter: PushMetricExporter) {
+    const aggregationSelector = exporter.selectAggregation?.bind(exporter);
+    const aggregationTemporalitySelector = exporter.selectAggregationTemporality?.bind(exporter);
     super({
-      aggregationSelector: exporter.selectAggregation?.bind(exporter),
-      aggregationTemporalitySelector: exporter.selectAggregationTemporality?.bind(exporter),
+      ...(aggregationSelector ? { aggregationSelector } : {}),
+      ...(aggregationTemporalitySelector ? { aggregationTemporalitySelector } : {}),
     });
     this._exporter = exporter;
   }

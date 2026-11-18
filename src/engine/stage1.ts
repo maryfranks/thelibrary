@@ -138,7 +138,7 @@ export function transitionStage1(
   const nodeLines = getNodeLines(nextNode, content);
 
   const stage2InventorySnapshot =
-    nextNode === "stage2_foyer" ? [...nextInventory] : state.stage2InventorySnapshot;
+    nextNode === "stage2_foyer" ? [...nextInventory] : (state.stage2InventorySnapshot ?? null);
 
   return {
     ...state,
