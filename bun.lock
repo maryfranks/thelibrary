@@ -7,6 +7,7 @@
       "dependencies": {
         "@opentelemetry/api": "^1.10.0",
         "@opentelemetry/exporter-metrics-otlp-http": "0.200.0",
+        "@opentelemetry/resources": "2.0.0",
         "@opentelemetry/sdk-metrics": "2.0.0",
         "@tailwindcss/vite": "^4.2.1",
         "@tanstack/react-router": "1.170.41",

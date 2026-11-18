@@ -13,13 +13,18 @@ import {
   DEATHS_COUNTER_NAME,
   ImmediateMetricReader,
   METER_NAME,
+  NoopMetricExporter,
   RUNS_COMPLETED_COUNTER_NAME,
+  SERVICE_NAME,
   createInitialState,
+  createMetricExporter,
+  createTelemetryResource,
   deathsCounter,
   flushTelemetry,
   getStageFromNodeId,
   isActiveSession,
   isDeathScreenNode,
+  isTestEnvironment,
   meter,
   meterProvider,
   metricExporter,
@@ -27,6 +32,7 @@ import {
   recordDeath,
   recordRunCompleted,
   runsCompletedCounter,
+  telemetryResource,
   transition,
   type DeathAttributes,
   type GameState,
@@ -138,9 +144,11 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       expect(isActiveSession(makeState("game_win", [], { isWin: true }))).toBe(false);
     });
 
-    it("configures OTLPMetricExporter directly to production collector URL with ImmediateMetricReader (no periodic interval)", async () => {
+    it("uses NoopMetricExporter in test environments and configures OTLPMetricExporter for non-test environments with ImmediateMetricReader", async () => {
       expect(COLLECTOR_URL).toBe("https://collector.littlefuzzydinos.com/v1/metrics");
-      expect(metricExporter).toBeInstanceOf(OTLPMetricExporter);
+      expect(isTestEnvironment()).toBe(true);
+      expect(metricExporter).toBeInstanceOf(NoopMetricExporter);
+      expect(metricExporter).not.toBeInstanceOf(OTLPMetricExporter);
       expect(metricReader).toBeInstanceOf(ImmediateMetricReader);
       expect(metricReader).toBeInstanceOf(MetricReader);
       expect(meterProvider).toBeInstanceOf(SdkMeterProvider);
@@ -152,6 +160,10 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       expect(readerInternal._exporter).toBe(metricExporter);
       expect(readerInternal._interval).toBeUndefined();
 
+      const nonTestExporter = createMetricExporter(false);
+      expect(nonTestExporter).toBeInstanceOf(OTLPMetricExporter);
+      await nonTestExporter.shutdown();
+
       recordDeath({
         stage: "stage1",
         death_type: "monster_attack",
@@ -160,6 +172,39 @@ describe("OpenTelemetry Instrumentation (telemetry.ts & Engine Metrics)", () => 
       await vi.waitFor(() => {
         expect(exportSpy).toHaveBeenCalledTimes(1);
       });
+    });
+
+    it("configures explicit service.name and deployment.environment on the OpenTelemetry Resource", () => {
+      expect(SERVICE_NAME).toBe("the-library");
+      expect(telemetryResource.attributes["service.name"]).toBe("the-library");
+      expect(telemetryResource.attributes["deployment.environment"]).toBe("test");
+
+      const prodResource = createTelemetryResource("production");
+      expect(prodResource.attributes["service.name"]).toBe("the-library");
+      expect(prodResource.attributes["deployment.environment"]).toBe("production");
+
+      const devResource = createTelemetryResource("development");
+      expect(devResource.attributes["service.name"]).toBe("the-library");
+      expect(devResource.attributes["deployment.environment"]).toBe("development");
+    });
+
+    it("makes zero network requests when exporting metrics in test environment without mocks", async () => {
+      exportSpy.mockRestore();
+      exporterForceFlushSpy.mockRestore();
+      const fetchSpy = vi.spyOn(globalThis, "fetch");
+
+      recordDeath({
+        stage: "stage1",
+        death_type: "monster_attack",
+        node_id: "stage1_vestibule",
+      });
+      recordRunCompleted({
+        outcome: "loss",
+        final_stage: "stage1",
+      });
+      await flushTelemetry();
+
+      expect(fetchSpy).not.toHaveBeenCalled();
     });
 
     it("flushes buffered metrics immediately via flushTelemetry() and when recordRunCompleted() is called", async () => {
