@@ -1,4 +1,4 @@
-import { getAvailableChoices } from "./choices";
+import { getAvailableChoices, hasPack } from "./choices";
 import { formatChoicePrompt, getTransitionPrompt } from "./prompt";
 import { transition } from "./transition";
 import type { GameState } from "./types";
@@ -36,7 +36,7 @@ function shouldShowInventory(prev: GameState, next: GameState, lower: string): b
   if (changed) return true;
   const choices = getAvailableChoices(prev.currentNode);
   const chosen = choices[Number(lower) - 1] ?? lower;
-  return chosen === "look in the pack";
+  return chosen === "look in the pack" && hasPack(prev);
 }
 
 /** Scene narrative followed by the choice prompt for the given state. */

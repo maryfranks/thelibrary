@@ -6,6 +6,7 @@ import {
   getSceneEntries,
   processCommand,
 } from "../index";
+import { formatChoicePrompt } from "../prompt";
 import type { GameState } from "../types";
 
 const promptCount = (entries: { text: string }[]) =>
@@ -180,6 +181,17 @@ describe("inventory display", () => {
     ] as const) {
       const r = processCommand(at(node, ["mop"]), "look in the pack");
       expect(invLines(r.entries)).toEqual([{ kind: "sys", text: "Inventory: mop" }]);
+    }
+  });
+
+  it("does not print inventory on 'look in the pack' before the pack is found", () => {
+    for (const node of ["stage1_vestibule", "stage1_vestibule_respawn"] as const) {
+      const r = processCommand(at(node), "look in the pack");
+      expect(invLines(r.entries)).toHaveLength(0);
+      expect(r.entries.map((e) => e.text)).toEqual([
+        ...getParserFallback(0),
+        ...formatChoicePrompt(node),
+      ]);
     }
   });
 
