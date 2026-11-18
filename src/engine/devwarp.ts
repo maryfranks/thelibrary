@@ -98,6 +98,6 @@ export function tryDevWarp(
     isWin: false,
     lastDeathType: null,
     ...(preset.flags ?? {}),
-    output: [`\x1b[33m[DEV WARP -> ${preset.node}]\x1b[0m`, ...nodeLines],
+    output: [`[DEV WARP -> ${preset.node}]`, ...nodeLines],
   };
 }
