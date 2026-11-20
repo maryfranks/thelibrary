@@ -18,6 +18,7 @@ export default defineConfig({
       preset: "cloudflare-module",
       cloudflare: {
         wrangler: {
+          name: "maryfranks-thelibrary",
           workers_dev: false,
           preview_urls: true,
         },
