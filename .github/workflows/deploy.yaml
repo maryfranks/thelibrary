@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '_docs/**'
+      - 'monitoring/**'
+      - '**.md'
+      - 'thelibrary.png'
 
 jobs:
   deploy:

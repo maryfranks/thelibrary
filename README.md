@@ -89,7 +89,7 @@ I organized the codebase around a strict three-tier separation of concerns: pres
 
 ### Telemetry & Observability Pipeline
 
-Client-side gameplay metrics (such as run completions and fatal transitions) are dispatched over OpenTelemetry Protocol (OTLP) to an OpenTelemetry (OTel) collector hosted on Google Cloud Platform (GCP) Virtual Machine (VM). The collector exports metrics to Victoriametrics for persistence and a Grafana instance (`stats.littlefuzzydinos.com`) for visualization. The configuration for that infrastructure is stored in another, private repo.
+Client-side gameplay metrics (such as run completions and fatal transitions) are dispatched over OpenTelemetry Protocol (OTLP) to an OpenTelemetry (OTel) collector hosted on Google Cloud Platform (GCP) Virtual Machine (VM). The collector exports metrics to Victoriametrics for persistence and a Grafana instance (`stats.littlefuzzydinos.com`) for visualization. The configuration for that infrastructure is stored in another, private repo. For a peek at the sanitized collector stack, see [maryfranks/otel-collector](https://github.com/maryfranks/otel-collector).
 
 Continuous Integration (CI) automatically updates the Grafana dashboard (`monitoring/dashboards/game-telemetry.json`) on pushes to `main` via GitHub Actions (`.github/workflows/deploy-dashboard.yaml`).
 
