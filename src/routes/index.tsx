@@ -193,7 +193,7 @@ function Index() {
       </main>
       <footer className="flex gap-8 py-10 font-mono text-xs uppercase tracking-widest">
         <a
-          href="https://github.com/maryfranks"
+          href="https://github.com/maryfranks/thelibrary"
           target="_blank"
           rel="noreferrer"
           className="text-muted-foreground transition-colors hover:text-primary"
